@@ -1,0 +1,13 @@
+1, server要init
+2, user init, 主要是设置监听哪些事件
+3, 在init里边login and connect
+4, 在on connect response里边, 构建login request, 然后send request给server去login
+5, 在login response里, 去join room
+6, join room时候, 要设plugin 名字之类的信息, 以找到plugin, 这时候还没进入room呢, 
+       设好后发送
+7, 发送完create room/join room request后, 会触发onJoinRoom event
+8, 保存住room id和zone id
+9, 有新user加入是, (应该也包含第一个创建房间同时加入的人), 能收到on room user update event,
+       此时要更新一下客户端的保存的user 列表
+10, 可以在加满人时候, (on room user update event 的逻辑中, 可以试着去拿到user数量和列表)允许点击开始游戏
+11, 点击开始游戏, 其实就是发esob了

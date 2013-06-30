@@ -33,7 +33,6 @@ public class Controller {
     private ElectroServer       es      = null;
     private Room                room    = null;
     private static final String xmlPath = "settings.xml";
-    private String              pendingAction;
     
     public void setView(View view) {
         this.view = view;
@@ -64,13 +63,6 @@ public class Controller {
         }
     }
     
-    private void sendInitMeRequest() {
-        log("sendInitMeRequest");
-        EsObject obj = new EsObject();
-        obj.setString("action", "kill");
-        sendPluginRequest(obj);
-    }
-    
     private void sendPluginRequest(EsObject obj) {
         log("sendPluginRequest");
         EsPluginRequest pmr = new EsPluginRequest();
@@ -88,32 +80,19 @@ public class Controller {
         EsObject obj = e.getParameters();
         String action = obj.getString(ClientConstants.ACTION);
         log(action);
-        if(action.equals("print_test")){
-            showChat("printing test");
+        if (action.equals(ClientConstants.CHOOSE_CHARACTOR)) {
+            gotCharactersToChoose(obj);
+            
         }
-        /*
-         * if (!e.getPluginName().equals(PLUGIN_NAME) &&
-         * !e.getPluginName().equals(LOBBY_PLUGIN_NAME)) { return; } EsObject
-         * obj = e.getParameters(); // log("onPluginMessageEvent: " +
-         * obj.toString()); String action =
-         * obj.getString(PluginConstants.ACTION, "");
-         * 
-         * if (action.isEmpty()) { log("onPluginMessageEvent: Action empty! ");
-         * return; } else if (action.equals(PluginConstants.START_GAME)) {
-         * handleStartGame(obj); } else if
-         * (action.equals(PluginConstants.MOVE_RESPONSE)) {
-         * handleMoveResponse(obj); } else if
-         * (action.equals(PluginConstants.MOVE_EVENT)) { handleMoveEvent(obj); }
-         * else if (action.equals(PluginConstants.SCORE)) {
-         * handleScoreEvent(obj); } else if
-         * (action.equals(PluginConstants.GAME_OVER)) { handleGameOver(obj); }
-         * else if (action.equals(PluginConstants.INIT_ME)) {
-         * handleWatcherInit(obj); } else if
-         * (action.equals(PluginConstants.SCORES_SET)) { handleTopScores(obj); }
-         * else if (action.equals(PluginConstants.LEADERBOARDS)) {
-         * handleLeaderBoards(obj); } else { log("unhandled action: " + action);
-         * }
-         */
+        
+        //TODO acton == game over
+    }
+    
+    private void gotCharactersToChoose(EsObject obj) {
+        String[] charsToChoose = obj.getStringArray(ClientConstants.CHARACTORS_TO_CHOOSE);
+        
+        showChat(charsToChoose.toString());
+        
     }
     
     public void onPublicMessageEvent(EsPublicMessageEvent e) {
@@ -122,8 +101,8 @@ public class Controller {
         
         showChat(from + ": " + msg + "\n");
         
-//        if (pendingAction == ClientConstants.PENDING_ACTION_NEED_START && msg.equals(ClientConstants.USER_INPUT_MESSAGE_START)) {
-        if(msg.equals("start")){
+        //        if (pendingAction == ClientConstants.PENDING_ACTION_NEED_START && msg.equals(ClientConstants.USER_INPUT_MESSAGE_START)) {
+        if (msg.equals("start")) {
             EsObject esob = new EsObject();
             esob.setString(ClientConstants.ACTION, ClientConstants.ACTION_START_GAME);
             sendPluginRequest(esob);

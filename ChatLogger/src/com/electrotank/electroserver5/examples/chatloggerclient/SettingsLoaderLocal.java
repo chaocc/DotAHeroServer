@@ -26,6 +26,8 @@ public class SettingsLoaderLocal {
                 return filename + " worked!";
             } catch (FileNotFoundException ex) {
                 return "File exists but FileNotFoundException thrown";
+            }finally{
+                IOUtils.closeQuietly(in);
             }
         } else {
             return null;
@@ -47,6 +49,8 @@ public class SettingsLoaderLocal {
                 return filename + " worked!";
             } catch (FileNotFoundException ex) {
                 return "File exists but FileNotFoundException thrown";
+            }finally{
+                IOUtils.closeQuietly(in);
             }
         } else {
             // Try and get the file stream via the classpath
