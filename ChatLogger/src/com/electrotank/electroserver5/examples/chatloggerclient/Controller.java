@@ -33,6 +33,7 @@ public class Controller {
     private ElectroServer       es      = null;
     private Room                room    = null;
     private static final String xmlPath = "settings.xml";
+    private String              currentAction;
     
     public void setView(View view) {
         this.view = view;
@@ -63,6 +64,22 @@ public class Controller {
         }
     }
     
+    public void onPluginMessageEvent(EsPluginMessageEvent e) {
+        log("onPluginMessageEvent");
+        EsObject obj = e.getParameters();
+        String action = obj.getString(ClientConstants.ACTION);
+        log(action);
+        
+        //TODO implement waiting mechanism
+        
+        if (action.equals(ClientConstants.CHOOSE_CHARACTOR)) {
+            gotCharactersToChoose(obj);
+            
+        }
+        
+        //TODO acton == game over
+    }
+    
     private void sendPluginRequest(EsObject obj) {
         log("sendPluginRequest");
         EsPluginRequest pmr = new EsPluginRequest();
@@ -73,19 +90,6 @@ public class Controller {
         
         es.getEngine().send(pmr);
         log("sendPluginRequest");
-    }
-    
-    public void onPluginMessageEvent(EsPluginMessageEvent e) {
-        log("onPluginMessageEvent");
-        EsObject obj = e.getParameters();
-        String action = obj.getString(ClientConstants.ACTION);
-        log(action);
-        if (action.equals(ClientConstants.CHOOSE_CHARACTOR)) {
-            gotCharactersToChoose(obj);
-            
-        }
-        
-        //TODO acton == game over
     }
     
     private void gotCharactersToChoose(EsObject obj) {

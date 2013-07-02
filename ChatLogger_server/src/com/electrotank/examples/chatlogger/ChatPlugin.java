@@ -46,13 +46,14 @@ public class ChatPlugin extends BasePlugin {
         String action = messageIn.getString(PluginConstants.ACTION);
         
         if (action.equals(PluginConstants.ACTION_START_GAME)) {
+            log.debug("got action start game");
             reorderUsers();
-            chooseCharacters();
+            chooseCharacters(messageIn);
             
         } else {
-            EsObject obj = new EsObject();
-            obj.setString("action", "nan");
-            getApi().sendPluginMessageToUser(user, obj);
+//            EsObject obj = new EsObject();
+            messageIn.setString("action", "nan");
+            getApi().sendPluginMessageToUser(user, messageIn);
         }
         
     }
@@ -69,9 +70,8 @@ public class ChatPlugin extends BasePlugin {
         log.debug("List<String> players is ready.");
     }
     
-    private void chooseCharacters() {
+    private void chooseCharacters(EsObject obj) {
         
-        EsObject obj = new EsObject();
         obj.setString(PluginConstants.ACTION, PluginConstants.CHOOSE_CHARACTOR);
         String[] charsToChoose = new String[3];
         for (int i = 0; i < players.size(); i++) {
