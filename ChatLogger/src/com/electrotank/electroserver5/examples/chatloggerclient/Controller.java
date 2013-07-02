@@ -1,27 +1,29 @@
 package com.electrotank.electroserver5.examples.chatloggerclient;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import com.electrotank.electroserver5.client.ElectroServer;
-import com.electrotank.electroserver5.client.connection.Connection;
-import com.electrotank.electroserver5.client.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.client.api.EsConnectionResponse;
 import com.electrotank.electroserver5.client.api.EsCreateRoomRequest;
 import com.electrotank.electroserver5.client.api.EsJoinRoomEvent;
-import com.electrotank.electroserver5.client.api.EsPluginMessageEvent;
-import com.electrotank.electroserver5.client.api.EsPluginRequest;
-import com.electrotank.electroserver5.client.api.EsUserUpdateEvent;
 import com.electrotank.electroserver5.client.api.EsLoginRequest;
 import com.electrotank.electroserver5.client.api.EsLoginResponse;
 import com.electrotank.electroserver5.client.api.EsMessageType;
 import com.electrotank.electroserver5.client.api.EsPluginListEntry;
+import com.electrotank.electroserver5.client.api.EsPluginMessageEvent;
+import com.electrotank.electroserver5.client.api.EsPluginRequest;
 import com.electrotank.electroserver5.client.api.EsPublicMessageEvent;
 import com.electrotank.electroserver5.client.api.EsPublicMessageRequest;
 import com.electrotank.electroserver5.client.api.EsUserListEntry;
+import com.electrotank.electroserver5.client.api.EsUserUpdateEvent;
+import com.electrotank.electroserver5.client.connection.Connection;
+import com.electrotank.electroserver5.client.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.client.user.User;
 import com.electrotank.electroserver5.client.zone.Room;
 import com.electrotank.electroserver5.client.zone.Zone;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Controls all communications with the ES5.
@@ -34,6 +36,7 @@ public class Controller {
     private Room                room    = null;
     private static final String xmlPath = "settings.xml";
     private String              currentAction;
+    private String[]            currentData;
     
     public void setView(View view) {
         this.view = view;
@@ -67,14 +70,16 @@ public class Controller {
     public void onPluginMessageEvent(EsPluginMessageEvent e) {
         log("onPluginMessageEvent");
         EsObject obj = e.getParameters();
-        String action = obj.getString(ClientConstants.ACTION);
-        log(action);
+        currentAction = obj.getString(ClientConstants.ACTION);
+        log(currentAction);
         
         //TODO implement waiting mechanism
         
-        if (action.equals(ClientConstants.CHOOSE_CHARACTOR)) {
+        if (currentAction.equals(ClientConstants.CHOOSE_CHARACTER)) {
+            currentData = obj.getStringArray(ClientConstants.CHARACTORS_TO_CHOOSE);
             gotCharactersToChoose(obj);
-            
+        }else if(currentAction.equals("bcd")){
+            showChat("print_test");
         }
         
         //TODO acton == game over
@@ -95,7 +100,7 @@ public class Controller {
     private void gotCharactersToChoose(EsObject obj) {
         String[] charsToChoose = obj.getStringArray(ClientConstants.CHARACTORS_TO_CHOOSE);
         
-        showChat(charsToChoose.toString());
+        showChat("please choose: "+charsToChoose.toString());
         
     }
     
@@ -104,11 +109,12 @@ public class Controller {
         String msg = e.getMessage();
         
         showChat(from + ": " + msg + "\n");
-        
-        //        if (pendingAction == ClientConstants.PENDING_ACTION_NEED_START && msg.equals(ClientConstants.USER_INPUT_MESSAGE_START)) {
-        if (msg.equals("start")) {
-            EsObject esob = new EsObject();
+        EsObject esob = new EsObject();
+        if (msg.equals(ClientConstants.USER_INPUT_MESSAGE_START)) {
             esob.setString(ClientConstants.ACTION, ClientConstants.ACTION_START_GAME);
+            sendPluginRequest(esob);
+        } else if (currentAction != null && currentAction.equals(ClientConstants.CHOOSE_CHARACTER) && currentData != null && Arrays.asList(currentData).contains(msg)) {
+            esob.setString(ClientConstants.ACTION_CHOSE_CHARACTER, msg);
             sendPluginRequest(esob);
         }
         

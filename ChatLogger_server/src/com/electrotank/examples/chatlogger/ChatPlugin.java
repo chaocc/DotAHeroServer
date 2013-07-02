@@ -6,24 +6,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.slf4j.Logger;
-
 import com.electrotank.electroserver5.extensions.BasePlugin;
 import com.electrotank.electroserver5.extensions.ChainAction;
-import com.electrotank.electroserver5.extensions.api.PluginApi;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
 import com.electrotank.electroserver5.extensions.api.value.UserPublicMessageContext;
-import com.electrotank.examples.chatlogger.values.CharacterEnum;
-import com.electrotank.examples.chatlogger.values.PluginConstants;
+import com.electrotank.examples.chatlogger.components.CharacterEnum;
+import com.electrotank.examples.chatlogger.components.PluginConstants;
+
+//import org.slf4j.Logger;
 
 public class ChatPlugin extends BasePlugin {
     
-    private ChatLogger          chatLogger = null;
-    private List<CharacterEnum> charactors = new ArrayList<CharacterEnum>();
-    private List<String>        players    = new ArrayList<String>();
-    private PluginApi           api        = getApi();
-    private Logger              log        = getApi().getLogger();
+    private ChatLogger          chatLogger             = null;
+    private List<CharacterEnum> allCharactersForChoose = new ArrayList<CharacterEnum>();
+    private List<String>        players                = new ArrayList<String>();
+    private List<String>        playerChoseCharactors  = new ArrayList<String>();
+    
+    //    private PluginApi           api                    = getApi();
     
     @Override
     public void init(EsObjectRO parameters) {
@@ -32,9 +32,9 @@ public class ChatPlugin extends BasePlugin {
     }
     
     private void initCharactorsRandomly() {
-        charactors = Arrays.asList(CharacterEnum.values());
-        Collections.shuffle(charactors);
-        log.debug("List<CharacterEnum> charactors is ready");
+        allCharactersForChoose = Arrays.asList(CharacterEnum.values());
+        Collections.shuffle(allCharactersForChoose);
+        getApi().getLogger().debug("List<CharacterEnum> charactors is ready");
     }
     
     @Override
@@ -46,44 +46,52 @@ public class ChatPlugin extends BasePlugin {
         String action = messageIn.getString(PluginConstants.ACTION);
         
         if (action.equals(PluginConstants.ACTION_START_GAME)) {
-            log.debug("got action start game");
+            getApi().getLogger().debug("got action start game");
             reorderUsers();
-            chooseCharacters(messageIn);
+            chooseCharacters(user, messageIn);
             
+        } else if (action.equals(PluginConstants.ACTION_CHOSE_CHARACTER)) {
+            choseCharacter(messageIn);
         } else {
-//            EsObject obj = new EsObject();
+            //            EsObject obj = new EsObject();
             messageIn.setString("action", "nan");
             getApi().sendPluginMessageToUser(user, messageIn);
         }
         
     }
     
+    private void choseCharacter(EsObject messageIn) {
+        
+    }
+    
     private void reorderUsers() {
-        String[] users = (String[]) api.getUsers().toArray();
+        String[] users = (String[]) getApi().getUsers().toArray();
         int random = new Random().nextInt(users.length);
         for (int i = 0; i < users.length; i++) {
             int count = i + random;
             count = count >= users.length ? count : (count - users.length);
             players.add(users[count]);
-            log.debug("adding the " + count + " user as the " + i + " player");
+            getApi().getLogger().debug("adding the " + count + " user as the " + i + " player");
         }
-        log.debug("List<String> players is ready.");
+        getApi().getLogger().debug("List<String> players is ready.");
     }
     
-    private void chooseCharacters(EsObject obj) {
+    private void chooseCharacters(String user, EsObject obj) {
+        obj.setString(PluginConstants.ACTION, "bdc");
+        getApi().sendPluginMessageToUser(user, obj);
         
-        obj.setString(PluginConstants.ACTION, PluginConstants.CHOOSE_CHARACTOR);
-        String[] charsToChoose = new String[3];
-        for (int i = 0; i < players.size(); i++) {
-            String player = players.get(i);
-            for (int choosingCount = 0; choosingCount < charsToChoose.length; choosingCount++) {
-                int shouldAddCharacterCount = i * charsToChoose.length + choosingCount;
-                charsToChoose[choosingCount] = charactors.get(shouldAddCharacterCount).getValue();
-            }
-            obj.setStringArray(PluginConstants.CHARACTORS_TO_CHOOSE, charsToChoose);
-            getApi().sendPluginMessageToUser(player, obj);
-            log.debug("Characters " + charsToChoose + " are sending to player " + player);
-        }
+        //        obj.setString(PluginConstants.ACTION, PluginConstants.CHOOSE_CHARACTER);
+        //        String[] charsToChoose = new String[3];
+        //        for (int i = 0; i < players.size(); i++) {
+        //            String player = players.get(i);
+        //            for (int choosingCount = 0; choosingCount < charsToChoose.length; choosingCount++) {
+        //                int shouldAddCharacterCount = i * charsToChoose.length + choosingCount;
+        //                charsToChoose[choosingCount] = allCharactersForChoose.get(shouldAddCharacterCount).getValue();
+        //            }
+        //            obj.setStringArray(PluginConstants.CHARACTORS_TO_CHOOSE, charsToChoose);
+        //            getApi().sendPluginMessageToUser(player, obj);
+        //            getApi().getLogger().debug("Characters " + charsToChoose + " are sending to player " + player);
+        //        }
         
     }
     

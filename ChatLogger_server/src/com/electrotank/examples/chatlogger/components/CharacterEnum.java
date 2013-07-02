@@ -1,4 +1,4 @@
-package com.electrotank.examples.chatlogger.values;
+package com.electrotank.examples.chatlogger.components;
 
 public enum CharacterEnum {
     秀逗魔导士("kSlayer"), 复仇之魂("kVengefulSpirit"), 刚被兽("kBristleback"),

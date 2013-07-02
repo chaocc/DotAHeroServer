@@ -1,4 +1,4 @@
-package com.electrotank.examples.chatlogger.values;
+package com.electrotank.examples.chatlogger.components;
 
 public class Cards {
     
