@@ -76,10 +76,8 @@ public class Controller {
         //TODO implement waiting mechanism
         
         if (currentAction.equals(ClientConstants.CHOOSE_CHARACTER)) {
-            currentData = obj.getStringArray(ClientConstants.CHARACTORS_TO_CHOOSE);
+            
             gotCharactersToChoose(obj);
-        }else if(currentAction.equals("bcd")){
-            showChat("print_test");
         }
         
         //TODO acton == game over
@@ -99,9 +97,8 @@ public class Controller {
     
     private void gotCharactersToChoose(EsObject obj) {
         String[] charsToChoose = obj.getStringArray(ClientConstants.CHARACTORS_TO_CHOOSE);
-        
-        showChat("please choose: "+charsToChoose.toString());
-        
+        currentData = charsToChoose;
+        showChat("please choose: " + Arrays.toString(charsToChoose));
     }
     
     public void onPublicMessageEvent(EsPublicMessageEvent e) {
@@ -109,14 +106,15 @@ public class Controller {
         String msg = e.getMessage();
         
         showChat(from + ": " + msg + "\n");
-        EsObject esob = new EsObject();
-        if (msg.equals(ClientConstants.USER_INPUT_MESSAGE_START)) {
-            esob.setString(ClientConstants.ACTION, ClientConstants.ACTION_START_GAME);
-            sendPluginRequest(esob);
-        } else if (currentAction != null && currentAction.equals(ClientConstants.CHOOSE_CHARACTER) && currentData != null && Arrays.asList(currentData).contains(msg)) {
-            esob.setString(ClientConstants.ACTION_CHOSE_CHARACTER, msg);
-            sendPluginRequest(esob);
-        }
+        //        EsObject esob = new EsObject();
+        //        //        if (msg.equals(ClientConstants.USER_INPUT_MESSAGE_START)) {
+        //        //            esob.setString(ClientConstants.ACTION, ClientConstants.ACTION_START_GAME);
+        //        //            sendPluginRequest(esob);
+        //        //        } else
+        //        if (currentAction != null && currentAction.equals(ClientConstants.CHOOSE_CHARACTER) && currentData != null && Arrays.asList(currentData).contains(msg)) {
+        //            esob.setString(ClientConstants.ACTION_CHOSE_CHARACTER, msg);
+        //            sendPluginRequest(esob);
+        //        }
         
     }
     
@@ -201,6 +199,26 @@ public class Controller {
         spmr.setMessage(message);
         // send it
         es.getEngine().send(spmr);
+        
+        log("currentAction = " + currentAction);
+        log("currentData   = " + Arrays.toString(currentData));
+        
+        if (message.equals(ClientConstants.USER_INPUT_MESSAGE_START)) {
+            EsObject esob = new EsObject();
+            esob.setString(ClientConstants.ACTION, ClientConstants.ACTION_START_GAME);
+            sendPluginRequest(esob);
+        } else if (currentAction.equals(ClientConstants.CHOOSE_CHARACTER)) {
+            log("" + currentAction.equals(ClientConstants.CHARACTORS_TO_CHOOSE));
+            if (Arrays.asList(currentData).contains(message)) {
+                EsObject esob = new EsObject();
+                esob.setString(ClientConstants.ACTION, ClientConstants.ACTION_CHOSE_CHARACTER);
+                esob.setString(ClientConstants.CHARACTORS_TO_CHOOSE, message);
+                sendPluginRequest(esob);
+            } else {
+                showChat("Wrong selection, please choose: " + Arrays.toString(currentData));
+            }
+        }
+        
     }
     
     private void logSuccessfulConnection() {

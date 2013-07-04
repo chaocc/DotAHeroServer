@@ -1,13 +1,24 @@
 package test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 public class Test {
     public static void main(String... args) {
-        shuffle();
+        testAddToEmptyList();
+    }
+    
+    public static void testAddToEmptyList() {
+
+    }
+    
+    public static void printStringArray() {
+        String[] charsToChoose = { "1st", "2nd", "3rd", "4th" };
+        System.out.println(Arrays.toString(charsToChoose));
+        
     }
     
     public static void shuffle() {
