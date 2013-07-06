@@ -32,11 +32,11 @@ import com.electrotank.electroserver5.client.zone.Zone;
 public class Controller {
     
     private View                view;
-    private ElectroServer       es      = null;
-    private Room                room    = null;
-    private static final String xmlPath = "settings.xml";
-    private String              currentAction;
-    private String[]            currentData;
+    private ElectroServer       es            = null;
+    private Room                room          = null;
+    private static final String xmlPath       = "settings.xml";
+    private int                 currentAction = -1;
+    private int[]               currentData;
     
     public void setView(View view) {
         this.view = view;
@@ -70,18 +70,70 @@ public class Controller {
     public void onPluginMessageEvent(EsPluginMessageEvent e) {
         log("onPluginMessageEvent");
         EsObject obj = e.getParameters();
-        currentAction = obj.getString(ClientConstants.ACTION);
-        log(currentAction);
+        log("currentObj: " + obj.toString());
+        currentAction = obj.getInteger(ClientConstants.ACTION);
+        log("" + currentAction);
         
         //TODO implement waiting mechanism
         
-        if (currentAction.equals(ClientConstants.CHOOSE_CHARACTER)) {
-            
+        if (currentAction == ClientConstants.ACTION_CHOOSE_CHARACTER) {
             gotCharactersToChoose(obj);
+        } else if (currentAction == ClientConstants.ACTION_ALL_HEROS) {
+            showChat("all heros: " + Arrays.toString(obj.getIntegerArray(ClientConstants.ALL_HEROS)));
+        } else if (currentAction == ClientConstants.ACTION_DISPATCH_FORCE) {
+            showChat("my force: " + obj.getInteger(ClientConstants.FORCE));
+            showChat("remaining cards: " + obj.getInteger(ClientConstants.STACK_CARD_COUNT));
+        } else if (currentAction == ClientConstants.ACTION_DISPATCH_HANDCARD) {
+            showChat("got cards: " + Arrays.toString(obj.getIntegerArray(ClientConstants.INIT_HAND_CARDS)));
         }
         
         //TODO acton == game over
     }
+    
+    public void attemptSendMessage(String message) {
+        if (room == null) {
+            log("Unable to send message.  Room is null.");
+            return;
+        }
+        if (message == null || message.isEmpty()) { return; }
+        log("Attempting to send message: " + message);
+        // create the request
+        EsPublicMessageRequest spmr = new EsPublicMessageRequest();
+        spmr.setRoomId(room.getId());
+        spmr.setZoneId(room.getZoneId());
+        spmr.setMessage(message);
+        // send it
+        es.getEngine().send(spmr);
+        
+        log("currentAction = " + currentAction);
+        log("currentData == " + Arrays.toString(currentData));
+        
+        if (message.equals(ClientConstants.USER_INPUT_MESSAGE_START)) {
+            EsObject esob = new EsObject();
+            esob.setInteger(ClientConstants.ACTION, ClientConstants.ACTION_START_GAME);
+            sendPluginRequest(esob);
+        } else if (currentAction == ClientConstants.ACTION_CHOOSE_CHARACTER) {
+            log(" " + Arrays.toString(currentData));
+            for (int hero : currentData) {
+                if (hero == Integer.parseInt(message)) {
+                    EsObject esob = new EsObject();
+                    esob.setInteger(ClientConstants.ACTION, ClientConstants.ACTION_CHOSE_CHARACTER);
+                    esob.setInteger(ClientConstants.SELECTED_HERO_ID, Integer.parseInt(message));
+                    sendPluginRequest(esob);
+                    return;
+                }
+            }
+            
+            showChat("Wrong selection, please choose: " + Arrays.toString(currentData));
+            
+        }
+        
+    }
+    
+    //    private void confirmCharacterSelected(EsObject obj) {
+    //        String character = obj.getString(ClientConstants.CHARACTER_CONFIRMATION);
+    //        showChat("character selected : " + character);
+    //    }
     
     private void sendPluginRequest(EsObject obj) {
         log("sendPluginRequest");
@@ -96,7 +148,7 @@ public class Controller {
     }
     
     private void gotCharactersToChoose(EsObject obj) {
-        String[] charsToChoose = obj.getStringArray(ClientConstants.CHARACTORS_TO_CHOOSE);
+        int[] charsToChoose = obj.getIntegerArray(ClientConstants.CHARACTORS_TO_CHOOSE);
         currentData = charsToChoose;
         showChat("please choose: " + Arrays.toString(charsToChoose));
     }
@@ -125,7 +177,7 @@ public class Controller {
         log("Attempting to join room");
         // Create the request
         EsCreateRoomRequest crr = new EsCreateRoomRequest();
-        crr.setRoomName("ChatLoggerRoom");
+        crr.setRoomName("ChatRoom2");
         crr.setZoneName("TestZone");
         crr.setUsingLanguageFilter(true);
         
@@ -183,42 +235,6 @@ public class Controller {
         }
         
         showUserList(users);
-    }
-    
-    public void attemptSendMessage(String message) {
-        if (room == null) {
-            log("Unable to send message.  Room is null.");
-            return;
-        }
-        if (message == null || message.isEmpty()) { return; }
-        log("Attempting to send message: " + message);
-        // create the request
-        EsPublicMessageRequest spmr = new EsPublicMessageRequest();
-        spmr.setRoomId(room.getId());
-        spmr.setZoneId(room.getZoneId());
-        spmr.setMessage(message);
-        // send it
-        es.getEngine().send(spmr);
-        
-        log("currentAction = " + currentAction);
-        log("currentData   = " + Arrays.toString(currentData));
-        
-        if (message.equals(ClientConstants.USER_INPUT_MESSAGE_START)) {
-            EsObject esob = new EsObject();
-            esob.setString(ClientConstants.ACTION, ClientConstants.ACTION_START_GAME);
-            sendPluginRequest(esob);
-        } else if (currentAction.equals(ClientConstants.CHOOSE_CHARACTER)) {
-            log("" + currentAction.equals(ClientConstants.CHARACTORS_TO_CHOOSE));
-            if (Arrays.asList(currentData).contains(message)) {
-                EsObject esob = new EsObject();
-                esob.setString(ClientConstants.ACTION, ClientConstants.ACTION_CHOSE_CHARACTER);
-                esob.setString(ClientConstants.CHARACTORS_TO_CHOOSE, message);
-                sendPluginRequest(esob);
-            } else {
-                showChat("Wrong selection, please choose: " + Arrays.toString(currentData));
-            }
-        }
-        
     }
     
     private void logSuccessfulConnection() {
