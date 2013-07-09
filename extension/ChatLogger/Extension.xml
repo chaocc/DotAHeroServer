@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Extension>
+	<Name>ChatLogger</Name>
+       <ManagedObjects>
+           <ManagedObject>
+               <Handle>ChatLogger</Handle>
+               <Type>Java</Type>
+               <Path>com.electrotank.examples.chatlogger.ChatLoggerFactory</Path>
+           </ManagedObject>
+       </ManagedObjects>
+       <Plugins>
+           <Plugin>
+               <Handle>ChatPlugin</Handle>
+               <Type>Java</Type>
+               <Path>com.electrotank.examples.chatlogger.ChatPlugin</Path>
+           </Plugin>
+       </Plugins>
+</Extension>
