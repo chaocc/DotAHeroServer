@@ -29,7 +29,10 @@ public class ChatPlugin extends BasePlugin {
         getApi().getLogger().debug(user + " requests: " + messageIn.toString());
         
         int action = messageIn.getInteger(PluginConstants.ACTION);
-        
+        if(action==100){
+            messageIn.setInteger(PluginConstants.ACTION, 100);
+            
+        }
         
     }
     
