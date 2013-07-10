@@ -7,6 +7,7 @@ package com.electrotank.electroserver5.examples.chatloggerclient;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 

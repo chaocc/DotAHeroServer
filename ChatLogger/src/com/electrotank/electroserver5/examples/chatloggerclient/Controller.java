@@ -111,7 +111,7 @@ public class Controller {
         if (message.equals(ClientConstants.USER_INPUT_MESSAGE_START)) {
             EsObject esob = new EsObject();
             esob.setInteger(ClientConstants.ACTION, ClientConstants.ACTION_START_GAME);
-            sendPluginRequest(esob);
+            sendGamePluginRequest(esob);
         } else if (currentAction == ClientConstants.ACTION_CHOOSE_CHARACTER) {
             log(" " + Arrays.toString(currentData));
             for (int hero : currentData) {
@@ -119,13 +119,17 @@ public class Controller {
                     EsObject esob = new EsObject();
                     esob.setInteger(ClientConstants.ACTION, ClientConstants.ACTION_CHOSE_CHARACTER);
                     esob.setInteger(ClientConstants.SELECTED_HERO_ID, Integer.parseInt(message));
-                    sendPluginRequest(esob);
+                    sendGamePluginRequest(esob);
                     return;
                 }
             }
             
             showChat("Wrong selection, please choose: " + Arrays.toString(currentData));
             
+        } else if (message.equals("gg")) {
+            EsObject esob = new EsObject();
+            esob.setInteger(ClientConstants.ACTION, 100);
+            sendRoomPluginRequest(esob);
         }
         
     }
@@ -135,8 +139,8 @@ public class Controller {
     //        showChat("character selected : " + character);
     //    }
     
-    private void sendPluginRequest(EsObject obj) {
-        log("sendPluginRequest");
+    private void sendRoomPluginRequest(EsObject obj) {
+        log("send  Room   PluginRequest");
         EsPluginRequest pmr = new EsPluginRequest();
         pmr.setPluginName("ChatPlugin");
         pmr.setRoomId(room.getId());
@@ -145,6 +149,18 @@ public class Controller {
         
         es.getEngine().send(pmr);
         log("sendPluginRequest");
+    }
+    
+    private void sendGamePluginRequest(EsObject obj) {
+        log("sendPluginRequest");
+        EsPluginRequest pmr = new EsPluginRequest();
+        pmr.setPluginName("GamePlugin");
+        pmr.setRoomId(room.getId());
+        pmr.setZoneId(room.getZoneId());
+        pmr.setParameters(obj);
+        
+        es.getEngine().send(pmr);
+        log("send  Game   PluginRequest");
     }
     
     private void gotCharactersToChoose(EsObject obj) {
@@ -181,26 +197,23 @@ public class Controller {
         crr.setZoneName("TestZone");
         crr.setUsingLanguageFilter(true);
         
-        // Java clients don't handle video 
         crr.setReceivingVideoEvents(false);
+        List<EsPluginListEntry> plugins = new ArrayList<EsPluginListEntry>();
         
-        /**
-         * Create plugin associated with this room. Then as chat messages are
-         * sent they are intercepted by the server and logged before being
-         * distributed to the room.
-         */
         EsPluginListEntry ple = new EsPluginListEntry();
         ple.setExtensionName("ChatLogger");
         ple.setPluginHandle("ChatPlugin");
         ple.setPluginName("ChatPlugin");
+        plugins.add(ple);
         
-        List<EsPluginListEntry> plugins = new ArrayList<EsPluginListEntry>();
+        ple = new EsPluginListEntry();
+        ple.setExtensionName("ChatLogger");
+        ple.setPluginHandle("GamePlugin");
+        ple.setPluginName("GamePlugin");
         plugins.add(ple);
         
         crr.setPlugins(plugins);
-        
         es.getEngine().send(crr);
-        
     }
     
     public void onJoinRoomEvent(EsJoinRoomEvent e) {
@@ -244,8 +257,7 @@ public class Controller {
             String serverId = conn.getServerId();
             int port = conn.getPort();
             String transport = conn.getTransportType().toString();
-            log("Active connection: " + host + ", " + port + ", "
-                    + transport + ", " + serverId);
+            log("Active connection: " + host + ", " + port + ", " + transport + ", " + serverId);
         }
     }
     

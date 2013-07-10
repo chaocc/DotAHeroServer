@@ -14,5 +14,10 @@
                <Type>Java</Type>
                <Path>com.electrotank.examples.chatlogger.ChatPlugin</Path>
            </Plugin>
+           <Plugin>
+               <Handle>GamePlugin</Handle>
+               <Type>Java</Type>
+               <Path>com.electrotank.examples.chatlogger.GamePlugin</Path>
+           </Plugin>
        </Plugins>
 </Extension>

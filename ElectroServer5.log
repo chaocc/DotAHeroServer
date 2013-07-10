@@ -1,0 +1,500 @@
+	at com.electrotank.electroserver5.protocol.netty.MessageFlagsHandler.messageReceived(MessageFlagsHandler.java:27)
+	at org.jboss.netty.channel.SimpleChannelHandler.handleUpstream(SimpleChannelHandler.java:95)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:777)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:296)
+	at org.jboss.netty.handler.codec.oneone.OneToOneDecoder.handleUpstream(OneToOneDecoder.java:71)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:777)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:296)
+	at org.jboss.netty.handler.codec.frame.FrameDecoder.unfoldAndFireMessageReceived(FrameDecoder.java:327)
+	at org.jboss.netty.handler.codec.frame.FrameDecoder.callDecode(FrameDecoder.java:305)
+	at org.jboss.netty.handler.codec.frame.FrameDecoder.messageReceived(FrameDecoder.java:207)
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:75)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:777)
+	at org.jboss.netty.handler.codec.oneone.OneToOneDecoder.handleUpstream(OneToOneDecoder.java:69)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:777)
+	at org.jboss.netty.channel.SimpleChannelHandler.messageReceived(SimpleChannelHandler.java:149)
+	at com.electrotank.electroserver5.protocol.netty.HexLoggingHandler.messageReceived(HexLoggingHandler.java:24)
+	at org.jboss.netty.channel.SimpleChannelHandler.handleUpstream(SimpleChannelHandler.java:95)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:553)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:268)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:255)
+	at org.jboss.netty.channel.socket.nio.NioWorker.read(NioWorker.java:343)
+	at org.jboss.netty.channel.socket.nio.NioWorker.processSelectedKeys(NioWorker.java:274)
+	at org.jboss.netty.channel.socket.nio.NioWorker.run(NioWorker.java:194)
+	at org.jboss.netty.util.ThreadRenamingRunnable.run(ThreadRenamingRunnable.java:102)
+	at org.jboss.netty.util.internal.DeadLockProofWorker$1.run(DeadLockProofWorker.java:42)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:895)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:918)
+	at java.lang.Thread.run(Thread.java:680)
+2013-Jul-10 00:29:33:646 [New I/O server worker #1-1] ERROR com.electrotank.electroserver5.servers.registry.RegistryEndpoint  - Exception processing message com.electrotank.electroserver5.messages.client.request.ClientCreateRoomRequestMessage@2a973678
+com.electrotank.electroserver5.servers.registry.MessagingException: Exception processing message com.electrotank.electroserver5.messages.client.request.ClientCreateRoomRequestMessage@2a973678
+	at com.electrotank.electroserver5.servers.registry.transactions.TransactionHandlerImpl.processMessage(TransactionHandlerImpl.java:174)
+	at com.electrotank.electroserver5.servers.registry.RegistryEndpoint.doReceive(RegistryEndpoint.java:218)
+	at com.electrotank.electroserver5.servers.registry.RegistryEndpoint.receive(RegistryEndpoint.java:97)
+	at com.electrotank.electroserver5.servers.gateway.GatewayEndpoint.write(GatewayEndpoint.java:74)
+	at com.electrotank.electroserver5.servers.gateway.GatewayEndpoint.write(GatewayEndpoint.java:86)
+	at com.electrotank.electroserver5.servers.gateway.transactions.ClientMessageToRegistryForwarder.forward(ClientMessageToRegistryForwarder.java:31)
+	at com.electrotank.electroserver5.protocol.netty.MessageHandler.messageReceived(MessageHandler.java:79)
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:75)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:777)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:296)
+	at com.electrotank.electroserver5.protocol.netty.BinaryProtocolHandler.messageReceived(BinaryProtocolHandler.java:65)
+	at org.jboss.netty.channel.SimpleChannelHandler.handleUpstream(SimpleChannelHandler.java:95)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:777)
+	at org.jboss.netty.channel.SimpleChannelHandler.messageReceived(SimpleChannelHandler.java:149)
+	at com.electrotank.electroserver5.protocol.netty.CompressionHandler.messageReceived(CompressionHandler.java:54)
+	at org.jboss.netty.channel.SimpleChannelHandler.handleUpstream(SimpleChannelHandler.java:95)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:777)
+	at org.jboss.netty.channel.SimpleChannelHandler.messageReceived(SimpleChannelHandler.java:149)
+	at com.electrotank.electroserver5.protocol.netty.MessageFlagsHandler.messageReceived(MessageFlagsHandler.java:27)
+	at org.jboss.netty.channel.SimpleChannelHandler.handleUpstream(SimpleChannelHandler.java:95)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:777)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:296)
+	at org.jboss.netty.handler.codec.oneone.OneToOneDecoder.handleUpstream(OneToOneDecoder.java:71)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:777)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:296)
+	at org.jboss.netty.handler.codec.frame.FrameDecoder.unfoldAndFireMessageReceived(FrameDecoder.java:327)
+	at org.jboss.netty.handler.codec.frame.FrameDecoder.callDecode(FrameDecoder.java:305)
+	at org.jboss.netty.handler.codec.frame.FrameDecoder.messageReceived(FrameDecoder.java:207)
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:75)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:777)
+	at org.jboss.netty.handler.codec.oneone.OneToOneDecoder.handleUpstream(OneToOneDecoder.java:69)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:777)
+	at org.jboss.netty.channel.SimpleChannelHandler.messageReceived(SimpleChannelHandler.java:149)
+	at com.electrotank.electroserver5.protocol.netty.HexLoggingHandler.messageReceived(HexLoggingHandler.java:24)
+	at org.jboss.netty.channel.SimpleChannelHandler.handleUpstream(SimpleChannelHandler.java:95)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:558)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:553)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:268)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:255)
+	at org.jboss.netty.channel.socket.nio.NioWorker.read(NioWorker.java:343)
+	at org.jboss.netty.channel.socket.nio.NioWorker.processSelectedKeys(NioWorker.java:274)
+	at org.jboss.netty.channel.socket.nio.NioWorker.run(NioWorker.java:194)
+	at org.jboss.netty.util.ThreadRenamingRunnable.run(ThreadRenamingRunnable.java:102)
+	at org.jboss.netty.util.internal.DeadLockProofWorker$1.run(DeadLockProofWorker.java:42)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:895)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:918)
+	at java.lang.Thread.run(Thread.java:680)
+Caused by: java.lang.NullPointerException
+	at java.util.concurrent.ConcurrentHashMap.get(ConcurrentHashMap.java:768)
+	at com.electrotank.electroserver5.entities.managers.DefaultExtensionManager.getExtension(DefaultExtensionManager.java:1400)
+	at com.electrotank.electroserver5.entities.managers.DefaultExtensionManager.createPlugin(DefaultExtensionManager.java:1045)
+	at com.electrotank.electroserver5.entities.managers.DefaultExtensionManager.createRoomPlugin(DefaultExtensionManager.java:1007)
+	at com.electrotank.electroserver5.entities.Room.createRoomPlugins(Room.java:537)
+	at com.electrotank.electroserver5.entities.Zone.createRoom(Zone.java:159)
+	at com.electrotank.electroserver5.entities.managers.RoomManager.createLockedRoom(RoomManager.java:2391)
+	at com.electrotank.electroserver5.entities.managers.RoomManager.doCreateAndJoinRoom(RoomManager.java:448)
+	at com.electrotank.electroserver5.entities.managers.RoomManager.doCreateZoneAndRoom(RoomManager.java:367)
+	at com.electrotank.electroserver5.entities.managers.RoomManager.createRoom(RoomManager.java:340)
+	at com.electrotank.electroserver5.servers.registry.transactions.CreateRoomTransaction.execute(CreateRoomTransaction.java:79)
+	at com.electrotank.electroserver5.servers.registry.transactions.SinglePersonTransaction.execute(SinglePersonTransaction.java:34)
+	at com.electrotank.electroserver5.servers.registry.transactions.SinglePersonTransaction.execute(SinglePersonTransaction.java:16)
+	at com.electrotank.electroserver5.servers.registry.transactions.TransactionHandlerImpl.processMessage(TransactionHandlerImpl.java:171)
+	... 53 more
+2013-Jul-10 00:29:33:670 [pool-1-thread-4] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - Client dropped: 276451995680769
+2013-Jul-10 00:29:33:671 [pool-1-thread-4] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - ConnectedUser{bbb (276451995680769)} has [] clients
+2013-Jul-10 00:29:33:671 [pool-1-thread-4] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - User dropped registry connection {}
+2013-Jul-10 00:29:33:671 [pool-1-thread-4] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Removed bbb from the connectedUsers list
+2013-Jul-10 00:29:33:671 [pool-1-thread-4] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - User dropped bbb (276451995680769)
+2013-Jul-10 00:29:33:671 [pool-1-thread-4] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Removed bbb from the users list
+2013-Jul-10 00:33:24:150 [New I/O server worker #1-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Starting People.login for 276494945353729 / rrr
+2013-Jul-10 00:33:24:150 [New I/O server worker #1-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User not already logged in, attempting event handlers (if available)
+2013-Jul-10 00:33:24:151 [New I/O server worker #1-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User Logged In 276494945353729 / rrr
+2013-Jul-10 00:33:32:872 [New I/O server worker #1-2] DEBUG Extensions.ChatLogger.Plugins.GamePlugin  - ======== game =>> game plugin received
+2013-Jul-10 00:33:36:385 [pool-1-thread-2] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - Client dropped: 276494945353729
+2013-Jul-10 00:33:36:386 [pool-1-thread-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - ConnectedUser{rrr (276494945353729)} has [] clients
+2013-Jul-10 00:33:36:386 [pool-1-thread-2] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - User dropped registry connection {}
+2013-Jul-10 00:38:40:065 [New I/O server worker #1-3] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Starting People.login for 276572254765057 / 333
+2013-Jul-10 00:38:40:066 [New I/O server worker #1-3] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User not already logged in, attempting event handlers (if available)
+2013-Jul-10 00:38:40:066 [New I/O server worker #1-3] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User Logged In 276572254765057 / 333
+2013-Jul-10 00:38:46:433 [pool-1-thread-1] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - Client dropped: 276572254765057
+2013-Jul-10 00:38:46:434 [pool-1-thread-1] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - ConnectedUser{333 (276572254765057)} has [] clients
+2013-Jul-10 00:38:46:434 [pool-1-thread-1] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - User dropped registry connection {}
+2013-Jul-10 00:39:02:048 [Thread-29] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.stop
+2013-Jul-10 00:39:02:144 [Thread-29] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.shutdown
+2013-Jul-10 00:39:02:144 [Thread-29] WARN  com.electrotank.electroserver5.servers.registry.RegistryServer  - RegistryServer.shutdown invoked
+2013-Jul-10 00:39:02:144 [Thread-29] WARN  com.electrotank.electroserver5.entities.managers.DefaultExtensionManager  - unloading extensions
+2013-Jul-10 00:39:02:144 [Thread-29] WARN  com.electrotank.electroserver5.entities.managers.DefaultExtensionManager  - unloading extension named ChatLogger
+2013-Jul-10 00:39:02:146 [Thread-29] WARN  Extensions.ChatLogger.ManagedObjectFactories.ChatLogger  - ControllerFactory.destroy invoked
+2013-Jul-10 00:39:02:147 [Thread-29] WARN  com.electrotank.examples.chatlogger.ChatLogger  - ChatLogger.dispose invoked
+2013-Jul-10 00:39:03:463 [main] INFO  DisplayLogger  - 
+ _____ _           _                                            ____ 
+| ____| | ___  ___| |_ _ __ ___  ___  ___ _ ____   _____ _ __  | ___| 
+|  _| | |/ _ \/ __| __| '__/ _ \/ __|/ _ \ '__\ \ / / _ \ '__| |___ \
+| |___| |  __/ (__| |_| | | (_) \__ \  __/ |   \ V /  __/ |     ___) |
+|_____|_|\___|\___|\__|_|  \___/|___/\___|_|    \_/ \___|_|    |____/
+
+Starting ElectroServer 5.4.1
+Go to http://www.electrotank.com/ for the latest version.
+###########################################################
+Computer Information
+	Operating System: Mac OS X
+	Operating System Architecture: x86_64
+	Processors Available: 4
+	Memory Available: 123Mb
+###########################################################
+Virtual Machine Information
+	Virtual Machine Vendor: Apple Inc.
+	Virtual Machine Version: 1.6.0_51
+
+
+2013-Jul-10 00:39:04:603 [main] INFO  DisplayLogger  - 
+###########################################################
+Bootstrap complete.
+Launching server in background. Please use ES5Admin to manage.
+
+
+2013-Jul-10 00:39:06:921 [main] INFO  DisplayLogger  - 
+ _____ _           _                                            ____ 
+| ____| | ___  ___| |_ _ __ ___  ___  ___ _ ____   _____ _ __  | ___| 
+|  _| | |/ _ \/ __| __| '__/ _ \/ __|/ _ \ '__\ \ / / _ \ '__| |___ \
+| |___| |  __/ (__| |_| | | (_) \__ \  __/ |   \ V /  __/ |     ___) |
+|_____|_|\___|\___|\__|_|  \___/|___/\___|_|    \_/ \___|_|    |____/
+
+Starting ElectroServer 5.4.1
+Go to http://www.electrotank.com/ for the latest version.
+###########################################################
+Computer Information
+	Operating System: Mac OS X
+	Operating System Architecture: x86_64
+	Processors Available: 4
+	Memory Available: 61Mb
+###########################################################
+Virtual Machine Information
+	Virtual Machine Vendor: Apple Inc.
+	Virtual Machine Version: 1.6.0_51
+
+
+2013-Jul-10 00:39:08:798 [main] INFO  com.electrotank.electroserver5.servers.registry.config.RegistryConfigurationService  - MUID [a55759a3-35c6-44ec-8d6a-35fcf2f92253]
+2013-Jul-10 00:39:09:472 [main] WARN  com.electrotank.examples.chatlogger.ChatLogger  - Managed object ChatLogger created
+2013-Jul-10 00:39:09:472 [main] DEBUG Extensions.ChatLogger.ManagedObjectFactories.ChatLogger  - ChatLogger started
+2013-Jul-10 00:39:09:472 [ChatLogger] WARN  com.electrotank.examples.chatlogger.ChatLogger  - Chat logger starting
+2013-Jul-10 00:39:10:105 [main] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.doStart
+2013-Jul-10 00:39:10:150 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryTCP listener on /127.0.0.1:9899 
+2013-Jul-10 00:39:10:155 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened RTMP listener on /127.0.0.1:1935 
+2013-Jul-10 00:39:10:162 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryHTTP listener on /127.0.0.1:8989 
+2013-Jul-10 00:39:10:165 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened TextTCP listener on /127.0.0.1:8990 
+2013-Jul-10 00:39:10:172 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryUDP listener on /127.0.0.1:10000 
+2013-Jul-10 00:39:10:173 [main] INFO  DisplayLogger  - 
+-=-=-=-=-=-=-=-
+ElectroServer has started successfully
+2013-Jul-10 00:39:22:504 [Thread-1] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.stop
+2013-Jul-10 00:39:22:595 [Thread-1] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.shutdown
+2013-Jul-10 00:39:22:596 [Thread-1] WARN  com.electrotank.electroserver5.servers.registry.RegistryServer  - RegistryServer.shutdown invoked
+2013-Jul-10 00:39:22:596 [Thread-1] WARN  com.electrotank.electroserver5.entities.managers.DefaultExtensionManager  - unloading extensions
+2013-Jul-10 00:39:22:596 [Thread-1] WARN  com.electrotank.electroserver5.entities.managers.DefaultExtensionManager  - unloading extension named ChatLogger
+2013-Jul-10 00:39:22:598 [Thread-1] WARN  Extensions.ChatLogger.ManagedObjectFactories.ChatLogger  - ControllerFactory.destroy invoked
+2013-Jul-10 00:39:22:598 [Thread-1] WARN  com.electrotank.examples.chatlogger.ChatLogger  - ChatLogger.dispose invoked
+2013-Jul-10 00:39:32:151 [main] INFO  DisplayLogger  - 
+ _____ _           _                                            ____ 
+| ____| | ___  ___| |_ _ __ ___  ___  ___ _ ____   _____ _ __  | ___| 
+|  _| | |/ _ \/ __| __| '__/ _ \/ __|/ _ \ '__\ \ / / _ \ '__| |___ \
+| |___| |  __/ (__| |_| | | (_) \__ \  __/ |   \ V /  __/ |     ___) |
+|_____|_|\___|\___|\__|_|  \___/|___/\___|_|    \_/ \___|_|    |____/
+
+Starting ElectroServer 5.4.1
+Go to http://www.electrotank.com/ for the latest version.
+###########################################################
+Computer Information
+	Operating System: Mac OS X
+	Operating System Architecture: x86_64
+	Processors Available: 4
+	Memory Available: 910Mb
+###########################################################
+Virtual Machine Information
+	Virtual Machine Vendor: Apple Inc.
+	Virtual Machine Version: 1.6.0_51
+
+
+2013-Jul-10 00:39:33:264 [main] INFO  DisplayLogger  - 
+###########################################################
+Bootstrap complete.
+Launching server in background. Please use ES5Admin to manage.
+
+
+2013-Jul-10 00:39:35:588 [main] INFO  DisplayLogger  - 
+ _____ _           _                                            ____ 
+| ____| | ___  ___| |_ _ __ ___  ___  ___ _ ____   _____ _ __  | ___| 
+|  _| | |/ _ \/ __| __| '__/ _ \/ __|/ _ \ '__\ \ / / _ \ '__| |___ \
+| |___| |  __/ (__| |_| | | (_) \__ \  __/ |   \ V /  __/ |     ___) |
+|_____|_|\___|\___|\__|_|  \___/|___/\___|_|    \_/ \___|_|    |____/
+
+Starting ElectroServer 5.4.1
+Go to http://www.electrotank.com/ for the latest version.
+###########################################################
+Computer Information
+	Operating System: Mac OS X
+	Operating System Architecture: x86_64
+	Processors Available: 4
+	Memory Available: 61Mb
+###########################################################
+Virtual Machine Information
+	Virtual Machine Vendor: Apple Inc.
+	Virtual Machine Version: 1.6.0_51
+
+
+2013-Jul-10 00:39:37:570 [main] INFO  com.electrotank.electroserver5.servers.registry.config.RegistryConfigurationService  - MUID [a55759a3-35c6-44ec-8d6a-35fcf2f92253]
+2013-Jul-10 00:39:38:421 [main] WARN  com.electrotank.examples.chatlogger.ChatLogger  - Managed object ChatLogger created
+2013-Jul-10 00:39:38:421 [main] DEBUG Extensions.ChatLogger.ManagedObjectFactories.ChatLogger  - ChatLogger started
+2013-Jul-10 00:39:38:421 [ChatLogger] WARN  com.electrotank.examples.chatlogger.ChatLogger  - Chat logger starting
+2013-Jul-10 00:39:39:418 [main] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.doStart
+2013-Jul-10 00:39:39:472 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryTCP listener on /127.0.0.1:9899 
+2013-Jul-10 00:39:39:478 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened RTMP listener on /127.0.0.1:1935 
+2013-Jul-10 00:39:39:483 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryHTTP listener on /127.0.0.1:8989 
+2013-Jul-10 00:39:39:485 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened TextTCP listener on /127.0.0.1:8990 
+2013-Jul-10 00:39:39:492 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryUDP listener on /127.0.0.1:10000 
+2013-Jul-10 00:39:39:492 [main] INFO  DisplayLogger  - 
+-=-=-=-=-=-=-=-
+ElectroServer has started successfully
+2013-Jul-10 09:09:23:407 [Thread-48] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.stop
+2013-Jul-10 09:09:23:577 [Thread-48] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.shutdown
+2013-Jul-10 09:09:23:577 [Thread-48] WARN  com.electrotank.electroserver5.servers.registry.RegistryServer  - RegistryServer.shutdown invoked
+2013-Jul-10 09:09:23:578 [Thread-48] WARN  com.electrotank.electroserver5.entities.managers.DefaultExtensionManager  - unloading extensions
+2013-Jul-10 09:09:23:578 [Thread-48] WARN  com.electrotank.electroserver5.entities.managers.DefaultExtensionManager  - unloading extension named ChatLogger
+2013-Jul-10 09:09:23:579 [Thread-48] WARN  Extensions.ChatLogger.ManagedObjectFactories.ChatLogger  - ControllerFactory.destroy invoked
+2013-Jul-10 09:09:23:580 [Thread-48] WARN  com.electrotank.examples.chatlogger.ChatLogger  - ChatLogger.dispose invoked
+2013-Jul-10 13:24:47:417 [main] INFO  DisplayLogger  - 
+ _____ _           _                                            ____ 
+| ____| | ___  ___| |_ _ __ ___  ___  ___ _ ____   _____ _ __  | ___| 
+|  _| | |/ _ \/ __| __| '__/ _ \/ __|/ _ \ '__\ \ / / _ \ '__| |___ \
+| |___| |  __/ (__| |_| | | (_) \__ \  __/ |   \ V /  __/ |     ___) |
+|_____|_|\___|\___|\__|_|  \___/|___/\___|_|    \_/ \___|_|    |____/
+
+Starting ElectroServer 5.4.1
+Go to http://www.electrotank.com/ for the latest version.
+###########################################################
+Computer Information
+	Operating System: Mac OS X
+	Operating System Architecture: x86_64
+	Processors Available: 4
+	Memory Available: 910Mb
+###########################################################
+Virtual Machine Information
+	Virtual Machine Vendor: Apple Inc.
+	Virtual Machine Version: 1.6.0_51
+
+
+2013-Jul-10 13:24:53:597 [main] INFO  DisplayLogger  - 
+###########################################################
+Bootstrap complete.
+Launching server in background. Please use ES5Admin to manage.
+
+
+2013-Jul-10 13:24:55:968 [main] INFO  DisplayLogger  - 
+ _____ _           _                                            ____ 
+| ____| | ___  ___| |_ _ __ ___  ___  ___ _ ____   _____ _ __  | ___| 
+|  _| | |/ _ \/ __| __| '__/ _ \/ __|/ _ \ '__\ \ / / _ \ '__| |___ \
+| |___| |  __/ (__| |_| | | (_) \__ \  __/ |   \ V /  __/ |     ___) |
+|_____|_|\___|\___|\__|_|  \___/|___/\___|_|    \_/ \___|_|    |____/
+
+Starting ElectroServer 5.4.1
+Go to http://www.electrotank.com/ for the latest version.
+###########################################################
+Computer Information
+	Operating System: Mac OS X
+	Operating System Architecture: x86_64
+	Processors Available: 4
+	Memory Available: 61Mb
+###########################################################
+Virtual Machine Information
+	Virtual Machine Vendor: Apple Inc.
+	Virtual Machine Version: 1.6.0_51
+
+
+2013-Jul-10 13:25:04:564 [main] INFO  com.electrotank.electroserver5.servers.registry.config.RegistryConfigurationService  - MUID [a55759a3-35c6-44ec-8d6a-35fcf2f92253]
+2013-Jul-10 13:25:10:054 [main] WARN  com.electrotank.examples.chatlogger.ChatLogger  - Managed object ChatLogger created
+2013-Jul-10 13:25:10:054 [main] DEBUG Extensions.ChatLogger.ManagedObjectFactories.ChatLogger  - ChatLogger started
+2013-Jul-10 13:25:10:054 [ChatLogger] WARN  com.electrotank.examples.chatlogger.ChatLogger  - Chat logger starting
+2013-Jul-10 13:25:22:020 [main] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.doStart
+2013-Jul-10 13:25:22:310 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryTCP listener on /127.0.0.1:9899 
+2013-Jul-10 13:25:22:315 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened RTMP listener on /127.0.0.1:1935 
+2013-Jul-10 13:25:22:323 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryHTTP listener on /127.0.0.1:8989 
+2013-Jul-10 13:25:22:324 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened TextTCP listener on /127.0.0.1:8990 
+2013-Jul-10 13:25:22:385 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryUDP listener on /127.0.0.1:10000 
+2013-Jul-10 13:25:22:386 [main] INFO  DisplayLogger  - 
+-=-=-=-=-=-=-=-
+ElectroServer has started successfully
+2013-Jul-10 15:28:27:449 [Thread-148] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.stop
+2013-Jul-10 15:28:31:587 [Thread-148] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.shutdown
+2013-Jul-10 15:28:31:587 [Thread-148] WARN  com.electrotank.electroserver5.servers.registry.RegistryServer  - RegistryServer.shutdown invoked
+2013-Jul-10 15:28:31:625 [Thread-148] WARN  com.electrotank.electroserver5.entities.managers.DefaultExtensionManager  - unloading extensions
+2013-Jul-10 15:28:31:657 [Thread-148] WARN  com.electrotank.electroserver5.entities.managers.DefaultExtensionManager  - unloading extension named ChatLogger
+2013-Jul-10 15:28:31:780 [Thread-148] WARN  Extensions.ChatLogger.ManagedObjectFactories.ChatLogger  - ControllerFactory.destroy invoked
+2013-Jul-10 15:28:31:783 [Thread-148] WARN  com.electrotank.examples.chatlogger.ChatLogger  - ChatLogger.dispose invoked
+2013-Jul-10 21:16:28:353 [main] INFO  DisplayLogger  - 
+ _____ _           _                                            ____ 
+| ____| | ___  ___| |_ _ __ ___  ___  ___ _ ____   _____ _ __  | ___| 
+|  _| | |/ _ \/ __| __| '__/ _ \/ __|/ _ \ '__\ \ / / _ \ '__| |___ \
+| |___| |  __/ (__| |_| | | (_) \__ \  __/ |   \ V /  __/ |     ___) |
+|_____|_|\___|\___|\__|_|  \___/|___/\___|_|    \_/ \___|_|    |____/
+
+Starting ElectroServer 5.4.1
+Go to http://www.electrotank.com/ for the latest version.
+###########################################################
+Computer Information
+	Operating System: Mac OS X
+	Operating System Architecture: x86_64
+	Processors Available: 4
+	Memory Available: 910Mb
+###########################################################
+Virtual Machine Information
+	Virtual Machine Vendor: Apple Inc.
+	Virtual Machine Version: 1.6.0_51
+
+
+2013-Jul-10 21:16:30:854 [main] INFO  DisplayLogger  - 
+###########################################################
+Bootstrap complete.
+Launching server in background. Please use ES5Admin to manage.
+
+
+2013-Jul-10 21:16:33:211 [main] INFO  DisplayLogger  - 
+ _____ _           _                                            ____ 
+| ____| | ___  ___| |_ _ __ ___  ___  ___ _ ____   _____ _ __  | ___| 
+|  _| | |/ _ \/ __| __| '__/ _ \/ __|/ _ \ '__\ \ / / _ \ '__| |___ \
+| |___| |  __/ (__| |_| | | (_) \__ \  __/ |   \ V /  __/ |     ___) |
+|_____|_|\___|\___|\__|_|  \___/|___/\___|_|    \_/ \___|_|    |____/
+
+Starting ElectroServer 5.4.1
+Go to http://www.electrotank.com/ for the latest version.
+###########################################################
+Computer Information
+	Operating System: Mac OS X
+	Operating System Architecture: x86_64
+	Processors Available: 4
+	Memory Available: 61Mb
+###########################################################
+Virtual Machine Information
+	Virtual Machine Vendor: Apple Inc.
+	Virtual Machine Version: 1.6.0_51
+
+
+2013-Jul-10 21:16:36:618 [main] INFO  com.electrotank.electroserver5.servers.registry.config.RegistryConfigurationService  - MUID [a55759a3-35c6-44ec-8d6a-35fcf2f92253]
+2013-Jul-10 21:16:38:309 [main] WARN  com.electrotank.examples.chatlogger.ChatLogger  - Managed object ChatLogger created
+2013-Jul-10 21:16:38:309 [main] DEBUG Extensions.ChatLogger.ManagedObjectFactories.ChatLogger  - ChatLogger started
+2013-Jul-10 21:16:38:309 [ChatLogger] WARN  com.electrotank.examples.chatlogger.ChatLogger  - Chat logger starting
+2013-Jul-10 21:16:40:356 [main] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.doStart
+2013-Jul-10 21:16:40:450 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryTCP listener on /127.0.0.1:9899 
+2013-Jul-10 21:16:40:455 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened RTMP listener on /127.0.0.1:1935 
+2013-Jul-10 21:16:40:461 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryHTTP listener on /127.0.0.1:8989 
+2013-Jul-10 21:16:40:463 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened TextTCP listener on /127.0.0.1:8990 
+2013-Jul-10 21:16:40:512 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryUDP listener on /127.0.0.1:10000 
+2013-Jul-10 21:16:40:512 [main] INFO  DisplayLogger  - 
+-=-=-=-=-=-=-=-
+ElectroServer has started successfully
+2013-Jul-10 21:17:03:655 [New I/O server worker #1-1] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Starting People.login for 232273962074113 / ccc
+2013-Jul-10 21:17:03:662 [New I/O server worker #1-1] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User not already logged in, attempting event handlers (if available)
+2013-Jul-10 21:17:03:666 [New I/O server worker #1-1] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User Logged In 232273962074113 / ccc
+2013-Jul-10 21:17:03:838 [New I/O server worker #1-1] DEBUG Extensions.ChatLogger.Plugins.ChatPlugin  - ChatPlugin initialized
+2013-Jul-10 21:17:03:838 [New I/O server worker #1-1] DEBUG Extensions.ChatLogger.Plugins.ChatPlugin  - List<CharacterEnum> charactors is ready
+2013-Jul-10 21:17:03:840 [New I/O server worker #1-1] DEBUG Extensions.ChatLogger.Plugins.GamePlugin  - ChatPlugin initialized
+2013-Jul-10 21:17:12:498 [New I/O server worker #1-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Starting People.login for 232286846976001 / baibai
+2013-Jul-10 21:17:12:499 [New I/O server worker #1-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User not already logged in, attempting event handlers (if available)
+2013-Jul-10 21:17:12:499 [New I/O server worker #1-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User Logged In 232286846976001 / baibai
+2013-Jul-10 21:17:16:061 [New I/O server worker #1-2] DEBUG Extensions.ChatLogger.Plugins.GamePlugin  - ======== game =>> game plugin received
+2013-Jul-10 21:17:38:146 [pool-1-thread-2] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - Client dropped: 232286846976001
+2013-Jul-10 21:17:38:146 [pool-1-thread-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - ConnectedUser{baibai (232286846976001)} has [] clients
+2013-Jul-10 21:17:38:147 [pool-1-thread-2] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - User dropped registry connection {}
+2013-Jul-10 21:17:38:150 [pool-1-thread-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Removed baibai from the connectedUsers list
+2013-Jul-10 21:17:38:151 [pool-1-thread-2] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - User dropped baibai (232286846976001)
+2013-Jul-10 21:17:38:151 [pool-1-thread-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Removed baibai from the users list
+2013-Jul-10 21:17:42:091 [pool-1-thread-2] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - Client dropped: 232273962074113
+2013-Jul-10 21:17:42:091 [pool-1-thread-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - ConnectedUser{ccc (232273962074113)} has [] clients
+2013-Jul-10 21:17:42:091 [pool-1-thread-2] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - User dropped registry connection {}
+2013-Jul-10 21:17:42:093 [pool-1-thread-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Removed ccc from the connectedUsers list
+2013-Jul-10 21:17:42:094 [pool-1-thread-2] INFO  com.electrotank.electroserver5.entities.PeopleImpl  - User dropped ccc (232273962074113)
+2013-Jul-10 21:17:42:094 [pool-1-thread-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Removed ccc from the users list
+2013-Jul-10 21:57:38:955 [Thread-210] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.stop
+2013-Jul-10 21:57:39:197 [Thread-210] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.shutdown
+2013-Jul-10 21:57:39:198 [Thread-210] WARN  com.electrotank.electroserver5.servers.registry.RegistryServer  - RegistryServer.shutdown invoked
+2013-Jul-10 21:57:39:198 [Thread-210] WARN  com.electrotank.electroserver5.entities.managers.DefaultExtensionManager  - unloading extensions
+2013-Jul-10 21:57:39:198 [Thread-210] WARN  com.electrotank.electroserver5.entities.managers.DefaultExtensionManager  - unloading extension named ChatLogger
+2013-Jul-10 21:57:39:207 [Thread-210] DEBUG Extensions.ChatLogger.Plugins.ChatPlugin  - ChatPlugin destroyed
+2013-Jul-10 21:57:39:209 [Thread-210] WARN  Extensions.ChatLogger.ManagedObjectFactories.ChatLogger  - ControllerFactory.destroy invoked
+2013-Jul-10 21:57:39:209 [Thread-210] WARN  com.electrotank.examples.chatlogger.ChatLogger  - ChatLogger.dispose invoked
+2013-Jul-10 21:58:17:121 [main] INFO  DisplayLogger  - 
+ _____ _           _                                            ____ 
+| ____| | ___  ___| |_ _ __ ___  ___  ___ _ ____   _____ _ __  | ___| 
+|  _| | |/ _ \/ __| __| '__/ _ \/ __|/ _ \ '__\ \ / / _ \ '__| |___ \
+| |___| |  __/ (__| |_| | | (_) \__ \  __/ |   \ V /  __/ |     ___) |
+|_____|_|\___|\___|\__|_|  \___/|___/\___|_|    \_/ \___|_|    |____/
+
+Starting ElectroServer 5.4.1
+Go to http://www.electrotank.com/ for the latest version.
+###########################################################
+Computer Information
+	Operating System: Mac OS X
+	Operating System Architecture: x86_64
+	Processors Available: 4
+	Memory Available: 910Mb
+###########################################################
+Virtual Machine Information
+	Virtual Machine Vendor: Apple Inc.
+	Virtual Machine Version: 1.6.0_51
+
+
+2013-Jul-10 21:58:18:362 [main] INFO  DisplayLogger  - 
+###########################################################
+Bootstrap complete.
+Launching server in background. Please use ES5Admin to manage.
+
+
+2013-Jul-10 21:58:20:714 [main] INFO  DisplayLogger  - 
+ _____ _           _                                            ____ 
+| ____| | ___  ___| |_ _ __ ___  ___  ___ _ ____   _____ _ __  | ___| 
+|  _| | |/ _ \/ __| __| '__/ _ \/ __|/ _ \ '__\ \ / / _ \ '__| |___ \
+| |___| |  __/ (__| |_| | | (_) \__ \  __/ |   \ V /  __/ |     ___) |
+|_____|_|\___|\___|\__|_|  \___/|___/\___|_|    \_/ \___|_|    |____/
+
+Starting ElectroServer 5.4.1
+Go to http://www.electrotank.com/ for the latest version.
+###########################################################
+Computer Information
+	Operating System: Mac OS X
+	Operating System Architecture: x86_64
+	Processors Available: 4
+	Memory Available: 61Mb
+###########################################################
+Virtual Machine Information
+	Virtual Machine Vendor: Apple Inc.
+	Virtual Machine Version: 1.6.0_51
+
+
+2013-Jul-10 21:58:23:390 [main] INFO  com.electrotank.electroserver5.servers.registry.config.RegistryConfigurationService  - MUID [a55759a3-35c6-44ec-8d6a-35fcf2f92253]
+2013-Jul-10 21:58:24:421 [main] WARN  com.electrotank.examples.chatlogger.ChatLogger  - Managed object ChatLogger created
+2013-Jul-10 21:58:24:422 [main] DEBUG Extensions.ChatLogger.ManagedObjectFactories.ChatLogger  - ChatLogger started
+2013-Jul-10 21:58:24:422 [ChatLogger] WARN  com.electrotank.examples.chatlogger.ChatLogger  - Chat logger starting
+2013-Jul-10 21:58:25:198 [main] INFO  com.electrotank.electroserver5.servers.gateway.GatewayServer  - GatewayServer.doStart
+2013-Jul-10 21:58:25:281 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryTCP listener on /127.0.0.1:9899 
+2013-Jul-10 21:58:25:286 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened RTMP listener on /127.0.0.1:1935 
+2013-Jul-10 21:58:25:292 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryHTTP listener on /127.0.0.1:8989 
+2013-Jul-10 21:58:25:294 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened TextTCP listener on /127.0.0.1:8990 
+2013-Jul-10 21:58:25:304 [main] INFO  com.electrotank.electroserver5.protocol.IOProvider  - Opened BinaryUDP listener on /127.0.0.1:10000 
+2013-Jul-10 21:58:25:304 [main] INFO  DisplayLogger  - 
+-=-=-=-=-=-=-=-
+ElectroServer has started successfully
+2013-Jul-10 22:04:15:670 [New I/O server worker #1-1] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Starting People.login for 232836602789889 / yy
+2013-Jul-10 22:04:15:689 [New I/O server worker #1-1] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User not already logged in, attempting event handlers (if available)
+2013-Jul-10 22:04:15:693 [New I/O server worker #1-1] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User Logged In 232836602789889 / yy
+2013-Jul-10 22:04:15:882 [New I/O server worker #1-1] DEBUG Extensions.ChatLogger.Plugins.ChatPlugin  - ChatPlugin initialized
+2013-Jul-10 22:04:15:884 [New I/O server worker #1-1] DEBUG Extensions.ChatLogger.Plugins.GamePlugin  - List<CharacterEnum> charactors is ready
+2013-Jul-10 22:04:15:884 [New I/O server worker #1-1] DEBUG Extensions.ChatLogger.Plugins.GamePlugin  - ChatPlugin initialized
+2013-Jul-10 22:04:24:509 [New I/O server worker #1-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - Starting People.login for 232849487691777 / uu
+2013-Jul-10 22:04:24:528 [New I/O server worker #1-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User not already logged in, attempting event handlers (if available)
+2013-Jul-10 22:04:24:529 [New I/O server worker #1-2] DEBUG com.electrotank.electroserver5.entities.PeopleImpl  - User Logged In 232849487691777 / uu
+2013-Jul-10 22:04:27:148 [New I/O server worker #1-2] DEBUG Extensions.ChatLogger.Plugins.ChatPlugin  - chat message recd: gg
+2013-Jul-10 22:04:27:214 [New I/O server worker #1-2] DEBUG Extensions.ChatLogger.Plugins.ChatPlugin  - uu requests: {EsObject:
+	action:integer = 100
+	}
