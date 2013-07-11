@@ -29,7 +29,6 @@ public class GamePlugin extends BasePlugin {
     private final int           force_a                          = 1;
     private final int           force_b                          = 5;
     
-    
     @Override
     public void init(EsObjectRO parameters) {
         
@@ -50,7 +49,6 @@ public class GamePlugin extends BasePlugin {
         getApi().getLogger().debug(user + " requests: " + messageIn.toString());
         
         int action = messageIn.getInteger(PluginConstants.ACTION);
-        
         
         if (action == PluginConstants.ACTION_START_GAME && !gameStarted) {
             getApi().getLogger().debug("got action start game");
@@ -126,8 +124,8 @@ public class GamePlugin extends BasePlugin {
         int[] cards = new int[howmany];
         for (int i = 0; i < howmany; i++) {
             cards[i] = cardStack.get(i).getCardId();
-            cardStack.remove(i);
-            
+            d.debug(logprefix + "cardStack size : " + cardStack.size());
+            cardStack.remove(0);
         }
         obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_DISPATCH_HANDCARD);
         obj.setIntegerArray(PluginConstants.INIT_HAND_CARDS, cards);
@@ -209,7 +207,7 @@ public class GamePlugin extends BasePlugin {
                 int shouldAddCharacterCount = i * charsToChoose.length + choosingCount;
                 getApi().getLogger()
                         .debug(
-                               "charsToChoose = " + Arrays.toString(charsToChoose) + "\n" + "choosingCount = " + choosingCount + "\n" + "shouldAddCharacterCount = " + shouldAddCharacterCount);
+                                "charsToChoose = " + Arrays.toString(charsToChoose) + "\n" + "choosingCount = " + choosingCount + "\n" + "shouldAddCharacterCount = " + shouldAddCharacterCount);
                 charsToChoose[choosingCount] = allCharactersForChoose.get(shouldAddCharacterCount).getId();
             }
             obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_CHOOSE_CHARACTER);
