@@ -21,16 +21,19 @@ public class ChatPlugin extends BasePlugin {
         getApi().getLogger().debug("ChatPlugin initialized");
     }
     
-    
     @Override
     public void request(String user, EsObjectRO message) {
         EsObject messageIn = new EsObject();
         messageIn.addAll(message);
-        getApi().getLogger().debug(user + " requests: " + messageIn.toString());
+        d.debug(logprefix + user + " requests: " + messageIn.toString());
         
         int action = messageIn.getInteger(PluginConstants.ACTION);
+<<<<<<< HEAD
         if(action==100){
             messageIn.setInteger(PluginConstants.ACTION, 100);
+=======
+        if (action == 100) {
+>>>>>>> 290cdf9c47e4b2e9b7bf958b233db37366a1f5a7
             
         }
         
@@ -73,8 +76,6 @@ public class ChatPlugin extends BasePlugin {
         return chatLogger;
     }
     
-
-    
     private class D {
         public void debug(String message) {
             getApi().getLogger().debug(message);
@@ -83,6 +84,5 @@ public class ChatPlugin extends BasePlugin {
     }
     
     private D d = new D();
-    
     
 }
