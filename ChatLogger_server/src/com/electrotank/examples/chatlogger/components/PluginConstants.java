@@ -33,4 +33,5 @@ public class PluginConstants {
     public static final String INIT_HAND_CARDS            = "init_handcards";
     public static final String CARD_STACK                 = "card_stack";
     
+    
 }

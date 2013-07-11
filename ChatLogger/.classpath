@@ -3,7 +3,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/es5-client"/>
-	<classpathentry kind="lib" path="C:/Program Files/ElectroServer_5_4_1/code_examples/ChatLogger/client/java/lib/appframework-1.0.3.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/ElectroServer_5_4_1/code_examples/ChatLogger/client/java/lib/swing-worker-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

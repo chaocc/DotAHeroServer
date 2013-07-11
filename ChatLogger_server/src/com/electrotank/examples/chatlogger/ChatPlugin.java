@@ -28,12 +28,9 @@ public class ChatPlugin extends BasePlugin {
         d.debug(logprefix + user + " requests: " + messageIn.toString());
         
         int action = messageIn.getInteger(PluginConstants.ACTION);
-<<<<<<< HEAD
-        if(action==100){
-            messageIn.setInteger(PluginConstants.ACTION, 100);
-=======
         if (action == 100) {
->>>>>>> 290cdf9c47e4b2e9b7bf958b233db37366a1f5a7
+            messageIn.setInteger(PluginConstants.ACTION, 100);
+            
             
         }
         
@@ -41,17 +38,6 @@ public class ChatPlugin extends BasePlugin {
     
     /**************** logic in game loop start ***************************/
     
-    //    private synchronized void confirmGotHandcards(String user) {
-    //        playerStates[players.indexOf(user)] = player_state_get_init_handcards_confirmed;
-    //        for (int i = 0; i < players.size(); i++) {
-    //            String state = playerStates[i];
-    //            if (!state.equals(player_state_get_init_handcards_confirmed)) { return; }
-    //            
-    //            if (i == players.size() - 1) {
-    //                gameTurn(players.get(0));
-    //            }
-    //        }
-    //    }
     
     /**************** logic before game start end ***************************/
     @Override
