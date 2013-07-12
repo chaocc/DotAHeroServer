@@ -1,8 +1,10 @@
 package com.electrotank.electroserver5.examples.chatloggerclient;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import com.electrotank.electroserver5.client.ElectroServer;
@@ -24,6 +26,7 @@ import com.electrotank.electroserver5.client.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.client.user.User;
 import com.electrotank.electroserver5.client.zone.Room;
 import com.electrotank.electroserver5.client.zone.Zone;
+import com.electrotank.electroserver5.examples.chatloggerclient.component.Player;
 
 /**
  * Controls all communications with the ES5.
@@ -32,11 +35,13 @@ import com.electrotank.electroserver5.client.zone.Zone;
 public class Controller {
     
     private View                view;
-    private ElectroServer       es            = null;
-    private Room                room          = null;
-    private static final String xmlPath       = "settings.xml";
-    private int                 currentAction = -1;
+    private ElectroServer       es             = null;
+    private Room                room           = null;
+    private static final String xmlPath        = "settings.xml";
+    private int                 currentAction  = -1;
     private int[]               currentData;
+    private Player              player;
+    private int                 cardStackCount = -1;
     
     public void setView(View view) {
         this.view = view;
@@ -69,10 +74,7 @@ public class Controller {
     
     public void onPluginMessageEvent(EsPluginMessageEvent e) {
         log("onPluginMessageEvent");
-        EsObject obj = e.getParameters();
-        log("currentObj: " + obj.toString());
-        currentAction = obj.getInteger(ClientConstants.ACTION);
-        log("" + currentAction);
+        EsObject obj = getObj(e);
         
         //TODO implement waiting mechanism
         
@@ -82,12 +84,32 @@ public class Controller {
             showChat("all heros: " + Arrays.toString(obj.getIntegerArray(ClientConstants.ALL_HEROS)));
         } else if (currentAction == ClientConstants.ACTION_DISPATCH_FORCE) {
             showChat("my force: " + obj.getInteger(ClientConstants.FORCE));
-            showChat("remaining cards: " + obj.getInteger(ClientConstants.STACK_CARD_COUNT));
+            showChat("remaining cards: " + obj.getInteger(ClientConstants.STACK_CARD_COUNT, 1));
         } else if (currentAction == ClientConstants.ACTION_DISPATCH_HANDCARD) {
-            showChat("got cards: " + Arrays.toString(obj.getIntegerArray(ClientConstants.INIT_HAND_CARDS)));
+            gotInitHandCards(obj);
+        } else if (currentAction == 0) {
+            showChat("0 worked");
         }
         
         //TODO acton == game over
+    }
+    
+    private void gotInitHandCards(EsObject obj) {
+        int[] cards = obj.getIntegerArray(ClientConstants.DISPATCH_CARDS);
+        currentData = cards;
+        showChat("got cards: " + Arrays.toString(currentData));
+        
+    }
+    
+    private EsObject getObj(EsPluginMessageEvent e) {
+        EsObject obj = e.getParameters();
+        log("currentObj: " + obj.toString());
+        currentAction = obj.getInteger(ClientConstants.ACTION, -1);
+        log("" + currentAction);
+        if (obj.getInteger(ClientConstants.STACK_CARD_COUNT, -1) != -1) {
+            cardStackCount = obj.getInteger(ClientConstants.STACK_CARD_COUNT);
+        }
+        return obj;
     }
     
     public void attemptSendMessage(String message) {
@@ -120,6 +142,7 @@ public class Controller {
                     esob.setInteger(ClientConstants.ACTION, ClientConstants.ACTION_CHOSE_CHARACTER);
                     esob.setInteger(ClientConstants.SELECTED_HERO_ID, Integer.parseInt(message));
                     sendGamePluginRequest(esob);
+                    initPlayer(hero);
                     return;
                 }
             }
@@ -128,8 +151,20 @@ public class Controller {
             
         } else if (message.equals("gg")) {
             EsObject esob = new EsObject();
-            esob.setInteger(ClientConstants.ACTION, 100);
+            esob.setInteger(ClientConstants.ACTION, 0);
             sendRoomPluginRequest(esob);
+        } else if (currentAction == ClientConstants.ACTION_DISPATCH_HANDCARD) {
+            for (int card : currentData) {
+                if (card == Integer.parseInt(message)) {
+                    EsObject esob = new EsObject();
+                    esob.setInteger(ClientConstants.ACTION, ClientConstants.ACTION_STAKE);
+                    esob.setInteger(ClientConstants.STAKE_CARD, Integer.parseInt(message));
+                    sendGamePluginRequest(esob);
+                    //TODO remove card
+                    return;
+                }
+            }
+            showChat("Wrong selection, please select card for stake from : " + Arrays.toString(currentData));
         }
         
     }
@@ -138,6 +173,11 @@ public class Controller {
     //        String character = obj.getString(ClientConstants.CHARACTER_CONFIRMATION);
     //        showChat("character selected : " + character);
     //    }
+    
+    private void initPlayer(int hero) {
+        //read plahyer from id
+        
+    }
     
     private void sendRoomPluginRequest(EsObject obj) {
         log("send  Room   PluginRequest");
@@ -301,7 +341,20 @@ public class Controller {
      * 
      ****************************************/
     private void showChat(String message) {
+        view.showChat("==== >> current state start " + getCurrentTimeStamp() + " << ====");
+        view.showChat(cardStackCount + " cards remaining");
+        if (player != null) {
+            view.showChat("my cards : " + Arrays.toString(player.getHandCards().toArray()));
+        }
         view.showChat(message);
+        view.showChat("======= >> current state end << =========");
+    }
+    
+    public static String getCurrentTimeStamp() {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
+        Date now = new Date();
+        String strDate = sdfDate.format(now);
+        return strDate;
     }
     
     private void showUserList(List<String> users) {

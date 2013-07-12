@@ -28,16 +28,24 @@ public class ChatPlugin extends BasePlugin {
         d.debug(logprefix + user + " requests: " + messageIn.toString());
         
         int action = messageIn.getInteger(PluginConstants.ACTION);
-        if (action == 100) {
-            messageIn.setInteger(PluginConstants.ACTION, 100);
-            
-            
+        if (action == PluginConstants.ACTION_USER_READY) {
+            messageIn.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_USER_READY);
+            //            sendRoomPluginMessageToRoom(messageIn);
+            getApi().sendPluginMessageToUser(user, messageIn);
         }
         
     }
     
-    /**************** logic in game loop start ***************************/
+//    private void sendRoomPluginMessageToRoom(EsObject obj) {
+//        getApi().sendPluginMessageToRoom(getApi().getZoneId(), getApi().getRoomId(), obj);
+//        
+//    }
     
+    //    private void sendRoomPluginMessageToUser(String user, EsObject obj) {
+    //        getApi().sendPluginMessageToUser(user, obj);
+    //    }
+    
+    /**************** logic in game loop start ***************************/
     
     /**************** logic before game start end ***************************/
     @Override

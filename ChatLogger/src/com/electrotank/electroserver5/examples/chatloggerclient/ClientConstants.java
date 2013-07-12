@@ -2,8 +2,8 @@ package com.electrotank.electroserver5.examples.chatloggerclient;
 
 public class ClientConstants {
     public static final String ACTION                             = "action";
-    public static final int    ACTION_START_GAME                  = 0;
-    public static final int    ACTION_PLAYER_LIST_ORDERED         = 1;
+    public static final int    ACTION_START_GAME                  = 1;
+    public static final int    ACTION_USER_READY                  = 0;
     public static final int    ACTION_CHOOSE_CHARACTER            = 2;
     public static final int    ACTION_CHOSE_CHARACTER             = 3;
     public static final int    ACTION_ALL_HEROS                   = 4;
@@ -16,8 +16,7 @@ public class ClientConstants {
     public static final int    ACTION_START_TURN                  = 7;
     public static final int    ACTION_DRAW_CARDS                  = 8;
     
-    public static final int    ACTION_USE_CARD                    = 9;
-    public static final int    ACTION_USE_CARD_2                  = 10;
+    public static final int    ACTION_STAKE                       = 9;
     
     public static final String CHARACTORS_TO_CHOOSE               = "toBeSelectedHeroIds";
     public static final String SORTED_PLAYER_NAMES                = "sortedPlayerNames";
@@ -32,6 +31,7 @@ public class ClientConstants {
     public static final String FORCE                              = "force";
     public static final String INIT_HAND_CARDS                    = "init_handcards";
     public static final String CARD_STACK                         = "card_stack";
+    public static final String STAKE_CARD                         = "staked_card";
     
     /** client message */
     

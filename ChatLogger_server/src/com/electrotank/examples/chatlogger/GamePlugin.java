@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import com.electrotank.electroserver5.extensions.BasePlugin;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
@@ -24,11 +23,12 @@ public class GamePlugin extends BasePlugin {
     
     private String[]            playerStates;
     private final String        player_state_character_confirmed = "char_confirmed";
+    private final String        player_state_staked              = "staked";
+    private final String        player_state_waiting_for_stake   = "wait_stake";
     
     private Integer[]           force;                                                            //势力
     private final int           force_a                          = 1;
     private final int           force_b                          = 5;
-    
     
     /******** game state start ********/
     private final int           playerFlagInGameState            = 1;
@@ -41,8 +41,9 @@ public class GamePlugin extends BasePlugin {
         gameState[playerFlagInGameState] = playerIndex_none;
     }
     
-    /******** game state end ********/
+    private int[]               playerStakes;
     
+    /******** game state end ********/
     
     @Override
     public void init(EsObjectRO parameters) {
@@ -74,7 +75,7 @@ public class GamePlugin extends BasePlugin {
             playerChoseCharactors = new int[players.size()];
             force = new Integer[players.size()];
             playerStates = new String[players.size()];
-            
+            playerStakes = new int[players.size()];
             chooseCharacters(messageIn);
             gameStarted = true;
             
@@ -83,15 +84,57 @@ public class GamePlugin extends BasePlugin {
             
         } else if (action == PluginConstants.ACTION_DRAW_CARDS) {
             dispatchHandCards(user);
+        } else if (action == PluginConstants.ACTION_STAKE) {
+            gotStakeCard(user, messageIn);
         }
         
+    }
+    
+    private void gotStakeCard(String user, EsObject messageIn) {
+        playerStates[players.indexOf(user)] = player_state_staked;
+        playerStakes[players.indexOf(user)] = messageIn.getInteger(PluginConstants.STAKE_CARD);
+        
+        for (String playerState : playerStates) {
+            if (!playerState.equals(player_state_staked)) { return; }
+        }
+        
+        int biggestNumber = playerStakes[0];
+        String startPlayer = players.get(0);
+        for (int i = 1; i < players.size(); i++) {
+            int stake = playerStakes[i];
+            if (stake > biggestNumber) {
+                biggestNumber = stake;
+                startPlayer = players.get(i);
+            }
+        }
+        players = reorderPlayer(startPlayer);
+        gameTurn(players.get(nextPlayer()));
+        
+    }
+    
+    private List<String> reorderPlayer(String startPlayer) {
+        int startCount = players.indexOf(startPlayer);
+        List<String> newPlayerList = new ArrayList<String>();
+        for (int i = 0; i < players.size(); i++) {
+            if ((i + startCount) < players.size()) {
+                newPlayerList.add(players.get(i + startCount));
+            } else {
+                newPlayerList.add(players.get((i + startCount) - players.size()));
+            }
+        }
+        return newPlayerList;
     }
     
     private void gameTurn(String player) {
         EsObject obj = new EsObject();
         obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_START_TURN);
         obj.setString(PluginConstants.PLAYER_NAME, player);
-        getApi().sendPluginMessageToRoom(getApi().getZoneId(), getApi().getRoomId(), obj);
+        //        sendGamePluginMessageToRoom(obj);
+        for (String p : players) {
+            sendGamePluginMessageToUser(p, obj);
+        }
+        //TODO 判断是否跳过摸牌阶段, 如果没跳过, 就抓拍
+        dispatchHandCards(player);
     }
     
     //    private void hitOne(String user, EsObject messageIn) {
@@ -107,7 +150,6 @@ public class GamePlugin extends BasePlugin {
     /**************** logic in game loop end ***************************/
     
     /**************** logic before game start start ***************************/
-    
     
     private void initCardStack() {
         cardStack = new LinkedList<CardEnum>(Arrays.asList(CardEnum.values()));
@@ -132,11 +174,12 @@ public class GamePlugin extends BasePlugin {
             cards[i] = cardStack.get(i).getCardId();
             d.debug(logprefix + "cardStack size : " + cardStack.size());
             cardStack.remove(0);
+            
         }
         obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_DISPATCH_HANDCARD);
-        obj.setIntegerArray(PluginConstants.INIT_HAND_CARDS, cards);
+        obj.setIntegerArray(PluginConstants.DISPATCH_CARDS, cards);
         
-        getApi().sendPluginMessageToUser(player, obj);
+        sendGamePluginMessageToUser(player, obj);
     }
     
     private synchronized void choseCharacter(String user, EsObject messageIn) {
@@ -155,9 +198,13 @@ public class GamePlugin extends BasePlugin {
         initCardStack();
         dispatchForce();
         for (String player : players) {
-            dispatchHandCards(player, 4);
+            dispatchHandCards(player, 5);
         }
-        gameTurn(players.get(nextPlayer()));
+        
+        // then wait for stake
+        for (int i = 0; i < players.size(); i++) {
+            playerStates[i] = player_state_waiting_for_stake;
+        }
         
     }
     
@@ -173,7 +220,11 @@ public class GamePlugin extends BasePlugin {
         EsObject obj = new EsObject();
         obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_ALL_HEROS);
         obj.setIntegerArray(PluginConstants.ALL_HEROS, playerChoseCharactors);
-        sendGamePluginMessageToRoom(obj);
+        for (String player : players) {
+            sendGamePluginMessageToUser(player, obj);
+        }
+        
+        //        sendGamePluginMessageToRoom(obj);
     }
     
     private void dispatchForce() {
@@ -193,22 +244,25 @@ public class GamePlugin extends BasePlugin {
     }
     
     private void reorderUsers() {
-        Object[] users = getApi().getUsersInRoom(getApi().getZoneId(), getApi().getRoomId()).toArray();
-        int random = new Random().nextInt(users.length);
-        for (int i = 0; i < users.length; i++) {
-            int count = i + random;
-            count = count < users.length ? count : (count - users.length);
-            getApi().getLogger().debug("adding the " + count + " user as the " + i + " player");
-            players.add(((UserValue) users[count]).getUserName());
-            
+        for (UserValue user : getApi().getUsersInRoom(getApi().getZoneId(), getApi().getRoomId())) {
+            players.add(user.getUserName());
         }
-        d.debug("(List<String>) players order is ready.\n" + players);
-        
-        EsObject obj = new EsObject();
-        obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_PLAYER_LIST_ORDERED);
-        obj.setStringArray(PluginConstants.SORTED_PLAYER_NAMES, players.toArray(new String[players.size()]));
-        
-        sendGamePluginMessageToRoom(obj);
+        //        Object[] users = getApi().getUsersInRoom(getApi().getZoneId(), getApi().getRoomId()).toArray();
+        //        int random = new Random().nextInt(users.length);
+        //        for (int i = 0; i < users.length; i++) {
+        //            int count = i + random;
+        //            count = count < users.length ? count : (count - users.length);
+        //            getApi().getLogger().debug("adding the " + count + " user as the " + i + " player");
+        //            players.add(((UserValue) users[count]).getUserName());
+        //            
+        //        }
+        //        d.debug("(List<String>) players order is ready.\n" + players);
+        //        
+        //        EsObject obj = new EsObject();
+        //        obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_PLAYER_LIST_ORDERED);
+        //        obj.setStringArray(PluginConstants.SORTED_PLAYER_NAMES, players.toArray(new String[players.size()]));
+        //        
+        //        sendGamePluginMessageToRoom(obj);
     }
     
     private void chooseCharacters(EsObject obj) {
@@ -221,7 +275,7 @@ public class GamePlugin extends BasePlugin {
                 int shouldAddCharacterCount = i * charsToChoose.length + choosingCount;
                 getApi().getLogger()
                         .debug(
-                               "charsToChoose = " + Arrays.toString(charsToChoose) + "\n" + "choosingCount = " + choosingCount + "\n" + "shouldAddCharacterCount = " + shouldAddCharacterCount);
+                                "charsToChoose = " + Arrays.toString(charsToChoose) + "\n" + "choosingCount = " + choosingCount + "\n" + "shouldAddCharacterCount = " + shouldAddCharacterCount);
                 charsToChoose[choosingCount] = allCharactersForChoose.get(shouldAddCharacterCount).getId();
             }
             obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_CHOOSE_CHARACTER);
@@ -232,14 +286,17 @@ public class GamePlugin extends BasePlugin {
         
     }
     
-    
-    private void sendGamePluginMessageToRoom(EsObject obj) {
-        obj.setInteger(PluginConstants.STACK_CARD_COUNT, cardStack.size());
-        getApi().sendPluginMessageToRoom(getApi().getZoneId(), getApi().getRoomId(), obj);
-    }
+    //    private void sendGamePluginMessageToRoom(EsObject obj) {
+    //        if (cardStack != null) {
+    //            obj.setInteger(PluginConstants.STACK_CARD_COUNT, cardStack.size());
+    //        }
+    //        getApi().sendPluginMessageToRoom(getApi().getZoneId(), getApi().getRoomId(), obj);
+    //    }
     
     private void sendGamePluginMessageToUser(String user, EsObject obj) {
-        obj.setInteger(PluginConstants.STACK_CARD_COUNT, cardStack.size());
+        if (cardStack != null) {
+            obj.setInteger(PluginConstants.STACK_CARD_COUNT, cardStack.size());
+        }
         getApi().sendPluginMessageToUser(user, obj);
     }
     
