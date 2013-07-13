@@ -1,4 +1,4 @@
-package com.electrotank.examples.chatlogger.components;
+package com.wolf.dota.component;
 
 public enum CharacterEnum {
     秀逗魔导士(21, "kSlayer"),

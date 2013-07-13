@@ -1,4 +1,4 @@
-package com.electrotank.examples.chatlogger.components;
+package com.wolf.dota.component;
 
 public enum CardEnum {
     _0(0, "普通攻击", "黑桃A", 1, 1 + CardEnum.suit_spade),

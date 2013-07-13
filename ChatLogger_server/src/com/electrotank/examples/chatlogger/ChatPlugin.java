@@ -5,7 +5,7 @@ import com.electrotank.electroserver5.extensions.ChainAction;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
 import com.electrotank.electroserver5.extensions.api.value.UserPublicMessageContext;
-import com.electrotank.examples.chatlogger.components.PluginConstants;
+import com.wolf.dota.component.PluginConstants;
 
 //import org.slf4j.Logger;
 

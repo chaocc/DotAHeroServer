@@ -1,6 +1,6 @@
-package com.electrotank.electroserver5.examples.chatloggerclient;
+package com.wolf.dota.component;
 
-public interface ClientConstants {
+public interface PluginConstants {
     public static final String ACTION = "action";
     public static final int
             ACTION_USER_READY = 0,
@@ -41,8 +41,5 @@ public interface ClientConstants {
             STAKE_CARD = "staked_card",
             HP_CHANGED = "hpChanged",
             SP_CHANGED = "spChanged";
-    /** client message */
     
-    public static final String USER_INPUT_MESSAGE_CHOSE_CHARACTER = "chose_character";
-    public static final String USER_INPUT_MESSAGE_START = "start";
 }

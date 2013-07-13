@@ -32,16 +32,16 @@ import com.electrotank.electroserver5.examples.chatloggerclient.component.Player
  * Controls all communications with the ES5.
  * 
  */
-public class Controller {
+public class Controller implements ClientConstants {
     
-    private View                view;
-    private ElectroServer       es             = null;
-    private Room                room           = null;
-    private static final String xmlPath        = "settings.xml";
-    private int                 currentAction  = -1;
-    private int[]               currentData;
-    private Player              player;
-    private int                 cardStackCount = -1;
+    private View view;
+    private ElectroServer es = null;
+    private Room room = null;
+    private static final String xmlPath = "settings.xml";
+    private int currentAction = -1;
+    private int[] currentData;
+    private Player player;
+    private int cardStackCount = -1;
     
     public void setView(View view) {
         this.view = view;
@@ -98,9 +98,17 @@ public class Controller {
             gotInitHandCards(obj);
         } else if (currentAction == 0) {
             showChat("0 worked");
+        } else if (currentAction == ClientConstants.ACTION_STAKE) {
+            showAllStakeCards(obj);
         }
         
         //TODO acton == game over
+    }
+    
+    private void showAllStakeCards(EsObject obj) {
+        int[] stakes = obj.getIntegerArray(ALL_STAKE_CARDS);
+        showChat(Arrays.toString(stakes));
+        
     }
     
     private void gotInitHandCards(EsObject obj) {

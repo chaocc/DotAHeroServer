@@ -1,4 +1,4 @@
-package com.electrotank.examples.chatlogger.components;
+package com.wolf.dota.component;
 
 import java.util.List;
 
