@@ -101,7 +101,8 @@ public class IdGenerator {
             } else {
                 faceNumber = Integer.parseInt(faceNumberString);
             }
-            line = "_" + cardId + "(" + cardId + ", \"" + functionName + "\", " + faceNumber
+            line = "_" + cardId + "(" + cardId + ", \"" + functionName + "\", \"" + cardFace
+                    + "\"," + faceNumber
                     + ", " + faceNumber + " + CardEnum." + suit + "),";
             
             writer.append(line);

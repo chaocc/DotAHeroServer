@@ -8,7 +8,26 @@ import java.util.Random;
 
 public class Test {
     public static void main(String... args) {
-        testIntEqualsString();
+        getNumberAndSuit();
+    }
+    
+    public static void getNumberAndSuit() {
+        String source = "黑桃A";
+        String faceNumberString = source.substring(2);
+        System.out.println(faceNumberString);
+        int faceNumber = -1;
+        if (faceNumberString.equals("A")) {
+            faceNumber = 1;
+        } else {
+            faceNumber = Integer.parseInt(faceNumberString);
+        }
+        System.out.println(faceNumber);
+    }
+    
+    public static void testSubString() {
+        String source = "普通攻击:";
+        String result = source.substring(0, source.indexOf(':'));
+        System.out.println(result);
     }
     
     public static void testIntEqualsString() {
