@@ -8,7 +8,28 @@ import java.util.Random;
 
 public class Test {
     public static void main(String... args) {
-        getNumberAndSuit();
+        testEnumValueOf();
+    }
+    
+    public static void testEnumValueOf() {
+        
+        System.out.println(TestEnum.valueOf("_1").faceNumber);
+    }
+    
+    enum TestEnum {
+        _0(0, "普通攻击", "黑桃A", 1),
+        _1(1, "普通攻击", "黑桃2", 2);
+        public int    cardId;
+        public String name;
+        public String cardFace;
+        public int    faceNumber;
+        
+        private TestEnum(int cardId, String name, String face, int faceNumber) {
+            this.cardId = cardId;
+            this.name = name;
+            this.cardFace = face;
+            this.faceNumber = faceNumber;
+        }
     }
     
     public static void getNumberAndSuit() {

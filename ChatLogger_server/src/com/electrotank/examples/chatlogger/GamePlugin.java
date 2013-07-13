@@ -12,21 +12,25 @@ import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
 import com.electrotank.examples.chatlogger.components.CardEnum;
 import com.electrotank.examples.chatlogger.components.CharacterEnum;
+import com.electrotank.examples.chatlogger.components.DeskModel;
+import com.electrotank.examples.chatlogger.components.Player;
 import com.electrotank.examples.chatlogger.components.PluginConstants;
 
 public class GamePlugin extends BasePlugin {
     private List<CharacterEnum> allCharactersForChoose           = new ArrayList<CharacterEnum>();
     private List<String>        players;
+    private Player[]            realPlayers;
     private int[]               playerChoseCharactors;
     private boolean             gameStarted                      = false;
     private List<CardEnum>      cardStack;
+    private List<CardEnum>      dropStack;
     
     private String[]            playerStates;
     private final String        player_state_character_confirmed = "char_confirmed";
     private final String        player_state_staked              = "staked";
     private final String        player_state_waiting_for_stake   = "wait_stake";
-    
-    private Integer[]           force;                                                            //势力
+    //势力
+    private Integer[]           force;
     private final int           force_a                          = 1;
     private final int           force_b                          = 5;
     
@@ -42,6 +46,8 @@ public class GamePlugin extends BasePlugin {
     }
     
     private int[]               playerStakes;
+    @SuppressWarnings("unused")
+    private DeskModel           desk;
     
     /******** game state end ********/
     
@@ -72,10 +78,7 @@ public class GamePlugin extends BasePlugin {
             reorderUsers();
             
             /*  init information depending on player size and order   */
-            playerChoseCharactors = new int[players.size()];
-            force = new Integer[players.size()];
-            playerStates = new String[players.size()];
-            playerStakes = new int[players.size()];
+            initSizes();
             chooseCharacters(messageIn);
             gameStarted = true;
             
@@ -90,25 +93,39 @@ public class GamePlugin extends BasePlugin {
         
     }
     
+    private void initSizes() {
+        playerChoseCharactors = new int[players.size()];
+        force = new Integer[players.size()];
+        playerStates = new String[players.size()];
+        playerStakes = new int[players.size()];
+        realPlayers = new Player[players.size()];
+        //TODO deprecating above logics, change to use desk model
+        desk = new DeskModel(players.size());
+    }
+    
     private void gotStakeCard(String user, EsObject messageIn) {
         playerStates[players.indexOf(user)] = player_state_staked;
-        playerStakes[players.indexOf(user)] = messageIn.getInteger(PluginConstants.STAKE_CARD);
-        
+        playerStakes[players.indexOf(user)] = messageIn
+                .getInteger(PluginConstants.STAKE_CARD);
+        dropStack.add(CardEnum.valueOf("_" + playerStakes[players.indexOf(user)]));
         for (String playerState : playerStates) {
             if (!playerState.equals(player_state_staked)) { return; }
         }
         
-        int biggestNumber = playerStakes[0];
+        int biggestNumber = CardEnum.valueOf("_" + playerStakes[0]).getPokerValue();
         String startPlayer = players.get(0);
         for (int i = 1; i < players.size(); i++) {
-            int stake = playerStakes[i];
+            int stake = CardEnum.valueOf("_" + playerStakes[i]).getPokerValue();
             if (stake > biggestNumber) {
                 biggestNumber = stake;
                 startPlayer = players.get(i);
             }
         }
-        players = reorderPlayer(startPlayer);
-        gameTurn(players.get(nextPlayer()));
+        //        players = reorderPlayer(startPlayer);
+        //TODO reorder playerChoseCharactors
+        //TODO reorder force
+        
+        gameTurn(startPlayer);
         
     }
     
@@ -143,7 +160,8 @@ public class GamePlugin extends BasePlugin {
     
     //TODO someone hitted 
     //        String target = messageIn.getString(PluginConstants.HIT_TARGET);
-    //        messageIn.setString(PluginConstants.ACTION, PluginConstants.ACTION_ATTACHED);
+    //        messageIn.setString(PluginConstants.ACTION, 
+    //PluginConstants.ACTION_ATTACHED);
     //        
     //    }
     
@@ -155,19 +173,14 @@ public class GamePlugin extends BasePlugin {
         cardStack = new LinkedList<CardEnum>(Arrays.asList(CardEnum.values()));
         Collections.shuffle(cardStack);
         getApi().getLogger().debug("card stack is ready to use,");
-        
-        //        EsObject obj = new EsObject();
-        //        //        obj.getInteger(PluginConstants.ACTION, PluginConstants.ACTION_INIT_CARD_STACK);
-        //        //        obj.setStringArray(PluginConstants.CARD_STACK, cardStack.toArray(new String[cardStack.size()]));
-        //        obj.setInteger(PluginConstants.STACK_CARD_COUNT, cardStack.size());
-        //        getApi().sendPluginMessageToRoom(getApi().getZoneId(), getApi().getRoomId(), obj);
+        dropStack = new LinkedList<CardEnum>();
     }
     
     private void dispatchHandCards(String player) {
-        dispatchHandCards(player, 2);
+        dispatchHandCards(player, 2, PluginConstants.ACTION_SEND_CARDS);
     }
     
-    private void dispatchHandCards(String player, int howmany) {
+    private void dispatchHandCards(String player, int howmany, int action) {
         EsObject obj = new EsObject();
         int[] cards = new int[howmany];
         for (int i = 0; i < howmany; i++) {
@@ -176,15 +189,18 @@ public class GamePlugin extends BasePlugin {
             cardStack.remove(0);
             
         }
-        obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_DISPATCH_HANDCARD);
+        obj.setInteger(PluginConstants.ACTION, action);
         obj.setIntegerArray(PluginConstants.DISPATCH_CARDS, cards);
         
         sendGamePluginMessageToUser(player, obj);
     }
     
     private synchronized void choseCharacter(String user, EsObject messageIn) {
-        getApi().getLogger().debug(logprefix + "set to user : " + user + " of index in players list : " + players.indexOf(user));
-        playerChoseCharactors[players.indexOf(user)] = messageIn.getInteger(PluginConstants.SELECTED_HERO_ID);
+        getApi().getLogger().debug(
+                logprefix + "set to user : " + user + " of index in players list : "
+                        + players.indexOf(user));
+        playerChoseCharactors[players.indexOf(user)] = messageIn
+                .getInteger(PluginConstants.SELECTED_HERO_ID);
         
         playerStates[players.indexOf(user)] = player_state_character_confirmed;
         
@@ -192,13 +208,14 @@ public class GamePlugin extends BasePlugin {
         
         for (int i = 0; i < players.size(); i++) {
             String playerState = playerStates[i];
-            if (playerState == null || !playerState.equals(player_state_character_confirmed)) { return; }
+            if (playerState == null ||
+                    !playerState.equals(player_state_character_confirmed)) { return; }
         }
         sendAllHeros();
         initCardStack();
         dispatchForce();
         for (String player : players) {
-            dispatchHandCards(player, 5);
+            dispatchHandCards(player, 5, PluginConstants.ACTION_DISPATCH_HANDCARD);
         }
         
         // then wait for stake
@@ -213,6 +230,7 @@ public class GamePlugin extends BasePlugin {
         if (nextPlayerIndex > players.size()) {
             nextPlayerIndex = 0;
         }
+        gameState[playerFlagInGameState] = nextPlayerIndex;
         return nextPlayerIndex;
     }
     
@@ -230,9 +248,35 @@ public class GamePlugin extends BasePlugin {
     private void dispatchForce() {
         EsObject obj = new EsObject();
         List<Integer> forceList = Arrays.asList(new Integer[] { force_a, force_b });
+        
+        switch (players.size()) {
+            case 1: {
+                forceList = Arrays.asList(new Integer[] { force_a });
+                break;
+            }
+            case 2: {
+                forceList = Arrays.asList(new Integer[] { force_a, force_b });
+                break;
+            }
+            case 3: {
+                forceList = Arrays.asList(new Integer[] { force_a, force_b, force_a });
+                break;
+            }
+            case 4: {
+                forceList = Arrays
+                        .asList(new Integer[] { force_a, force_b, force_a, force_b });
+                break;
+            }
+            case 5: {
+                forceList = Arrays.asList(new Integer[] { force_a, force_b, force_a, force_b,
+                        force_a });
+                break;
+            }
+        }
+        
         Collections.shuffle(forceList);
         force = forceList.toArray(new Integer[players.size()]);
-        getApi().getLogger().debug("dispatching order: " + Arrays.toString(force));
+        getApi().getLogger().debug("dispatching force: " + Arrays.toString(force));
         
         obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_DISPATCH_FORCE);
         obj.setInteger(PluginConstants.STACK_CARD_COUNT, cardStack.size());
@@ -244,25 +288,10 @@ public class GamePlugin extends BasePlugin {
     }
     
     private void reorderUsers() {
-        for (UserValue user : getApi().getUsersInRoom(getApi().getZoneId(), getApi().getRoomId())) {
+        for (UserValue user : getApi().getUsersInRoom(getApi().getZoneId(),
+                getApi().getRoomId())) {
             players.add(user.getUserName());
         }
-        //        Object[] users = getApi().getUsersInRoom(getApi().getZoneId(), getApi().getRoomId()).toArray();
-        //        int random = new Random().nextInt(users.length);
-        //        for (int i = 0; i < users.length; i++) {
-        //            int count = i + random;
-        //            count = count < users.length ? count : (count - users.length);
-        //            getApi().getLogger().debug("adding the " + count + " user as the " + i + " player");
-        //            players.add(((UserValue) users[count]).getUserName());
-        //            
-        //        }
-        //        d.debug("(List<String>) players order is ready.\n" + players);
-        //        
-        //        EsObject obj = new EsObject();
-        //        obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_PLAYER_LIST_ORDERED);
-        //        obj.setStringArray(PluginConstants.SORTED_PLAYER_NAMES, players.toArray(new String[players.size()]));
-        //        
-        //        sendGamePluginMessageToRoom(obj);
     }
     
     private void chooseCharacters(EsObject obj) {
@@ -275,13 +304,19 @@ public class GamePlugin extends BasePlugin {
                 int shouldAddCharacterCount = i * charsToChoose.length + choosingCount;
                 getApi().getLogger()
                         .debug(
-                                "charsToChoose = " + Arrays.toString(charsToChoose) + "\n" + "choosingCount = " + choosingCount + "\n" + "shouldAddCharacterCount = " + shouldAddCharacterCount);
-                charsToChoose[choosingCount] = allCharactersForChoose.get(shouldAddCharacterCount).getId();
+                                "charsToChoose = " + Arrays.toString(charsToChoose) + "\n"
+                                        + "choosingCount = " + choosingCount + "\n"
+                                        + "shouldAddCharacterCount = "
+                                        + shouldAddCharacterCount);
+                charsToChoose[choosingCount] = allCharactersForChoose.get(
+                        shouldAddCharacterCount).getId();
             }
             obj.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_CHOOSE_CHARACTER);
             obj.setIntegerArray(PluginConstants.CHARACTORS_TO_CHOOSE, charsToChoose);
             sendGamePluginMessageToUser(player, obj);
-            getApi().getLogger().debug("Characters " + Arrays.toString(charsToChoose) + " are sending to player " + player);
+            getApi().getLogger().debug(
+                    "Characters " + Arrays.toString(charsToChoose)
+                            + " are sending to player " + player);
         }
         
     }

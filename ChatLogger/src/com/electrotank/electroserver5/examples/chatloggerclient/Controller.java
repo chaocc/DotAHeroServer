@@ -56,12 +56,18 @@ public class Controller {
         log("Initializing");
         es = new ElectroServer();
         //listen for certain events to allow the application to flow, and to support chatting and user list updates
-        es.getEngine().addEventListener(EsMessageType.ConnectionResponse, this, "onConnectionResponse", EsConnectionResponse.class);
-        es.getEngine().addEventListener(EsMessageType.LoginResponse, this, "onLoginResponse", EsLoginResponse.class);
-        es.getEngine().addEventListener(EsMessageType.JoinRoomEvent, this, "onJoinRoomEvent", EsJoinRoomEvent.class);
-        es.getEngine().addEventListener(EsMessageType.UserUpdateEvent, this, "onRoomUserUpdateEvent", EsUserUpdateEvent.class);
-        es.getEngine().addEventListener(EsMessageType.PublicMessageEvent, this, "onPublicMessageEvent", EsPublicMessageEvent.class);
-        es.getEngine().addEventListener(EsMessageType.PluginMessageEvent, this, "onPluginMessageEvent", EsPluginMessageEvent.class);
+        es.getEngine().addEventListener(EsMessageType.ConnectionResponse, this,
+                "onConnectionResponse", EsConnectionResponse.class);
+        es.getEngine().addEventListener(EsMessageType.LoginResponse, this, "onLoginResponse",
+                EsLoginResponse.class);
+        es.getEngine().addEventListener(EsMessageType.JoinRoomEvent, this, "onJoinRoomEvent",
+                EsJoinRoomEvent.class);
+        es.getEngine().addEventListener(EsMessageType.UserUpdateEvent, this,
+                "onRoomUserUpdateEvent", EsUserUpdateEvent.class);
+        es.getEngine().addEventListener(EsMessageType.PublicMessageEvent, this,
+                "onPublicMessageEvent", EsPublicMessageEvent.class);
+        es.getEngine().addEventListener(EsMessageType.PluginMessageEvent, this,
+                "onPluginMessageEvent", EsPluginMessageEvent.class);
         
         try {
             log("loadAndConnect");
@@ -81,11 +87,14 @@ public class Controller {
         if (currentAction == ClientConstants.ACTION_CHOOSE_CHARACTER) {
             gotCharactersToChoose(obj);
         } else if (currentAction == ClientConstants.ACTION_ALL_HEROS) {
-            showChat("all heros: " + Arrays.toString(obj.getIntegerArray(ClientConstants.ALL_HEROS)));
+            showChat("all heros: "
+                    + Arrays.toString(obj.getIntegerArray(ClientConstants.ALL_HEROS)));
         } else if (currentAction == ClientConstants.ACTION_DISPATCH_FORCE) {
             showChat("my force: " + obj.getInteger(ClientConstants.FORCE));
-            showChat("remaining cards: " + obj.getInteger(ClientConstants.STACK_CARD_COUNT, 1));
-        } else if (currentAction == ClientConstants.ACTION_DISPATCH_HANDCARD) {
+            showChat("remaining cards: "
+                    + obj.getInteger(ClientConstants.STACK_CARD_COUNT, 1));
+        } else if (currentAction == ClientConstants.ACTION_DISPATCH_HANDCARD
+                || currentAction == 10) {
             gotInitHandCards(obj);
         } else if (currentAction == 0) {
             showChat("0 worked");
@@ -139,8 +148,10 @@ public class Controller {
             for (int hero : currentData) {
                 if (hero == Integer.parseInt(message)) {
                     EsObject esob = new EsObject();
-                    esob.setInteger(ClientConstants.ACTION, ClientConstants.ACTION_CHOSE_CHARACTER);
-                    esob.setInteger(ClientConstants.SELECTED_HERO_ID, Integer.parseInt(message));
+                    esob.setInteger(ClientConstants.ACTION,
+                            ClientConstants.ACTION_CHOSE_CHARACTER);
+                    esob.setInteger(ClientConstants.SELECTED_HERO_ID,
+                            Integer.parseInt(message));
                     sendGamePluginRequest(esob);
                     initPlayer(hero);
                     return;
@@ -164,7 +175,8 @@ public class Controller {
                     return;
                 }
             }
-            showChat("Wrong selection, please select card for stake from : " + Arrays.toString(currentData));
+            showChat("Wrong selection, please select card for stake from : "
+                    + Arrays.toString(currentData));
         }
         
     }
@@ -297,7 +309,8 @@ public class Controller {
             String serverId = conn.getServerId();
             int port = conn.getPort();
             String transport = conn.getTransportType().toString();
-            log("Active connection: " + host + ", " + port + ", " + transport + ", " + serverId);
+            log("Active connection: " + host + ", " + port + ", " + transport + ", "
+                    + serverId);
         }
     }
     
