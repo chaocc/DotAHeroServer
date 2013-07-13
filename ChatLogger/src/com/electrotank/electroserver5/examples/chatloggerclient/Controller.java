@@ -114,6 +114,7 @@ public class Controller implements ClientConstants {
     private void gotInitHandCards(EsObject obj) {
         int[] cards = obj.getIntegerArray(ClientConstants.DISPATCH_CARDS);
         currentData = cards;
+        player.addHandCards(cards);
         showChat("got cards: " + Arrays.toString(currentData));
         
     }
@@ -179,7 +180,7 @@ public class Controller implements ClientConstants {
                     esob.setInteger(ClientConstants.ACTION, ClientConstants.ACTION_STAKE);
                     esob.setInteger(ClientConstants.STAKE_CARD, Integer.parseInt(message));
                     sendGamePluginRequest(esob);
-                    //TODO remove card
+                    player.removeCard(card);
                     return;
                 }
             }
@@ -364,7 +365,7 @@ public class Controller implements ClientConstants {
     private void showChat(String message) {
         view.showChat("==== >> current state start " + getCurrentTimeStamp() + " << ====");
         view.showChat(cardStackCount + " cards remaining");
-        if (player != null) {
+        if (player != null && player.getHandCards() != null) {
             view.showChat("my cards : " + Arrays.toString(player.getHandCards().toArray()));
         }
         view.showChat(message);

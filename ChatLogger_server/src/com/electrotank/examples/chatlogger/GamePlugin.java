@@ -11,7 +11,7 @@ import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
 import com.google.common.primitives.Ints;
-import com.wolf.dota.component.CardEnum;
+import com.wolf.dota.component.CardModel;
 import com.wolf.dota.component.CharacterEnum;
 import com.wolf.dota.component.DeskModel;
 import com.wolf.dota.component.Player;
@@ -23,7 +23,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     private Player[] realPlayers;
     private int[] playerChoseCharactors;
     private boolean gameStarted = false;
-    private List<CardEnum> cardStack;
+    private List<CardModel> cardStack;
     private List<Integer> dropStack;
     
     private String[] playerStates;
@@ -115,18 +115,18 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
             dropStack.addAll(Ints.asList(cards));
         }
         obj.setInteger(ACTION, ACTION_HP_DAMAGED);
-        int damagedAmount = 1;
+        int damageAmount = 1;
         switch (actionCache) {
             case ACTION_NORMAL_ATTACK: {
-                damagedAmount = 1;
+                damageAmount = 1;
                 break;
             }
             default: {
-                damagedAmount = 1;
+                damageAmount = 1;
                 break;
             }
         }
-        obj.setInteger(HP_CHANGED, damagedAmount);
+        obj.setInteger(HP_CHANGED, damageAmount);
         actionCache = actionCacheNone;
         sendGamePluginMessageToUser(user, obj);
     }
@@ -166,10 +166,10 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
             if (!playerState.equals(player_state_staked)) { return; }
         }
         
-        int biggestNumber = CardEnum.valueOf("_" + playerStakes[0]).getPokerValue();
+        int biggestNumber = CardModel.valueOf("_" + playerStakes[0]).getPokerValue();
         String startPlayer = players.get(0);
         for (int i = 1; i < players.size(); i++) {
-            int stake = CardEnum.valueOf("_" + playerStakes[i]).getPokerValue();
+            int stake = CardModel.valueOf("_" + playerStakes[i]).getPokerValue();
             if (stake > biggestNumber) {
                 biggestNumber = stake;
                 startPlayer = players.get(i);
@@ -216,7 +216,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     /**************** logic before game start start ***************************/
     
     private void initCardStack() {
-        cardStack = new LinkedList<CardEnum>(Arrays.asList(CardEnum.values()));
+        cardStack = new LinkedList<CardModel>(Arrays.asList(CardModel.values()));
         Collections.shuffle(cardStack);
         getApi().getLogger().debug("card stack is ready to use,");
         dropStack = new LinkedList<Integer>();
