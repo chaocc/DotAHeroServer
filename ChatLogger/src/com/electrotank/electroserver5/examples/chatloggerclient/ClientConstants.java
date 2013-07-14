@@ -36,9 +36,7 @@ public interface ClientConstants {
             PLAYER_NAME = "playerName",
             TARGET_PLAYERS = "targetPlayerNames",
             FORCE = "force",
-            CARD_STAKE = "card_stack",
             ALL_STAKE_CARDS = "allCuttingCardIds",
-            STAKE_CARD = "staked_card",
             HP_CHANGED = "hpChanged",
             SP_CHANGED = "spChanged";
     /** client message */

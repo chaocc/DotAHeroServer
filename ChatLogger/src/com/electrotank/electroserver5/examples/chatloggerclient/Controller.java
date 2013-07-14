@@ -178,7 +178,8 @@ public class Controller implements ClientConstants {
                 if (card == Integer.parseInt(message)) {
                     EsObject esob = new EsObject();
                     esob.setInteger(ClientConstants.ACTION, ClientConstants.ACTION_STAKE);
-                    esob.setInteger(ClientConstants.STAKE_CARD, Integer.parseInt(message));
+                    esob.setIntegerArray(ClientConstants.USED_CARDS,
+                            new int[] { Integer.parseInt(message) });
                     sendGamePluginRequest(esob);
                     player.removeCard(card);
                     return;

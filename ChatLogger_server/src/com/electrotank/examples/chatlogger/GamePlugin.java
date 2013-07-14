@@ -50,6 +50,12 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     @SuppressWarnings("unused")
     private DeskModel desk;
     
+    /******** action caches *********/
+    private final int actionCacheNone = -1;
+    private int actionCache = actionCacheNone;
+    private int additionalEffect = actionCacheNone;
+    private String attackerCache = "";
+    
     /******** game state end ********/
     
     @Override
@@ -90,44 +96,162 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
             dispatchHandCards(user);
         } else if (action == ACTION_STAKE) {
             gotStakeCard(user, messageIn);
-        } else if (action == ACTION_NORMAL_ATTACK) {
-            attacked(user, messageIn);
+        } else if (action == ACTION_NORMAL_ATTACK || action == ACTION_CHAOS_ATTACK
+                || action == ACTION_FLAME_ATTACK) {
+            attack(user, messageIn);
         } else if (action == ACTION_EVASION) {
             evasion(user, messageIn);
         } else if (action == ACTION_HP_DAMAGED) {
-            damaged(user, messageIn);
+            hitted(user, messageIn);
+        } else if (action == ACTION_HEAL) {
+            heal(user, messageIn);
+        } else if (action == ACTION_S_LagunaBlade) {
+            s_LagunaBlade(user, messageIn);
+        } else if (action == ACTION_S_GodsStrength) {
+            s_GodsStrength(user, messageIn);
+        } else if (action == ACTION_S_ViperRaid) {
+            s_ViperRaid(user, messageIn);
+        } else if (action == ACTION_Mislead) {
+            m_Mislead(user, messageIn);
+        } else if (action == ACTION_Dispel) {
+            m_Dispel(user, messageIn);
+        } else if (action == ACTION_Disarm) {
+            m_Disarm(user, messageIn);
         }
         
     }
     
-    private final int actionCacheNone = -1;
-    private int actionCache = actionCacheNone;
+    private void m_Disarm(String user, EsObject obj) {
+        // assume strengthen is only client action, 
+        // strengthen only can send along with action instead of separately
+        
+        String target = obj.getStringArray(TARGET_PLAYERS)[0];
+        dropCard(obj, TARGET_CARD);
+        dropCard(obj);
+        looseEquipment(target, obj.getIntegerArray(TARGET_CARD));
+        if (obj.getBoolean(STRENGTHED, false)) {
+            spLost(user, 1, new EsObject());
+            getCard(user, obj.getIntegerArray(TARGET_CARD));
+        }
+    }
     
-    private void attacked(String user, EsObject obj) {
+    private void getCard(String player, int[] cards) {
+        EsObject obj = new EsObject();
+        obj.setInteger(ACTION, ACTION_GET_SPECIFIC_CARD);
+        obj.setIntegerArray(TARGET_CARD, cards);
+        sendGamePluginMessageToUser(player, obj);
+    }
+    
+    private void looseEquipment(String player, int[] cards) {
+        EsObject obj = new EsObject();
+        obj.setInteger(ACTION, ACTION_LOOSE_EQUIPMENT);
+        obj.setIntegerArray(TARGET_CARD, cards);
+        sendGamePluginMessageToUser(player, obj);
+    }
+    
+    private void m_Dispel(String user, EsObject obj) {
+        actionCache = actionCacheNone;
+        additionalEffect = actionCacheNone;
+        int[] cards = obj.getIntegerArray(USED_CARDS);
+        dropStack.addAll(Ints.asList(cards));
+        
+    }
+    
+    private void m_Mislead(String user, EsObject obj) {
+        dropCard(obj);
+        String[] ps = obj.getStringArray(TARGET_PLAYERS);
+        String source = ps[0];
+        String target = ps[1];
+        // what source player happen
+        spLost(source, 1, obj);
+        dispatchHandCards(source, 1);
+        // what target player happen
+        spUp(target, 1, obj);
+        
+    }
+    
+    private void s_ViperRaid(String user, EsObject messageIn) {
+        // TODO ?
+        
+    }
+    
+    private void s_GodsStrength(String user, EsObject obj) {
+        additionalEffect = obj.getInteger(ACTION);
+        int[] cards = obj.getIntegerArray(USED_CARDS);
+        dropStack.addAll(Ints.asList(cards));
+        
+        dispatchHandCards(user, 1);
+        
+    }
+    
+    private void s_LagunaBlade(String user, EsObject obj) {
+        spLost(user, 3, obj);
+        attack(user, obj);
+        
+    }
+    
+    private void heal(String user, EsObject obj) {
+        obj.setInteger(ACTION, ACTION_HP_RESTORE);
+        obj.setInteger(HP_CHANGED, 1);
+        sendGamePluginMessageToUser(user, obj);
+    }
+    
+    private void attack(String user, EsObject obj) {
+        
         int[] cards = obj.getIntegerArray(USED_CARDS);
         dropStack.addAll(Ints.asList(cards));
         actionCache = obj.getInteger(ACTION);
+        attackerCache = user;
     }
     
-    private void damaged(String user, EsObject obj) {
+    private void hitted(String user, EsObject obj) {
         int[] cards = obj.getIntegerArray(USED_CARDS);
         if (cards != null) {
             dropStack.addAll(Ints.asList(cards));
         }
-        obj.setInteger(ACTION, ACTION_HP_DAMAGED);
-        int damageAmount = 1;
+        int additionalHit = additionalEffect == ACTION_S_GodsStrength ? 1 : 0;
         switch (actionCache) {
             case ACTION_NORMAL_ATTACK: {
-                damageAmount = 1;
+                damage(user, 1 + additionalHit, obj);
                 break;
             }
-            default: {
-                damageAmount = 1;
+            case ACTION_FLAME_ATTACK: {
+                damage(user, 1 + additionalHit, obj);
+                spUp(user, 1, obj);
                 break;
             }
+            case ACTION_CHAOS_ATTACK: {
+                damage(user, 1 + additionalHit, obj);
+                spUp(attackerCache, 1, obj);
+                break;
+            }
+            case ACTION_S_LagunaBlade: {
+                int[] evations = obj.getIntegerArray(USED_CARDS, new int[] {});
+                dropCard(obj);
+                damage(user, 3 - evations.length, obj);
+                break;
+            }
+            
         }
-        obj.setInteger(HP_CHANGED, damageAmount);
         actionCache = actionCacheNone;
+        attackerCache = "";
+    }
+    
+    private void spUp(String user, int howMuch, EsObject obj) {
+        obj.setInteger(ACTION, ACTION_SP_UP);
+        obj.setInteger(SP_CHANGED, howMuch);
+        sendGamePluginMessageToUser(user, obj);
+    }
+    
+    private void spLost(String user, int howMuch, EsObject obj) {
+        obj.setInteger(ACTION, ACTION_SP_LOST);
+        obj.setInteger(SP_CHANGED, howMuch);
+        sendGamePluginMessageToUser(user, obj);
+    }
+    
+    private void damage(String user, int howMuch, EsObject obj) {
+        obj.setInteger(ACTION, ACTION_HP_DAMAGED);
+        obj.setInteger(HP_CHANGED, howMuch);
         sendGamePluginMessageToUser(user, obj);
     }
     
@@ -139,13 +263,17 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
         sendGamePluginMessageToUser(user, obj);
     }
     
-    private void dropCard(String user, EsObject obj) {
-        int[] cards = obj.getIntegerArray(USED_CARDS);
+    private void dropCard(EsObject obj, String key) {
+        int[] cards = obj.getIntegerArray(key);
         dropStack.addAll(Ints.asList(cards));
-        
-        //TODO user also need drop his/her cards
-        
     }
+    
+    private void dropCard(EsObject obj) {
+        dropCard(obj, USED_CARDS);
+    }
+    
+    //    private void dropCard(String user, EsObject obj){
+    //todo user also need drop his/her cards
     
     private void initSizes() {
         playerChoseCharactors = new int[players.size()];
@@ -160,7 +288,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     private void gotStakeCard(String user, EsObject messageIn) {
         playerStates[players.indexOf(user)] = player_state_staked;
         playerStakes[players.indexOf(user)] = messageIn
-                .getInteger(STAKE_CARD);
+                .getIntegerArray(USED_CARDS)[0];
         dropStack.add(playerStakes[players.indexOf(user)]);
         for (String playerState : playerStates) {
             if (!playerState.equals(player_state_staked)) { return; }
@@ -223,7 +351,11 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     }
     
     private void dispatchHandCards(String player) {
-        dispatchHandCards(player, 2, ACTION_SEND_CARDS);
+        dispatchHandCards(player, 2);
+    }
+    
+    private void dispatchHandCards(String player, int howMany) {
+        dispatchHandCards(player, howMany, ACTION_SEND_CARDS);
     }
     
     private void dispatchHandCards(String player, int howmany, int action) {
@@ -280,6 +412,8 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     
     @SuppressWarnings("unused")
     private int nextPlayer() {
+        actionCache = actionCacheNone;
+        additionalEffect = actionCacheNone;
         int nextPlayerIndex = gameState[playerFlagInGameState] + 1;
         if (nextPlayerIndex > players.size()) {
             nextPlayerIndex = 0;
