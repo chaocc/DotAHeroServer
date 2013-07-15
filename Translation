@@ -1,0 +1,256 @@
+
+正面/反面 - Face / Back
+切牌 - Cut Card (洗完牌，理成一摞后将牌分成3摞再叠好的过程)
+洗牌 - Shuffle Card
+发牌 - Deal Card
+分配牌  - Distribute Card
+展示手牌 - Reveal Card
+初始玩家 - Initial Player
+底牌 - Bottom Card
+
+身份牌 - Role Card
+手牌 - Hand Card
+角色牌 - Character Card
+宿命牌 - Destiny Card
+血量牌 - Heath Card
+
+血量 - Health (Life Point)
+怒气/魔法 - Mana
+
+施法阶段 - Casting Magic Phase
+状态判定阶段 - Determining Phase
+摸牌阶段 - Drawing Phase
+出牌阶段 - Playing Phase
+弃牌阶段 - Discarding Phase
+回合结束阶段 - Turn Ending Phase
+
+暗影惩戒者 - Shadow Punisher
+圣光征服者 - Conqueror of Holy Light
+蔓延的瘟疫 - Spreading Plague
+命运的博弈 - Game of Fate
+反噬的傀儡 - Puppet of Backfire
+死神的召唤者 - Summoner of Death 
+偏执的数学家 - Paranoid Mathematician
+Roshan附体 - Roshan Possession
+
+强化 - Strengthen
+判定 - Determine
+伤害来源 - Damage Source
+攻击范围 - Attack Range
+距离 - Distance
+颜色 - Card Color
+使用 - Use
+打出 - Play
+另一名角色 - Another Player
+上家 - Last Player
+下家 - Next Player
+牌和手牌 - Card & Hand Card
+一个角色回合 - Player Turn
+一个游戏回合 - Game Round
+摸X张牌 - Draw X cards
+明置 - FaceupPlace
+暗置 - FacedownPlace
+
+
+基本牌 - Basic Card
+装备牌 - Equipment Card (Weapon/Armor)
+魔法牌 - Magic Card
+S技牌 - Super Skill Card
+
+所属势力/阵营/种族 - Affiliation/Faction/Race
+近卫 － Sentinel
+天灾 － Scourge
+中立 － Neutral
+
+
+力量型 - Strength
+敏捷型 - Agility
+智力型 - Intelligence
+
+英雄技能 - Character Skill
+主动技能 - Active Skill
+被动技能 - Passive Skill
+施法技能 - Magic skill
+
+
+
+花色 － Suits
+红桃／方块／黑桃／梅花 － Hearts/Diamonds/Spades/Clubs
+
+
+普通技/限制技/限定技 - General Skill / Restricted Skill/Limited Skill
+锁定技 - Mandatory Skill
+
+
+卡牌效果结算 - EffectBeResolved
+
+
+
+
+死亡骑士 - Lord of Avernus
+     死亡缠绕 - Death Coil
+     霜之哀伤 - Frostmourne
+
+骷髅王 - Skeleton King
+     重生 - Reincarnation
+     吸血 - Vampiric Aura
+
+刚背兽 - Bristleback
+     战意 - Warpath
+     刚毛后背 - Bristleback
+
+神灵武士 - Sacred Warrior
+     牺牲 - Life Break
+     沸血之矛 - Burning Spear
+
+全能骑士 - Omniknight
+     洗礼 - Purification
+     圣光 - Holy Light
+
+斧王 - Axe
+     战争饥渴 - Battle Hunger
+     反转螺旋 - Counter Helix
+半人马酋长 - Centaur Warchief
+     双刃剑 - Double Edge
+龙骑士 - Dragon Knight
+     火焰气息 - Breathe Fire
+     龙族血统 - Dragon Blood
+守护骑士 - Guardian Knight
+     援护 - Guardian
+     信仰 - Faith
+     父爱 - Fatherly Love
+
+
+
+蛇发女妖 － Gorgon
+     秘术异蛇 － Mystic Snake
+     魔法护盾 － Mana Shield
+
+闪电幽魂 - Lightning Revenant
+     等离子场 - Plasma Field
+     不定电流 - Unstable Current
+
+剑圣 - Juggernaut
+     无敌斩 - Omnislash
+     剑舞 - Blade Dance
+复仇之魂 - Vengeful Spirit
+
+     移形换位 - Nether Swap
+     恐怖波动 - Wave of Terror
+血魔 - Strygwyr
+     血之狂暴 - Bloodrage
+     嗜血 - Strygwyr's Thirst
+     屠戮 - Blood Bath
+巨魔战将 - Troll Warlord
+     战斗专注 - Battle Trance
+     热血战魂 - Fervor
+矮人火枪手 - Dwarven Sniper
+     爆头 - Headshot
+     瞄准 - Take Aim
+     散弹 - Shrapnel
+地穴刺客 - Nerubian Assassin
+     法力燃烧 - Mana Burn
+     复仇 - Vendetta
+     穿刺护甲 - Spiked Carapace
+敌法师 - Antimage
+     法力损毁 - Mana Break
+     闪烁 - Blink
+     法力虚空 - Mana Void
+地穴编织者 - Nerubian Weaver
+     蝗虫群 - The Swarm
+     时光倒流 - Time Lapse
+熊战士 - Ursa Warrior
+     怒意狂击 - Fury Swipes
+     激怒 - Enrage
+陈云生 - ChenYunSheng
+     神判 - Ordeal
+     特殊体质 - Special Body
+
+
+
+秀逗魔导师 - Slayer
+     炽魂 - Fiery Soul
+     神灭斩 - Laguna Blade
+死灵法师 - Necrolyte
+     竭心光环 - Heartstopper Aura
+     施虐之心 - Sadist
+双头龙 － Twin Head Dragon
+     冰封 － Ice Path
+     液态火 － Liquid Fire
+水晶室女 - Crystal Maiden
+     冰封禁制 - Frostbite
+     辉煌光环 - Brilliance Aura
+巫妖 - Lich
+     邪恶祭祀 - Dark Ritual
+     霜冻护甲 - Frost Armor
+暗影牧师 - Shadow Priest
+     薄葬 - Shallow Grave
+     暗影波 - Shadow Wave
+食人魔法师 - Orge Magi
+     火焰爆轰 - Fireblast
+     多重施法 - Multi Cast
+光之守卫 - Keeper of the light
+     冲击波 - Illuminate
+     查克拉 - Chakra Magic
+     恩惠 - Grace
+哥布林工程师 - Goblin Techies
+     遥控炸弹 - Remote Mines
+     引爆 - Focused Detonate
+     自爆 - Suicide Squad
+风暴之灵 - Storm Spirit
+     超负荷 - Overload
+     球状闪电 - Ball Lightning
+魅惑魔女 - Enchantress
+     不可侵犯 - Untouchable
+     魅惑 - Enchant
+     自然之助 - Nature's Attendants
+精灵莉莉 - Elf Lily
+     治疗术 - Healing Spell
+     驱散精灵 - Dispel Wizard
+     魔法掌控 - Magic Control
+
+
+
+普通攻击 - Normal Attack
+火焰攻击 - Flame Attack
+混乱攻击 - Chaos Attack
+闪避 - Evasion
+治疗药膏 - Healing Salve
+
+
+狂热 - Fanaticism
+误导 - Mislead
+查克拉 - Chakra
+野性之斧 - Wild Axe
+驱散 - Dispel
+缴械 - Disarm
+月神之箭 - Elune's Arrow
+能量转移 - Energy Transport
+贪婪 - Greed
+海妖之歌 - Siren Song
+
+
+神之力量 - God's Strength
+蝮蛇突袭 - Viper Raid
+时间静止 - Time Lock
+灵魂隔断 - Sunder
+神灭斩 - Laguna Blade
+
+
+冰魄之眼 - Eye of Skadi
+攻击之爪 - Blades of Attack
+圣者遗物 - Sacred Relic
+恶魔刀锋 - Demon Edge
+散失之刃 - Diffusal Blade
+洛萨之锋 - Lothar's Edge
+黯灭之刃 - Stygian Desolator
+散夜对剑 - Sange and Yasha
+掠夺之斧 - Plunder Axe
+神秘法杖 - Mystic Staff
+鹰角弓 - Eaglehorn
+补刀斧 - Quelling Blade
+菲丽丝之戒 - Phyllis Ring
+刃甲 - Blade Mail
+速度之靴 - Boots of Speed
+流浪法师斗篷 - Planeswalker's Cloak
+闪避护符 - Talisman of Evasion
