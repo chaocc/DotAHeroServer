@@ -20,17 +20,21 @@ public class Player {
     
     private static Map<Integer, Player> players = new HashMap<Integer, Player>();
     
-    private String playerName;
-    private int order;
-    private String heroName;
-    private int heroId;
-    private int hp;
-    private int hpLimit;
-    private int spLimit;
-    private int sp;
-    private int[] skills;
-    private int[] weapons;
-    private int cardLimit;
+    private String
+            playerName,
+            heroName;
+    private int
+            order,
+            heroId,
+            heroType,
+            hp,
+            hpLimit,
+            spLimit,
+            sp,
+            handCardLimit;
+    private int[]
+            skills,
+            weapons;
     private List<Integer> handCards;
     
     //    21, "kSlayer"),
@@ -80,7 +84,7 @@ public class Player {
     }
     
     public List<Integer> addHandCards(int[] cards) {
-        this.handCards.addAll(Ints.asList(cards));
+//        this.handCards.addAll(Ints.asList(cards));
         return handCards;
     }
     

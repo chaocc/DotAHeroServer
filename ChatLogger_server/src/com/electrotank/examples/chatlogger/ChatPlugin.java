@@ -27,9 +27,9 @@ public class ChatPlugin extends BasePlugin {
         messageIn.addAll(message);
         d.debug(logprefix + user + " requests: " + messageIn.toString());
         
-        int action = messageIn.getInteger(PluginConstants.ACTION);
+        int action = messageIn.getInteger(PluginConstants.ac);
         if (action == PluginConstants.ACTION_USER_READY) {
-            messageIn.setInteger(PluginConstants.ACTION, PluginConstants.ACTION_USER_READY);
+            messageIn.setInteger(PluginConstants.ac, PluginConstants.ACTION_USER_READY);
             //            sendRoomPluginMessageToRoom(messageIn);
             getApi().sendPluginMessageToUser(user, messageIn);
         }

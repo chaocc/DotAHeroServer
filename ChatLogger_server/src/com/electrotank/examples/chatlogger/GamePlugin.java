@@ -77,7 +77,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
         messageIn.addAll(message);
         getApi().getLogger().debug(user + " requests: " + messageIn.toString());
         
-        int action = messageIn.getInteger(ACTION);
+        int action = messageIn.getInteger(ac);
         
         if (action == ACTION_START_GAME && !gameStarted) {
             getApi().getLogger().debug("got action start game");
@@ -94,6 +94,9 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
             
         } else if (action == ACTION_DRAW_CARDS) {
             dispatchHandCards(user);
+            EsObject obj = new EsObject();
+            obj.setInteger(ac_required, ac_require_play);
+            sendGamePluginMessageToUser(user, obj);
         } else if (action == ACTION_STAKE) {
             gotStakeCard(user, messageIn);
         } else if (action == ACTION_NORMAL_ATTACK || action == ACTION_CHAOS_ATTACK
@@ -122,8 +125,6 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     }
     
     private void m_Disarm(String user, EsObject obj) {
-        // assume strengthen is only client action, 
-        // strengthen only can send along with action instead of separately
         
         String target = obj.getStringArray(TARGET_PLAYERS)[0];
         dropCard(obj, TARGET_CARD);
@@ -137,14 +138,14 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     
     private void getCard(String player, int[] cards) {
         EsObject obj = new EsObject();
-        obj.setInteger(ACTION, ACTION_GET_SPECIFIC_CARD);
+        obj.setInteger(ac, ACTION_GET_SPECIFIC_CARD);
         obj.setIntegerArray(TARGET_CARD, cards);
         sendGamePluginMessageToUser(player, obj);
     }
     
     private void looseEquipment(String player, int[] cards) {
         EsObject obj = new EsObject();
-        obj.setInteger(ACTION, ACTION_LOOSE_EQUIPMENT);
+        obj.setInteger(ac, ACTION_LOOSE_EQUIPMENT);
         obj.setIntegerArray(TARGET_CARD, cards);
         sendGamePluginMessageToUser(player, obj);
     }
@@ -176,7 +177,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     }
     
     private void s_GodsStrength(String user, EsObject obj) {
-        additionalEffect = obj.getInteger(ACTION);
+        additionalEffect = obj.getInteger(ac);
         int[] cards = obj.getIntegerArray(USED_CARDS);
         dropStack.addAll(Ints.asList(cards));
         
@@ -191,7 +192,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     }
     
     private void heal(String user, EsObject obj) {
-        obj.setInteger(ACTION, ACTION_HP_RESTORE);
+        obj.setInteger(ac, ACTION_HP_RESTORE);
         obj.setInteger(HP_CHANGED, 1);
         sendGamePluginMessageToUser(user, obj);
     }
@@ -200,7 +201,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
         
         int[] cards = obj.getIntegerArray(USED_CARDS);
         dropStack.addAll(Ints.asList(cards));
-        actionCache = obj.getInteger(ACTION);
+        actionCache = obj.getInteger(ac);
         attackerCache = user;
     }
     
@@ -238,19 +239,19 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     }
     
     private void spUp(String user, int howMuch, EsObject obj) {
-        obj.setInteger(ACTION, ACTION_SP_UP);
+        obj.setInteger(ac, ACTION_SP_UP);
         obj.setInteger(SP_CHANGED, howMuch);
         sendGamePluginMessageToUser(user, obj);
     }
     
     private void spLost(String user, int howMuch, EsObject obj) {
-        obj.setInteger(ACTION, ACTION_SP_LOST);
+        obj.setInteger(ac, ACTION_SP_LOST);
         obj.setInteger(SP_CHANGED, howMuch);
         sendGamePluginMessageToUser(user, obj);
     }
     
     private void damage(String user, int howMuch, EsObject obj) {
-        obj.setInteger(ACTION, ACTION_HP_DAMAGED);
+        obj.setInteger(ac, ACTION_HP_DAMAGED);
         obj.setInteger(HP_CHANGED, howMuch);
         sendGamePluginMessageToUser(user, obj);
     }
@@ -258,7 +259,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     private void evasion(String user, EsObject obj) {
         int[] cards = obj.getIntegerArray(USED_CARDS);
         dropStack.addAll(Ints.asList(cards));
-        obj.setInteger(ACTION, ACTION_HP_DAMAGED);
+        obj.setInteger(ac, ACTION_HP_DAMAGED);
         obj.setInteger(HP_CHANGED, 0);
         sendGamePluginMessageToUser(user, obj);
     }
@@ -305,7 +306,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
         }
         
         EsObject obj = new EsObject();
-        obj.setInteger(ACTION, ACTION_STAKE);
+        obj.setInteger(ac, ACTION_STAKE);
         obj.setIntegerArray(ALL_STAKE_CARDS, playerStakes);
         for (String p : players) {
             sendGamePluginMessageToUser(p, obj);
@@ -329,18 +330,18 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     //    }
     //    
     private void gameTurn(String player) {
+        updateRequiredAction(player, ac_require_determing);
+        updateRequiredAction(player, ac_require_draw);
+        
+    }
+    
+    private void updateRequiredAction(String player, int actionRequired) {
         EsObject obj = new EsObject();
-        obj.setInteger(ACTION, ACTION_START_TURN);
-        obj.setString(PLAYER_NAME, player);
-        //        sendGamePluginMessageToRoom(obj);
-        for (String p : players) {
-            sendGamePluginMessageToUser(p, obj);
-        }
-        dispatchHandCards(player);
+        obj.setInteger(ac_required, actionRequired);
+        sendGamePluginMessageToUser(player, obj);
     }
     
     /**************** logic in game loop end ***************************/
-    
     /**************** logic before game start start ***************************/
     
     private void initCardStack() {
@@ -367,7 +368,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
             cardStack.remove(0);
             
         }
-        obj.setInteger(ACTION, action);
+        obj.setInteger(ac, action);
         obj.setIntegerArray(DISPATCH_CARDS, cards);
         
         sendGamePluginMessageToUser(player, obj);
@@ -406,7 +407,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     
     private void initRealPlayers() {
         for (int i = 0; i < playerChoseCharactors.length; i++) {
-            realPlayers[i] = Player.getPlayerById(playerChoseCharactors[i]);
+            realPlayers[i] = Player.getPlayerById(playerChoseCharactors[i], players.get(i));
         }
     }
     
@@ -424,7 +425,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
     
     private void sendAllHeros() {
         EsObject obj = new EsObject();
-        obj.setInteger(ACTION, ACTION_ALL_HEROS);
+        obj.setInteger(ac, ACTION_ALL_HEROS);
         obj.setIntegerArray(ALL_HEROS, playerChoseCharactors);
         for (String player : players) {
             sendGamePluginMessageToUser(player, obj);
@@ -466,7 +467,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
         force = forceList.toArray(new Integer[players.size()]);
         getApi().getLogger().debug("dispatching force: " + Arrays.toString(force));
         
-        obj.setInteger(ACTION, ACTION_DISPATCH_FORCE);
+        obj.setInteger(ac, ACTION_DISPATCH_FORCE);
         obj.setInteger(STACK_CARD_COUNT, cardStack.size());
         for (int i = 0; i < force.length; i++) {
             int f = force[i];
@@ -499,7 +500,7 @@ public class GamePlugin extends BasePlugin implements PluginConstants {
                 charsToChoose[choosingCount] = allCharactersForChoose.get(
                         shouldAddCharacterCount).getId();
             }
-            obj.setInteger(ACTION, ACTION_CHOOSE_CHARACTER);
+            obj.setInteger(ac, ACTION_CHOOSE_CHARACTER);
             obj.setIntegerArray(CHARACTORS_TO_CHOOSE, charsToChoose);
             sendGamePluginMessageToUser(player, obj);
             getApi().getLogger().debug(

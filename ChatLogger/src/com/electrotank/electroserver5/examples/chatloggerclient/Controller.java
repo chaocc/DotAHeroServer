@@ -38,7 +38,9 @@ public class Controller implements ClientConstants {
     private ElectroServer es = null;
     private Room room = null;
     private static final String xmlPath = "settings.xml";
-    private int currentAction = -1;
+    private final int no_action = -1;
+    private int currentAction = no_action;
+    private int requireAction = no_action;
     private int[] currentData;
     private Player player;
     private int cardStackCount = -1;
@@ -84,6 +86,11 @@ public class Controller implements ClientConstants {
         
         //TODO implement waiting mechanism
         
+        if (requireAction == ac_require_draw) {
+            obj.setInteger(ac, ACTION_DRAW_CARDS);
+            sendGamePluginRequest(obj);
+        }
+        
         if (currentAction == ClientConstants.ACTION_CHOOSE_CHARACTER) {
             gotCharactersToChoose(obj);
         } else if (currentAction == ClientConstants.ACTION_ALL_HEROS) {
@@ -94,7 +101,7 @@ public class Controller implements ClientConstants {
             showChat("remaining cards: "
                     + obj.getInteger(ClientConstants.STACK_CARD_COUNT, 1));
         } else if (currentAction == ClientConstants.ACTION_DISPATCH_HANDCARD
-                || currentAction == 10) {
+                || currentAction == ACTION_SEND_CARDS) {
             gotInitHandCards(obj);
         } else if (currentAction == 0) {
             showChat("0 worked");
@@ -113,8 +120,9 @@ public class Controller implements ClientConstants {
     
     private void gotInitHandCards(EsObject obj) {
         int[] cards = obj.getIntegerArray(ClientConstants.DISPATCH_CARDS);
+        log(obj.toString());
         currentData = cards;
-        player.addHandCards(cards);
+        //        player.addHandCards(cards);
         showChat("got cards: " + Arrays.toString(currentData));
         
     }
@@ -122,7 +130,11 @@ public class Controller implements ClientConstants {
     private EsObject getObj(EsPluginMessageEvent e) {
         EsObject obj = e.getParameters();
         log("currentObj: " + obj.toString());
-        currentAction = obj.getInteger(ClientConstants.ACTION, -1);
+        currentAction = no_action;
+        requireAction = no_action;
+        
+        currentAction = obj.getInteger(ClientConstants.ac, -1);
+        requireAction = obj.getInteger(ac_required, -1);
         log("" + currentAction);
         if (obj.getInteger(ClientConstants.STACK_CARD_COUNT, -1) != -1) {
             cardStackCount = obj.getInteger(ClientConstants.STACK_CARD_COUNT);
@@ -150,14 +162,14 @@ public class Controller implements ClientConstants {
         
         if (message.equals(ClientConstants.USER_INPUT_MESSAGE_START)) {
             EsObject esob = new EsObject();
-            esob.setInteger(ClientConstants.ACTION, ClientConstants.ACTION_START_GAME);
+            esob.setInteger(ClientConstants.ac, ClientConstants.ACTION_START_GAME);
             sendGamePluginRequest(esob);
         } else if (currentAction == ClientConstants.ACTION_CHOOSE_CHARACTER) {
             log(" " + Arrays.toString(currentData));
             for (int hero : currentData) {
                 if (hero == Integer.parseInt(message)) {
                     EsObject esob = new EsObject();
-                    esob.setInteger(ClientConstants.ACTION,
+                    esob.setInteger(ClientConstants.ac,
                             ClientConstants.ACTION_CHOSE_CHARACTER);
                     esob.setInteger(ClientConstants.SELECTED_HERO_ID,
                             Integer.parseInt(message));
@@ -171,17 +183,17 @@ public class Controller implements ClientConstants {
             
         } else if (message.equals("gg")) {
             EsObject esob = new EsObject();
-            esob.setInteger(ClientConstants.ACTION, 0);
+            esob.setInteger(ClientConstants.ac, 0);
             sendRoomPluginRequest(esob);
         } else if (currentAction == ClientConstants.ACTION_DISPATCH_HANDCARD) {
             for (int card : currentData) {
                 if (card == Integer.parseInt(message)) {
                     EsObject esob = new EsObject();
-                    esob.setInteger(ClientConstants.ACTION, ClientConstants.ACTION_STAKE);
+                    esob.setInteger(ClientConstants.ac, ClientConstants.ACTION_STAKE);
                     esob.setIntegerArray(ClientConstants.USED_CARDS,
                             new int[] { Integer.parseInt(message) });
                     sendGamePluginRequest(esob);
-                    player.removeCard(card);
+                    //                    player.removeCard(card);
                     return;
                 }
             }
