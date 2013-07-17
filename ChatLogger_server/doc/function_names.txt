@@ -1,0 +1,41 @@
+    kPlayingCardNormalAttack,           // 普通攻击
+    kPlayingCardFlameAttack,            // 火焰攻击
+    kPlayingCardChaosAttack,            // 混乱攻击
+    kPlayingCardEvasion,                // 闪避
+    kPlayingCardHealingSalve,           // 治疗药膏
+    
+    kPlayingCardFanaticism,             // 狂热
+    kPlayingCardMislead,                // 误导
+    kPlayingCardChakra,                 // 查克拉
+    kPlayingCardWildAxe,                // 野性之斧
+    kPlayingCardDispel,                 // 驱散
+    kPlayingCardDisarm,                 // 缴械
+    kPlayingCardElunesArrow,            // 月神之箭
+    kPlayingCardEnergyTransport,        // 能量转移
+    kPlayingCardGreed,                  // 贪婪
+    kPlayingCardSirenSong,              // 海妖之歌
+    
+    kPlayingCardGodsStrength,           // 神之力量
+    kPlayingCardViperRaid,              // 蝮蛇突袭
+    kPlayingCardTimeLock,               // 时间静止
+    kPlayingCardSunder,                 // 灵魂隔断
+    kPlayingCardLagunaBlade,            // 神灭斩
+    
+    kPlayingCardEyeOfSkadi,             // 冰魄之眼
+    kPlayingCardBladesOfAttack,         // 攻击之爪
+    kPlayingCardSacredRelic,            // 圣者遗物
+    kPlayingCardDemonEdge,              // 恶魔刀锋
+    kPlayingCardDiffusalBlade,          // 散失之刃
+    kPlayingCardLotharsEdge,            // 洛萨之锋
+    kPlayingCardStygianDesolator,       // 黯灭之刃
+    kPlayingCardSangeAndYasha,          // 散夜对剑
+    kPlayingCardPlunderAxe,             // 掠夺之斧
+    kPlayingCardMysticStaff,            // 神秘法杖
+    kPlayingCardEaglehorn,              // 鹰角弓
+    kPlayingCardQuellingBlade,          // 补刀斧
+    
+    kPlayingCardPhyllisRing,            // 菲丽丝之戒
+    kPlayingCardBladeMail,              // 刃甲
+    kPlayingCardBootsOfSpeed,           // 速度之靴
+    kPlayingCardPlaneswalkersCloak,     // 流浪法师斗篷
+    kPlayingCardTalismanOfEvasion       // 闪避护符

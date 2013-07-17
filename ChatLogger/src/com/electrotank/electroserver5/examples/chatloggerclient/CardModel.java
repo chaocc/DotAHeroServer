@@ -1,4 +1,4 @@
-package com.wolf.dota.component;
+package com.electrotank.electroserver5.examples.chatloggerclient;
 
 public enum CardModel {
 	_0(0, "普通攻击", CardModel.function_id_normal_attack, "黑桃A", 1, 1 + CardModel.suit_spade),
