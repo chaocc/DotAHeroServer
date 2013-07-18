@@ -1,4 +1,4 @@
-package com.wolf.dota.component;
+package com.electrotank.electroserver5.examples.chatloggerclient.constants;
 
 /**
  * s_ means s skills m_ means normal magic/skills h_ means hero skills w_ means
@@ -7,11 +7,8 @@ package com.wolf.dota.component;
  * @author Solomon
  * 
  */
-public interface PluginConstants {
-	public static final String
-			ac = "action",
-			ac_required = "playerState",
-			error = "err";
+public interface Code {
+
 	public static final int
 			ACTION_BASE = 0,
 			ACTION_USER_READY = ACTION_BASE + 1,
@@ -27,12 +24,14 @@ public interface PluginConstants {
 			ACTION_STAKE = ACTION_BASE + 10,
 			ACTION_SEND_CARDS = ACTION_BASE + 11, // server send to client
 			ACTION_USED_CARD = ACTION_BASE + 12,
+			ACTION_DROP_CARDS = ACTION_BASE + 13,
 			ACTION_HP_DAMAGED = ACTION_BASE + 14,
 			ACTION_HP_RESTORE = ACTION_BASE + 15,
 			ACTION_SP_UP = ACTION_BASE + 16,
 			ACTION_SP_LOST = ACTION_BASE + 17,
 			ACTION_GET_SPECIFIC_CARD = ACTION_BASE + 18,
 			ACTION_LOOSE_EQUIPMENT = ACTION_BASE + 19,
+			ACTION_CONTINUE_PLAYING = ACTION_BASE + 20,
 			
 			ACTION_TARGETTED = ACTION_BASE + 51,
 			ACTION_REACTED = ACTION_BASE + 52,
@@ -65,36 +64,26 @@ public interface PluginConstants {
 			ac_require_turn_end = 6, // 回合结束阶段
 			
 			ac_require_attacked = 7, // 被攻击生效前
-			ac_require_before_magic_happen = 8, // 魔法牌生效前
-			ac_require_targetted_by_magic_card = 9, // 成为任意1张魔法牌的目标时
-			ac_require_damaged = 10, // 受到1次伤害时
-			ac_require_dying = 11, // 濒死状态
-			ac_require_dead = 12, // 死亡
-			
-			ac_require_attack_hitted = 13, // 使用攻击命中后
-			ac_require_made_damage = 14, // 造成一次伤害
-			ac_require_damaged_x = 15 // 受到伤害大于1
-			
-			;
-	
-	public static final String
-			CHARACTORS_TO_CHOOSE = "toBeSelectedHeroIds",
-			SORTED_PLAYER_NAMES = "sortedPlayerNames",
-			STACK_CARD_COUNT = "remainingCardCount",
-			SELECTED_HERO_ID = "heroId",
-			ALL_HEROS = "allHeroIds",
-			ROLE_IDS = "roleIds", // value for dispatch force action
-			DISPATCH_CARDS = "gotPlayingCardIds",
-			USED_CARDS = "usedPlayingCardIds",
-			TARGET_CARD = "targetCard",
-			PLAYER_NAME = "playerName",
-			TARGET_PLAYERS = "targetPlayerNames",
-			FORCE = "force",
-			ALL_STAKE_CARDS = "allCuttingCardIds",
-			HP_CHANGED = "hpChanged",
-			SP_CHANGED = "spChanged",
-			STRENGTHED = "isStrengthed"
+			// ac_require_somebody_using_magic = 8, // 魔法牌生效前
+			// ac_require_targetted_by_magic_card = 9, // 成为任意1张魔法牌的目标时
+			// ac_require_damaged = 10, // 受到1次伤害时
+			// ac_require_dying = 11, // 濒死状态
+			// ac_require_dead = 12, // 死亡
+			//
+			// ac_require_attack_hitted = 13, // 使用攻击命中后
+			// ac_require_damaged_x = 15, // 受到伤害大于1
+			// kPlayerStateUsingHeroSkill = 9, // 英雄技能生效前
+			ac_require_hitted = 10, // 受到攻击的伤害
+			kPlayerStateWasDamaged = 11, // 受到1次伤害
+			kPlayerStateDealingDamage = 12, // 造成1次伤害
+			kPlayerStateIsDying = 13, // 濒死状态
+			ac_require_made_damage = 14, // 攻击造成1次伤害
+			kPlayerStateIsDead = 15, // 已死亡
+			ac_require_targetted_by_magic_card = 16, // 成为任意1张魔法牌的目标时
+			kPlayerStateTargetOfHeroSkill = 17, // 成为任意英雄技能的目标时
+			ac_require_restored_hp = 18
 			
 			;
+
 	
 }
