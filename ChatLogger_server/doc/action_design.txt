@@ -1,0 +1,33 @@
+以player为中心的设计, 面向模型的设计, player central, model oriented
+最核心的就是player的模型(PlayerModel), 各个card的模型, 牌桌的模型,
+每次传来信息, 要把它mapping到服务器端的player 模型上, 检查做了什么, server计算产生的结果, 把结果告诉客户端
+
+
+一, 客户端有3种请求
+1, use card
+2, say
+3, cancel
+
+二, 大多数事情都要server下command, 只有下command时候, 需要客户端回应, 如果没回应则视为取消
+比如:
+1, require say
+2, require use card or cancel
+
+三, state update不需要客户端回应, 都是server push到客户端, 客户端只要相应的更新ui就好了, 
+         只有下command时候才需要客户端给回应, 无回应即视为取消
+1, 掉了装备或者获得牌, 都不是任何action,  而是player model change,  不require任何client的action
+
+四, 卡牌模型
+每种物品都有各自的模型, 
+比如卡牌, 都有默认action
+比如杀默认action就是杀人, 如果需要覆盖就带相应参数, 没带就是杀人, 
+比如桃儿的默认action是加血, 默认给谁吃是自己, 桃儿一般只会覆盖默认给谁吃, 很少会覆盖默认action, 除非神关羽
+比如装备牌, 如果是手牌则默认是action是装备,  如果是已装备则默认是它的能力, 这样就需要多一个叫做"place"或者槽的属性
+
+发use card时候, 是从card里发出, 它会把必要的信息都带上, 覆盖了默认的信息
+
+五, player 模型
+前后端要对应上, 后端可以发给前端player的状态, 让前端mapping上, 及时更新界面和状态
+前端可以发给后端player做了什么, 让后端可以mapping上, 后端通过玩家的变化计算牌桌的变化以及要发生什么, 然后发给玩家
+
+
