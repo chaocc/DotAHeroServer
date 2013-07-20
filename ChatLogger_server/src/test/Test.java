@@ -11,9 +11,18 @@ import java.util.Random;
 public class Test {
     
     public static void main(String... args) {
-        char[] hello = { 'h', 'e', 'l', 'l', 'o', '.'};
-        System.out.println(hello);
+    
+        Test t = new Test();
+        TestInt[] a = { t.new TestInt(), t.new TestInt(), t.new TestInt() };
+        System.out.println("address of a: " + a);
+        System.out.println("address of 1: " + a[0]);
         
+    }
+    
+    
+    class TestInt {
+        
+        static final int a = 1;
     }
     
     

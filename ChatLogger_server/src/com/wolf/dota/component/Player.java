@@ -93,6 +93,7 @@ public class Player {
     
     
     /** only for test */
+    // TODO comment out to go production
     public static void main(String... args) throws Exception {
     
         NSArray heroArray = (NSArray) PropertyListParser.parse(new File(
@@ -134,6 +135,17 @@ public class Player {
     }
     
     
+    public int[] getHandCardsArray() {
+    
+        int[] result = new int[handCards.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = handCards.get(i);
+        }
+        
+        return result;
+    }
+    
+    
     public void setHandCards(List<Integer> handCards) {
     
         this.handCards = handCards;
@@ -170,7 +182,9 @@ public class Player {
     
         if (cards != null) {
             for (int card : cards) {
-                this.handCards.remove(card);
+                if (this.handCards.contains(cards)) {
+                    this.handCards.remove(card);
+                }
             }
         }
         return handCards;
@@ -183,9 +197,31 @@ public class Player {
     }
     
     
-    public void setHp(int hp) {
+    public int setHp(int hp) {
     
         this.hp = hp;
+        return this.hp;
+    }
+    
+    
+    public int hpUp(int up) {
+    
+        this.hp += up;
+        if (hp > hpLimit) {
+            hp = hpLimit;
+        }
+        
+        return this.hp;
+    }
+    
+    
+    public int hpDrop(int drop) {
+    
+        this.hp -= drop;
+        if (hp < 0) {
+            hp = 0;
+        }
+        return this.hp;
     }
     
     
@@ -195,8 +231,31 @@ public class Player {
     }
     
     
+    public int spUp(int up) {
+    
+        this.sp += up;
+        if (sp > spLimit) {
+            sp = spLimit;
+        }
+        return this.sp;
+    }
+    
+    
+    public int spDrop(int drop) {
+    
+        this.sp -= drop;
+        if (sp < 0) {
+            sp = 0;
+        }
+        return sp;
+    }
+    
+    
     public void setSp(int sp) {
     
+        if (sp >= spLimit) {
+        
+        return; }
         this.sp = sp;
     }
     

@@ -59,7 +59,10 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     private final int actionCacheNone = -1;
     private int actionCache = actionCacheNone;
     private int additionalEffect = actionCacheNone;
-    private String attackerCache = "";
+    private String userCacheNone = "";
+    private String attackerCache = userCacheNone;
+    private String targetCache = userCacheNone;
+    private boolean strengthenCache = false;
     
     
     /******** game state end ********/
@@ -116,9 +119,28 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         } else if (action == ACTION_CONTINUE_PLAYING) {
             continuePlay(user, messageIn);
         } else if (action == ACTION_DROP_CARDS) {
-            dropCards(user, messageIn);
+            user_action_drop_cards(user, messageIn);
         } else if (action == ACTION_GUESS_GOLOR) {
             m_Chakra_guess(user, messageIn);
+        } else if (action == ACTION_CHOOSED_CARD) {
+            m_choosed_card(user, messageIn);
+        }
+        
+    }
+    
+    
+    private void m_choosed_card(String user, EsObject messageIn) {
+    
+        int functionId = CardModel.getFunctionById(actionCache);
+        switch (functionId) {
+            case CardModel.function_id_m_Greed: {
+                m_Greed_picked(user, messageIn);
+                break;
+            }
+            case CardModel.function_id_m_EnergyTransport: {
+                m_EnergyTransport_result(user, messageIn);
+                break;
+            }
         }
         
     }
@@ -130,18 +152,19 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         CardModel preparedCard = cardStack.get(0);
         d.debug(logprefix + "cardStack size : " + cardStack.size());
         cardStack.remove(0);
+        EsObject sending = new EsObject();
         if (preparedCard.getColorCode() == color) {
             
-            EsObject sending = new EsObject();
             sending.setInteger(code_action, ACTION_GUESS_SUCCESS);
+            sending.setString(action, action_continue_chakra);
+            sending.setInteger(code_client_action_required, ac_require_somebody_using_magic);
             sending.setIntegerArray(DISPATCH_CARDS, new int[] { preparedCard.getCardId() });
         } else {
-            EsObject sending = new EsObject();
             sending.setInteger(code_client_action_required, ac_require_play);
             sending.setIntegerArray(MISGUESSED_CARD, new int[] { preparedCard.getCardId() });
             actionCache = actionCacheNone;
         }
-        
+        sendGamePluginMessageToUser(user, sending);
         
     }
     
@@ -167,6 +190,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             // todo, ...
             return;
         }
+        realPlayers[players.indexOf(player)].removeCards(cards);
         int function = CardModel.getFunctionById(cards[0]);
         switch (function) {
             case CardModel.function_id_normal_attack:
@@ -187,25 +211,24 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
                 m_ElunesArrow(player, messageIn);
                 break;
             }
-            case CardModel.function_id_m_Chakra: {// m_1
+            case CardModel.function_id_m_Chakra: {// done
                 m_Chakra(player, messageIn);
                 break;
             }
             case CardModel.function_id_m_EnergyTransport: {// m_2
-            
+                m_EnergyTransport(player, messageIn);
                 break;
             }
-            case CardModel.function_id_m_Fanaticism: {// m_3
+            case CardModel.function_id_m_Fanaticism: {// done
                 m_Fanaticism(player, messageIn);
                 break;
             }
-            case CardModel.function_id_m_Greed: {// m_4
-            
+            case CardModel.function_id_m_Greed: {// did
+                m_Greed(player, messageIn);
                 break;
             }
-            case CardModel.function_id_m_Mislead: {// m_5
+            case CardModel.function_id_m_Mislead: {// did
                 m_Mislead(player, messageIn);
-                
                 break;
             }
             case CardModel.function_id_m_Dispel: {// m_6
@@ -217,6 +240,156 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
                 break;
             }
         }
+        
+    }
+    
+    
+    private void m_EnergyTransport(String player, EsObject messageIn) {
+    
+        dropCard(messageIn);
+        actionCache = messageIn.getIntegerArray(USED_CARDS)[0];
+        strengthenCache = true;
+        int[] cards = new int[realPlayers.length];
+        for (int i = 0; i < cards.length; i++) {
+            cards[i] = cardStack.get(0).getCardId();
+            cardStack.remove(0);
+        }
+        EsObject cardObject = new EsObject();
+        cardObject.setInteger(code_action, ACTION_SEND_CARDS);
+        cardObject.setInteger(code_client_action_required, ac_require_choosing);
+        cardObject.setIntegerArray(DISPATCH_CARDS, cards);
+        sendGamePluginMessageToUser(player, cardObject);
+    }
+    
+    
+    private void m_EnergyTransport_result(String user, EsObject mi) {
+    
+        int[] cards = mi.getIntegerArray(DISPATCH_CARDS);
+        int startCount = players.indexOf(user);
+        for (int i = 0; i < cards.length; i++) {
+            int userPosition = (i + startCount);
+            userPosition = userPosition < cards.length ? userPosition : (userPosition - cards.length);
+            String cardDeliverTo = players.get(userPosition);
+            EsObject obj = new EsObject();
+            obj.setIntegerArray(DISPATCH_CARDS, cards);
+            obj.setInteger(code_action, ACTION_SEND_CARDS);
+            sendGamePluginMessageToUser(cardDeliverTo, obj);
+        }
+        EsObject continuePlayObj = new EsObject();
+        continuePlayObj.setInteger(code_client_action_required, ac_require_play);
+        continuePlayObj.setInteger(code_action, ACTION_CONTINUE_PLAYING);
+        if (strengthenCache == true) {
+            int card = cardStack.get(0).getCardId();
+            cardStack.remove(0);
+            continuePlayObj.setInteger(DISPATCH_CARDS, card);
+        }
+        strengthenCache = false;
+        actionCache = actionCacheNone;
+        sendGamePluginMessageToUser(currentPlayer, continuePlayObj);
+        
+    }
+    
+    
+    /**
+     * rule:
+     * 1, 抽取并暗至目标的2张手牌
+     *    或者抽取装备区里的1张牌
+     * 2, 目標抽取我的一張手牌
+     * 3, 我拿走步驟1抽出的牌
+     * 
+     * process:
+     * greed user 先发来一个greed请求, 
+     * server 再分别把2个玩家的卡牌发给对方让他们抽
+     * clients 再各自把抽完的牌发给server
+     * 
+     * 
+     * to Source:
+     * 
+     * 
+     * 
+     * @param player 出greed那个玩家
+     */
+    private void m_Greed(String user, EsObject messageIn) {
+    
+        dropCard(messageIn);
+        Player player = realPlayers[players.indexOf(user)];
+        player.removeCards(messageIn.getIntegerArray(USED_CARDS, new int[] {}));
+        String source = user;
+        String target = messageIn.getStringArray(TARGET_PLAYERS)[0];
+        
+        EsObject toSource = new EsObject();
+        //      toSource.setIntegerArray(TARGET_CARD, realPlayers[players.indexOf(target)].getHandCardsArray());
+        toSource.setInteger(TARGET_CARD_COUNT, realPlayers[players.indexOf(target)].getHandCards().size());
+        toSource.setIntegerArray(TARGET_EQUIPMENTS, realPlayers[players.indexOf(target)].getWeapons());
+        toSource.setInteger(code_client_action_required, ac_require_choosing);
+        toSource.setString(action, action_pick_for_using_gree);
+        sendGamePluginMessageToUser(source, toSource);
+        
+        
+        EsObject toTarget = new EsObject();
+        //        toTarget.setIntegerArray(TARGET_CARD, realPlayers[players.indexOf(source)].getHandCardsArray());
+        toTarget.setInteger(TARGET_CARD_COUNT, realPlayers[players.indexOf(source)].getHandCards().size());
+        //        toSource.setInteger(code_client_action_required, ac_requre_choosing);
+        toTarget.setInteger(code_client_action_required, ac_require_targetted_and_choosing);
+        toTarget.setIntegerArray(USED_CARDS, messageIn.getIntegerArray(USED_CARDS));
+        toTarget.setString(action, action_pick_for_targetted_by_gree);
+        sendGamePluginMessageToUser(target, toTarget);
+        
+        
+        attackerCache = user;
+        targetCache = target;
+        
+    }
+    
+    
+    private synchronized void m_Greed_picked(String user, EsObject messageIn) {
+    
+        if (user.equals(currentPlayer)) {
+            EsObject toDropper = new EsObject();
+            String target = targetCache;
+            targetCache = userCacheNone;
+            int type = messageIn.getInteger(TYPE);
+            switch (type) {
+                case type_quipment: {
+                    toDropper.setInteger(code_client_action_required, ac_require_lose_equipment);
+                    toDropper.setInteger(code_action, ACTION_LOOSE_EQUIPMENT);
+                    break;
+                }
+                case type_hand: {
+                    toDropper.setInteger(code_action, ACTION_DROP_CARDS);
+                    break;
+                }
+            }
+            toDropper.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
+            
+            sendGamePluginMessageToUser(target, toDropper);
+            
+            EsObject toPicker = new EsObject();
+            toPicker.setInteger(code_action, ACTION_GET_SPECIFIC_CARD);
+            toPicker.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
+            
+            if (attackerCache.equals(userCacheNone) && targetCache.equals(userCacheNone)) {
+                toPicker.setInteger(code_client_action_required, ac_require_play);
+            }
+            sendGamePluginMessageToUser(currentPlayer, toPicker);
+        } else {
+            attackerCache = userCacheNone;
+            EsObject toDropper = new EsObject();
+            toDropper.setInteger(code_action, ACTION_DROP_CARDS);
+            toDropper.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
+            if (attackerCache.equals(userCacheNone) && targetCache.equals(userCacheNone)) {
+                toDropper.setInteger(code_client_action_required, ac_require_play);
+            }
+            sendGamePluginMessageToUser(currentPlayer, toDropper);
+            
+            EsObject toPicker = new EsObject();
+            toPicker.setInteger(code_action, ACTION_GET_SPECIFIC_CARD);
+            toPicker.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
+            
+            
+            sendGamePluginMessageToUser(user, toPicker);
+        }
+        
         
     }
     
@@ -237,6 +410,12 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         obj.setInteger(HP_CHANGED, -1);
         obj.setInteger(SP_CHANGED, 1);
         sendGamePluginMessageToUser(player, obj);
+        
+        
+        EsObject continuePlay = new EsObject();
+        continuePlay.setInteger(code_client_action_required, ac_require_play);
+        sendGamePluginMessageToUser(player, continuePlay);
+        
     }
     
     
@@ -252,6 +431,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             return;
         }
         actionCache = cards[0];
+        d.debug("caching : " + actionCache);
         dispatchHandCards(currentPlayer, 1);
         
         
@@ -272,7 +452,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         actionCache = cards[0];
         
         EsObject elunesArrow = new EsObject();
-        elunesArrow.setInteger(code_client_action_required, ac_require_targetted_by_magic_card);
+        elunesArrow.setInteger(code_client_action_required, ac_require_arrow_drop_card);
         
         if (messageIn.getBoolean(STRENGTHED, false)) {
             elunesArrow.setInteger(TARGET_SUITS, messageIn.getInteger(TARGET_SUITS));
@@ -337,14 +517,27 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
         dropCard(obj);
         String[] ps = obj.getStringArray(TARGET_PLAYERS);
-        String source = ps[0];
-        //		String target = ps[1];
+        String spLoster = ps[0];
+        String spGainer = ps[1];
+        
+        
         // what source player happen
-        spLost(source, 1, obj);
-        dispatchHandCards(source, 1);
+        EsObject spLost = new EsObject();
+        spLost.setInteger(code_action, ACTION_SP_LOST);
+        spLost.setInteger(code_client_action_required, ac_require_play);
+        spLost.setInteger(SP_CHANGED, -1);
+        int card = cardStack.get(0).getCardId();
+        realPlayers[players.indexOf(spLoster)].addHandCard(card);
+        cardStack.remove(0);
+        spLost.setInteger(TARGET_CARD, card);
+        sendGamePluginMessageToUser(spLoster, spLost);
+        
+        
         // what target player happen
-        obj.setInteger(code_action, ACTION_SP_UP);
-        obj.setInteger(SP_CHANGED, 1);
+        EsObject spGain = new EsObject();
+        spGain.setInteger(code_action, ACTION_SP_UP);
+        spGain.setInteger(SP_CHANGED, 1);
+        sendGamePluginMessageToUser(spGainer, spGain);
         
     }
     
@@ -503,6 +696,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         
         actionCache = actionCacheNone;
         attackerCache = "";
+        targetCache = "";
     }
     
     
@@ -541,12 +735,12 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     private void dropCard(EsObject obj, String key) {
     
-        int[] cards = obj.getIntegerArray(key);
-        if (cards != null) {
-            for (int card : cards) {
-                dropStack.add(card);
-            }
+        int[] cards = obj.getIntegerArray(key, new int[] {});
+        
+        for (int card : cards) {
+            dropStack.add(card);
         }
+        
     }
     
     
@@ -556,7 +750,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     }
     
     
-    private void dropCards(String user, EsObject messageIn) {
+    private void user_action_drop_cards(String user, EsObject messageIn) {
     
         int[] cards = messageIn.getIntegerArray(USED_CARDS);
         for (int card : cards) {
@@ -598,8 +792,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
                 .getPokerValue();
         String startPlayer = players.get(0);
         for (int i = 1; i < players.size(); i++) {
-            int stake = CardModel.valueOf("_" + playerStakes[i])
-                    .getPokerValue();
+            int stake = CardModel.valueOf("_" + playerStakes[i]).getPokerValue();
             if (stake > biggestNumber) {
                 biggestNumber = stake;
                 startPlayer = players.get(i);
@@ -662,8 +855,8 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     final int
-            testCard_1 = 34,
-            testCard_2 = 29;
+            testCard_1 = 20,
+            testCard_2 = 22;
     
     
     private void dispatchHandCards(String player, int howmany, int action) {
@@ -684,7 +877,14 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
                 }
                 break;
             }
-            
+        }
+        if (actionCache != actionCacheNone && CardModel.getFunctionById(actionCache) == CardModel.function_id_m_Chakra) {
+            obj.setInteger(code_client_action_required, ac_require_somebody_using_magic);
+            cards = new int[] { cards[0] };
+        }
+        if (action == ACTION_DISPATCH_HANDCARD) {
+            obj.setInteger(code_client_action_required, ac_require_staking);
+            obj.setString(Commands.action, action_should_stake);
         }
         obj.setInteger(code_action, action);
         obj.setIntegerArray(DISPATCH_CARDS, cards);

@@ -35,10 +35,13 @@ public interface Code {
             ACTION_CONTINUE_PLAYING = ACTION_BASE + 20,
             ACTION_GUESS_GOLOR = 21,
             ACTION_GUESS_SUCCESS = 22,
+            ACTION_CHOOSED_CARD = 23,
             
             
             ACTION_TARGETTED = ACTION_BASE + 51,
             ACTION_REACTED = ACTION_BASE + 52,
+            ACTION_PICK_CARD = 53,
+            
             
             ACTION_FUNCTION_BASE = 100,
             ACTION_NORMAL_ATTACK = ACTION_FUNCTION_BASE + 1,
@@ -68,7 +71,8 @@ public interface Code {
             ac_require_turn_end = 6, // 回合结束阶段
             
             ac_require_attacked = 7, // 被攻击生效前
-            // ac_require_somebody_using_magic = 8, // 魔法牌生效前
+            ac_require_somebody_using_magic = 8, // 魔法牌生效前
+            ac_require_staking = 9,
             // ac_require_targetted_by_magic_card = 9, // 成为任意1张魔法牌的目标时
             // ac_require_damaged = 10, // 受到1次伤害时
             // ac_require_dying = 11, // 濒死状态
@@ -83,9 +87,12 @@ public interface Code {
             kPlayerStateIsDying = 13, // 濒死状态
             ac_require_made_damage = 14, // 只有杀, 造成1次伤害
             kPlayerStateIsDead = 15, // 已死亡
-            ac_require_targetted_by_magic_card = 16, // 成为任意1张魔法牌的目标时
+            ac_require_arrow_drop_card = 16, // 成为任意1张魔法牌的目标时
             kPlayerStateTargetOfHeroSkill = 17, // 成为任意英雄技能的目标时
-            ac_require_restored_hp = 18
+            ac_require_restored_hp = 18,
+            ac_require_choosing = 19,
+            ac_require_targetted_and_choosing = 20,
+            ac_require_lose_equipment = 21
             
             
             ;

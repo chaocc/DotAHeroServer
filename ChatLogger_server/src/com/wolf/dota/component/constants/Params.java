@@ -13,6 +13,8 @@ public interface Params {
             DISPATCH_CARDS = "gotPlayingCardIds",
             USED_CARDS = "usedPlayingCardIds",
             TARGET_CARD = "targetCard",
+            TARGET_EQUIPMENTS = "targetEquipments",
+            TARGET_CARD_COUNT = "targetCardCount",
             PLAYER_NAME = "playerName",
             TARGET_PLAYERS = "targetPlayerNames",
             FORCE = "force",
@@ -22,7 +24,10 @@ public interface Params {
             STRENGTHED = "isStrengthed",
             TARGET_COLOR = "targetColor",
             TARGET_SUITS = "targetSuits",
-            MISGUESSED_CARD = "misGuessedCardIds"
+            MISGUESSED_CARD = "misGuessedCardIds",
+            TYPE = "type"
+            
+            
             ;
     
     public static final int
@@ -31,7 +36,8 @@ public interface Params {
             kCardSuitsSpades = 3, // 黑桃
             kCardSuitsClubs = 4, // 梅花
             kCardColorRed = 1, // 红色
-            kCardColorBlack = 2 // 黑色
-            
+            kCardColorBlack = 2, // 黑色
+            type_quipment = 4,
+            type_hand = 5
             ;
 }
