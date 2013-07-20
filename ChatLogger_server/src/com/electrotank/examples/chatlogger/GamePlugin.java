@@ -468,34 +468,26 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     }
     
     
-    private void m_Disarm(String user, EsObject obj) {
+    private void m_Disarm(String user, EsObject messageIn) {
     
-        String target = obj.getStringArray(TARGET_PLAYERS)[0];
-        dropCard(obj, TARGET_CARD);
-        dropCard(obj);
-        looseEquipment(target, obj.getIntegerArray(TARGET_CARD));
-        if (obj.getBoolean(STRENGTHED, false)) {
-            spLost(user, 1, new EsObject());
-            getCard(user, obj.getIntegerArray(TARGET_CARD));
-        }
-    }
-    
-    
-    private void getCard(String player, int[] cards) {
-    
-        EsObject obj = new EsObject();
-        obj.setInteger(code_action, ACTION_GET_SPECIFIC_CARD);
-        obj.setIntegerArray(TARGET_CARD, cards);
-        sendGamePluginMessageToUser(player, obj);
-    }
-    
-    
-    private void looseEquipment(String player, int[] cards) {
-    
+        String target = messageIn.getStringArray(TARGET_PLAYERS)[0];
+        dropCard(messageIn, TARGET_CARD);
+        
         EsObject obj = new EsObject();
         obj.setInteger(code_action, ACTION_LOOSE_EQUIPMENT);
-        obj.setIntegerArray(TARGET_CARD, cards);
-        sendGamePluginMessageToUser(player, obj);
+        obj.setInteger(code_client_action_required, ac_require_lose_equipment);
+        obj.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
+        sendGamePluginMessageToUser(target, obj);
+        
+        
+        if (messageIn.getBoolean(STRENGTHED, false)) {
+            EsObject getObject = new EsObject();
+            getObject.setInteger(SP_CHANGED, 1);
+            getObject.setInteger(code_client_action_required, ac_require_play);
+            getObject.setInteger(code_action, ACTION_GET_SPECIFIC_CARD);
+            getObject.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
+            sendGamePluginMessageToUser(user, getObject);
+        }
     }
     
     
@@ -566,7 +558,9 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     private void s_LagunaBlade(String user, EsObject obj) {
     
-        spLost(user, 3, obj);
+        obj.setInteger(code_action, ACTION_SP_LOST);
+        obj.setInteger(SP_CHANGED, 3);
+        //        spLost(user, 3, obj);
         attack(user, obj);
         
     }
@@ -697,14 +691,6 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         actionCache = actionCacheNone;
         attackerCache = "";
         targetCache = "";
-    }
-    
-    
-    private void spLost(String user, int howMuch, EsObject obj) {
-    
-        obj.setInteger(code_action, ACTION_SP_LOST);
-        obj.setInteger(SP_CHANGED, howMuch);
-        sendGamePluginMessageToUser(user, obj);
     }
     
     

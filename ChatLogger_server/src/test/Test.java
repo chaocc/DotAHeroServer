@@ -11,12 +11,27 @@ import java.util.Random;
 public class Test {
     
     public static void main(String... args) {
-    
+    //convert array first n elements
         Test t = new Test();
-        TestInt[] a = { t.new TestInt(), t.new TestInt(), t.new TestInt() };
-        System.out.println("address of a: " + a);
-        System.out.println("address of 1: " + a[0]);
+        t.revertN(t.ar, t.on);
         
+    }
+    
+    
+    int[] ar = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+    int on = 10;
+    
+    
+    void revertN(int a[], int n) {
+    
+        if (n > 1) {
+            int temp = ar[n];
+            ar[n] = ar[0];
+            ar[0] = temp;
+            revertN(Arrays.copyOfRange(ar, 1, n-1), n - 2);
+        } else {
+            System.err.println(Arrays.toString(ar));
+        }
     }
     
     
