@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.electrotank.electroserver5.extensions.BasePlugin;
+import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
@@ -15,13 +16,14 @@ import com.wolf.dota.component.CardModel;
 import com.wolf.dota.component.CharacterEnum;
 import com.wolf.dota.component.DeskModel;
 import com.wolf.dota.component.Player;
+import com.wolf.dota.component.constants.Code;
 import com.wolf.dota.component.constants.Commands;
 import com.wolf.dota.component.constants.Params;
-import com.wolf.dota.component.constants.Code;
 
 
 public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
+    private int timerCallback = -1;
     private List<CharacterEnum> allCharactersForChoose = new ArrayList<CharacterEnum>();
     private List<String> players;
     private String currentPlayer;
@@ -72,6 +74,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
         initCharactorsRandomly();
         getApi().getLogger().debug("ChatPlugin initialized");
+        startTicker();
     }
     
     
@@ -312,6 +315,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     private void m_Greed(String user, EsObject messageIn) {
     
         dropCard(messageIn);
+        actionCache = messageIn.getIntegerArray(USED_CARDS)[0];
         Player player = realPlayers[players.indexOf(user)];
         player.removeCards(messageIn.getIntegerArray(USED_CARDS, new int[] {}));
         String source = user;
@@ -326,14 +330,19 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         sendGamePluginMessageToUser(source, toSource);
         
         
-        EsObject toTarget = new EsObject();
-        //        toTarget.setIntegerArray(TARGET_CARD, realPlayers[players.indexOf(source)].getHandCardsArray());
-        toTarget.setInteger(TARGET_CARD_COUNT, realPlayers[players.indexOf(source)].getHandCards().size());
-        //        toSource.setInteger(code_client_action_required, ac_requre_choosing);
-        toTarget.setInteger(code_client_action_required, ac_require_targetted_and_choosing);
-        toTarget.setIntegerArray(USED_CARDS, messageIn.getIntegerArray(USED_CARDS));
-        toTarget.setString(action, action_pick_for_targetted_by_gree);
-        sendGamePluginMessageToUser(target, toTarget);
+        if (!messageIn.getBoolean(STRENGTHED, false)) {
+            
+            EsObject toTarget = new EsObject();
+            //        toTarget.setIntegerArray(TARGET_CARD, realPlayers[players.indexOf(source)].getHandCardsArray());
+            toTarget.setInteger(TARGET_CARD_COUNT, realPlayers[players.indexOf(source)].getHandCards().size());
+            //        toSource.setInteger(code_client_action_required, ac_requre_choosing);
+            toTarget.setInteger(code_client_action_required, ac_require_targetted_and_choosing);
+            toTarget.setIntegerArray(USED_CARDS, messageIn.getIntegerArray(USED_CARDS));
+            toTarget.setString(action, action_pick_for_targetted_by_gree);
+            sendGamePluginMessageToUser(target, toTarget);
+        } else {
+            strengthenCache = true;
+        }
         
         
         attackerCache = user;
@@ -353,24 +362,54 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
                 case type_quipment: {
                     toDropper.setInteger(code_client_action_required, ac_require_lose_equipment);
                     toDropper.setInteger(code_action, ACTION_LOOSE_EQUIPMENT);
+                    toDropper.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
                     break;
                 }
                 case type_hand: {
+                    toDropper.setInteger(code_client_action_required, ac_require_lose_card);
                     toDropper.setInteger(code_action, ACTION_DROP_CARDS);
+                    int[] cardIndex = messageIn.getIntegerArray(INDEX);
+                    int[] targetCards = new int[cardIndex.length];
+                    for (int i = 0; i < targetCards.length; i++) {
+                        targetCards[i] = realPlayers[players.indexOf(target)].getHandCards().get(cardIndex[i]);
+                    }
+                    
+                    toDropper.setIntegerArray(TARGET_CARD, targetCards);
                     break;
                 }
             }
-            toDropper.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
+            if (strengthenCache) {
+                toDropper.setIntegerArray(TRANSFER_CARDS, messageIn.getIntegerArray(TRANSFER_CARDS));//dropper also get a card
+            }
             
             sendGamePluginMessageToUser(target, toDropper);
             
             EsObject toPicker = new EsObject();
-            toPicker.setInteger(code_action, ACTION_GET_SPECIFIC_CARD);
-            toPicker.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
+            toPicker.setInteger(code_action, ACTION_GET_SPECIFIC_CARDS_GREED);
+            switch (type) {
+                case type_quipment: {
+                    toPicker.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
+                    break;
+                }
+                case type_hand: {
+                    int[] cardIndex = messageIn.getIntegerArray(INDEX);
+                    int[] targetCards = new int[cardIndex.length];
+                    for (int i = 0; i < targetCards.length; i++) {
+                        targetCards[i] = realPlayers[players.indexOf(target)].getHandCards().get(cardIndex[i]);
+                    }
+                    
+                    toPicker.setIntegerArray(TARGET_CARD, targetCards);
+                    break;
+                }
+            }
             
             if (attackerCache.equals(userCacheNone) && targetCache.equals(userCacheNone)) {
                 toPicker.setInteger(code_client_action_required, ac_require_play);
             }
+            if (strengthenCache) {
+                toPicker.setIntegerArray(TRANSFER_CARDS, messageIn.getIntegerArray(TRANSFER_CARDS));// picker also should give a card to dropper
+            }
+            
             sendGamePluginMessageToUser(currentPlayer, toPicker);
         } else {
             attackerCache = userCacheNone;
@@ -383,9 +422,8 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             sendGamePluginMessageToUser(currentPlayer, toDropper);
             
             EsObject toPicker = new EsObject();
-            toPicker.setInteger(code_action, ACTION_GET_SPECIFIC_CARD);
+            toPicker.setInteger(code_action, ACTION_GET_SPECIFIC_CARDS_GREED);
             toPicker.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
-            
             
             sendGamePluginMessageToUser(user, toPicker);
         }
@@ -484,7 +522,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             EsObject getObject = new EsObject();
             getObject.setInteger(SP_CHANGED, 1);
             getObject.setInteger(code_client_action_required, ac_require_play);
-            getObject.setInteger(code_action, ACTION_GET_SPECIFIC_CARD);
+            getObject.setInteger(code_action, ACTION_GET_SPECIFIC_CARD_DISARM);
             getObject.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
             sendGamePluginMessageToUser(user, getObject);
         }
@@ -1050,6 +1088,41 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             obj.setInteger(STACK_CARD_COUNT, cardStack.size());
         }
         getApi().sendPluginMessageToUser(user, obj);
+    }
+    
+    
+    private void startTicker() {
+    
+        timerCallback = getApi().scheduleExecution(1000,
+                -1,
+                new ScheduledCallback() {
+                    
+                    public void scheduledCallback() {
+                    
+                        tick();
+                    }
+                });
+    }
+    
+    
+    @Override
+    public void destroy() {
+    
+        getApi().cancelScheduledExecution(timerCallback);
+        super.destroy();
+    }
+    
+    
+    public void tick() {
+    
+        EsObject message = new EsObject();
+        message.setString(action, action_tick);
+        message.setString("message ", "  test plugin message to whole room");
+        getApi().sendPluginMessageToRoom(getApi().getZoneId(), getApi().getRoomId(), message);
+        message.setString("message ", "  test plugin sending public message");
+        getApi().sendPublicMessageToRoomFromPlugin(currentPlayer,
+                getApi().getZoneId(), getApi().getRoomId(), " message out of EsObject ", message, true, false);
+        
     }
     
     

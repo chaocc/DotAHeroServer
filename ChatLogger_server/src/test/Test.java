@@ -11,26 +11,23 @@ import java.util.Random;
 public class Test {
     
     public static void main(String... args) {
-    //convert array first n elements
+    
+        int[] ar = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+        int on = 11;
         Test t = new Test();
-        t.revertN(t.ar, t.on);
-        
+        t.revertN(ar, on);
+        System.out.println(Arrays.toString(ar));
     }
-    
-    
-    int[] ar = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-    int on = 10;
     
     
     void revertN(int a[], int n) {
     
-        if (n > 1) {
-            int temp = ar[n];
-            ar[n] = ar[0];
-            ar[0] = temp;
-            revertN(Arrays.copyOfRange(ar, 1, n-1), n - 2);
-        } else {
-            System.err.println(Arrays.toString(ar));
+        int times = n / 2;
+        for (int i = 0; i < times; i++) {
+            n = n - 1;
+            int temp = a[i];
+            a[i] = a[n];
+            a[n] = temp;
         }
     }
     

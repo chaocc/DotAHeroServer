@@ -30,12 +30,13 @@ public interface Code {
             ACTION_HP_RESTORE = ACTION_BASE + 15,
             ACTION_SP_UP = ACTION_BASE + 16,
             ACTION_SP_LOST = ACTION_BASE + 17,
-            ACTION_GET_SPECIFIC_CARD = ACTION_BASE + 18,
+            ACTION_GET_SPECIFIC_CARD_DISARM = ACTION_BASE + 18,
             ACTION_LOOSE_EQUIPMENT = ACTION_BASE + 19,
             ACTION_CONTINUE_PLAYING = ACTION_BASE + 20,
             ACTION_GUESS_GOLOR = 21,
             ACTION_GUESS_SUCCESS = 22,
             ACTION_CHOOSED_CARD = 23,
+            ACTION_GET_SPECIFIC_CARDS_GREED = 24,
             
             
             ACTION_TARGETTED = ACTION_BASE + 51,
@@ -92,7 +93,8 @@ public interface Code {
             ac_require_restored_hp = 18,
             ac_require_choosing = 19,
             ac_require_targetted_and_choosing = 20,
-            ac_require_lose_equipment = 21
+            ac_require_lose_equipment = 21,
+            ac_require_lose_card = 22
             
             
             ;
