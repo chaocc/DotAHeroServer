@@ -1,6 +1,9 @@
 package test;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,23 +15,24 @@ public class Test {
     
     public static void main(String... args) {
     
-        int[] ar = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-        int on = 11;
-        Test t = new Test();
-        t.revertN(ar, on);
-        System.out.println(Arrays.toString(ar));
+        
     }
     
     
-    void revertN(int a[], int n) {
+    public static void consoleDesign() {
     
-        int times = n / 2;
-        for (int i = 0; i < times; i++) {
-            n = n - 1;
-            int temp = a[i];
-            a[i] = a[n];
-            a[n] = temp;
+        System.out.print("Enter your name: ");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        
+        String userName = null;
+        try {
+            userName = br.readLine();
+        } catch (IOException ioe) {
+            System.out.println("IO error trying to read your name!");
+            System.exit(1);
         }
+        
+        System.out.println("Thanks for the name, " + userName);
     }
     
     

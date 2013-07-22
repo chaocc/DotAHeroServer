@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.electrotank.electroserver5.extensions.BasePlugin;
-import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
@@ -74,7 +73,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
         initCharactorsRandomly();
         getApi().getLogger().debug("ChatPlugin initialized");
-        startTicker();
+//        startTicker();
     }
     
     
@@ -838,7 +837,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     private void gameTurn(String player) {
     
         currentPlayer = player;
-        updateRequiredAction(player, ac_require_determing);
+        updateRequiredAction(player, ac_require_turn_start);
         updateRequiredAction(player, ac_require_draw);
     }
     
@@ -1091,18 +1090,18 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     }
     
     
-    private void startTicker() {
-    
-        timerCallback = getApi().scheduleExecution(1000,
-                -1,
-                new ScheduledCallback() {
-                    
-                    public void scheduledCallback() {
-                    
-                        tick();
-                    }
-                });
-    }
+//    private void startTicker() {
+//    
+//        timerCallback = getApi().scheduleExecution(1000,
+//                -1,
+//                new ScheduledCallback() {
+//                    
+//                    public void scheduledCallback() {
+//                    
+//                        tick();
+//                    }
+//                });
+//    }
     
     
     @Override
@@ -1117,11 +1116,12 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
         EsObject message = new EsObject();
         message.setString(action, action_tick);
+        message.setInteger(code_action, -9999999);
         message.setString("message ", "  test plugin message to whole room");
         getApi().sendPluginMessageToRoom(getApi().getZoneId(), getApi().getRoomId(), message);
-        message.setString("message ", "  test plugin sending public message");
-        getApi().sendPublicMessageToRoomFromPlugin(currentPlayer,
-                getApi().getZoneId(), getApi().getRoomId(), " message out of EsObject ", message, true, false);
+//        message.setString("message ", "  test plugin sending public message");
+//        getApi().sendPublicMessageToRoomFromPlugin(currentPlayer,
+//                getApi().getZoneId(), getApi().getRoomId(), " message out of EsObject ", message, true, false);
         
     }
     
