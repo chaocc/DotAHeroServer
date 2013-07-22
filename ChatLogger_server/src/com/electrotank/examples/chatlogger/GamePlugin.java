@@ -72,8 +72,9 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     public void init(EsObjectRO parameters) {
     
         initCharactorsRandomly();
-        getApi().getLogger().debug("ChatPlugin initialized");
+        getApi().getLogger().debug("GamePlugin initialized");
 //        startTicker();
+        d.debug(logprefix+" v 0.01");
     }
     
     
@@ -359,12 +360,14 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             int type = messageIn.getInteger(TYPE);
             switch (type) {
                 case type_quipment: {
+                    d.debug(logprefix+" retrieving equipment");
                     toDropper.setInteger(code_client_action_required, ac_require_lose_equipment);
                     toDropper.setInteger(code_action, ACTION_LOOSE_EQUIPMENT);
                     toDropper.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
                     break;
                 }
                 case type_hand: {
+                    d.debug(logprefix+" retrieving hand cards");
                     toDropper.setInteger(code_client_action_required, ac_require_lose_card);
                     toDropper.setInteger(code_action, ACTION_DROP_CARDS);
                     int[] cardIndex = messageIn.getIntegerArray(INDEX);
@@ -373,7 +376,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
                         targetCards[i] = realPlayers[players.indexOf(target)].getHandCards().get(cardIndex[i]);
                     }
                     
-                    toDropper.setIntegerArray(TARGET_CARD, targetCards);
+//                    toDropper.setIntegerArray(TARGET_CARD, targetCards);
                     break;
                 }
             }
