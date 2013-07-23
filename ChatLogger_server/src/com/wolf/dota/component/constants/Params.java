@@ -25,9 +25,10 @@ public interface Params {
             TARGET_COLOR = "targetColor",
             TARGET_SUITS = "targetSuits",
             MISGUESSED_CARD = "misGuessedCardIds",
-            TYPE = "greedType",
+            GREED_TYPE = "greedType",
             INDEX = "extractedCardIdxes",
-            TRANSFER_CARDS = "transferedCards"
+            GREED_LOSE_CARDS = "greedLoseCardIds",
+            GREED_SEND_CARDS = "transferedCardIds"
             
             
             ;

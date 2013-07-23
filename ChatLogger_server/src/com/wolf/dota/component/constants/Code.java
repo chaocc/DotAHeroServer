@@ -36,7 +36,7 @@ public interface Code {
             ACTION_GUESS_GOLOR = 21,
             ACTION_GUESS_SUCCESS = 22,
             ACTION_CHOOSED_CARD = 23,
-            ACTION_GET_SPECIFIC_CARDS_GREED = 24,
+            ACTION_GREED_TRANSFER_ACTION = 24,
             
             
             ACTION_TARGETTED = ACTION_BASE + 51,
@@ -94,7 +94,7 @@ public interface Code {
             ac_require_choosing = 19,
             ac_require_targetted_and_choosing = 20,
             ac_require_lose_equipment = 21,
-            ac_require_lose_card = 22
+            ac_require_greed_transfer_card = 22
             
             
             ;

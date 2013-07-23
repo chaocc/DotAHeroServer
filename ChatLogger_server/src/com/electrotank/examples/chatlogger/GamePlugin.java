@@ -73,8 +73,8 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
         initCharactorsRandomly();
         getApi().getLogger().debug("GamePlugin initialized");
-//        startTicker();
-        d.debug(logprefix+" v 0.01");
+        //        startTicker();
+        d.debug(logprefix + " v 0.01");
     }
     
     
@@ -351,85 +351,110 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     }
     
     
+    boolean greedCaching = false;
+    int greedUserChoseTypeCache = -1;
+    int[] greedUserChoseIndexCache = { -1, -1 };
+    int greedUserChoseEquipIdCache = -1;
+    
+    int greedTargetChoseIndexCache = -1;
+    
+    
     private synchronized void m_Greed_picked(String user, EsObject messageIn) {
     
         if (user.equals(currentPlayer)) {
-            EsObject toDropper = new EsObject();
-            String target = targetCache;
-            targetCache = userCacheNone;
-            int type = messageIn.getInteger(TYPE);
-            switch (type) {
-                case type_quipment: {
-                    d.debug(logprefix+" retrieving equipment");
-                    toDropper.setInteger(code_client_action_required, ac_require_lose_equipment);
-                    toDropper.setInteger(code_action, ACTION_LOOSE_EQUIPMENT);
-                    toDropper.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
-                    break;
-                }
-                case type_hand: {
-                    d.debug(logprefix+" retrieving hand cards");
-                    toDropper.setInteger(code_client_action_required, ac_require_lose_card);
-                    toDropper.setInteger(code_action, ACTION_DROP_CARDS);
-                    int[] cardIndex = messageIn.getIntegerArray(INDEX);
-                    int[] targetCards = new int[cardIndex.length];
-                    for (int i = 0; i < targetCards.length; i++) {
-                        targetCards[i] = realPlayers[players.indexOf(target)].getHandCards().get(cardIndex[i]);
-                    }
-                    
-//                    toDropper.setIntegerArray(TARGET_CARD, targetCards);
-                    break;
-                }
-            }
-            if (strengthenCache) {
-                toDropper.setIntegerArray(TRANSFER_CARDS, messageIn.getIntegerArray(TRANSFER_CARDS));//dropper also get a card
-            }
-            
-            sendGamePluginMessageToUser(target, toDropper);
-            
-            EsObject toPicker = new EsObject();
-            toPicker.setInteger(code_action, ACTION_GET_SPECIFIC_CARDS_GREED);
-            switch (type) {
-                case type_quipment: {
-                    toPicker.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
-                    break;
-                }
-                case type_hand: {
-                    int[] cardIndex = messageIn.getIntegerArray(INDEX);
-                    int[] targetCards = new int[cardIndex.length];
-                    for (int i = 0; i < targetCards.length; i++) {
-                        targetCards[i] = realPlayers[players.indexOf(target)].getHandCards().get(cardIndex[i]);
-                    }
-                    
-                    toPicker.setIntegerArray(TARGET_CARD, targetCards);
-                    break;
-                }
-            }
-            
-            if (attackerCache.equals(userCacheNone) && targetCache.equals(userCacheNone)) {
-                toPicker.setInteger(code_client_action_required, ac_require_play);
-            }
-            if (strengthenCache) {
-                toPicker.setIntegerArray(TRANSFER_CARDS, messageIn.getIntegerArray(TRANSFER_CARDS));// picker also should give a card to dropper
-            }
-            
-            sendGamePluginMessageToUser(currentPlayer, toPicker);
+            m_Greed_user_picking(user, messageIn);
         } else {
-            attackerCache = userCacheNone;
-            EsObject toDropper = new EsObject();
-            toDropper.setInteger(code_action, ACTION_DROP_CARDS);
-            toDropper.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
-            if (attackerCache.equals(userCacheNone) && targetCache.equals(userCacheNone)) {
-                toDropper.setInteger(code_client_action_required, ac_require_play);
-            }
-            sendGamePluginMessageToUser(currentPlayer, toDropper);
-            
-            EsObject toPicker = new EsObject();
-            toPicker.setInteger(code_action, ACTION_GET_SPECIFIC_CARDS_GREED);
-            toPicker.setIntegerArray(TARGET_CARD, messageIn.getIntegerArray(TARGET_CARD));
-            
-            sendGamePluginMessageToUser(user, toPicker);
+            m_Greed_target_picking(user, messageIn);
         }
         
+        if (attackerCache.equals(userCacheNone) && targetCache.equals(userCacheNone) && (strengthenCache || (greedCaching == false))) {
+            objToUser();
+            objToTarget();
+            
+            
+            //      if (strengthenCache) {
+            //          toPicker.setIntegerArray(TRANSFER_CARDS, messageIn.getIntegerArray(TRANSFER_CARDS));// picker also should give a card to dropper
+            //      }
+            greedCaching = false;
+            greedUserChoseTypeCache = -1;
+            greedUserChoseIndexCache = new int[] { -1, -1 };
+            greedUserChoseEquipIdCache = -1;
+            greedTargetChoseIndexCache = -1;
+            strengthenCache = false;
+            attackerCache = userCacheNone;
+            targetCache = userCacheNone;
+            
+            EsObject continuePlay = new EsObject();
+            continuePlay.setInteger(code_client_action_required, ac_require_play);
+            sendGamePluginMessageToUser(currentPlayer, continuePlay);
+            
+            
+        }
+        
+        
+        //        EsObject continuePlayObh = new EsObject();
+        //        continuePlayObh.setInteger(code_client_action_required, ac_require_play);
+        //        sendGamePluginMessageToUser(currentPlayer, continuePlayObh);
+        
+    }
+    
+    
+    private void objToTarget() {
+    
+        EsObject obj = new EsObject();
+        obj.setInteger(code_action, ACTION_GREED_TRANSFER_ACTION);
+        obj.setInteger(code_client_action_required, ac_require_greed_transfer_card);
+        obj.setIntegerArray(DISPATCH_CARDS, new int[] { greedTargetChoseIndexCache });
+        obj.setIntegerArray(GREED_LOSE_CARDS, greedUserChoseIndexCache);
+        obj.setInteger(GREED_TYPE, greedUserChoseTypeCache);
+        sendGamePluginMessageToUser(targetCache, obj);
+        
+        
+    }
+    
+    
+    private void objToUser() {
+    
+        EsObject obj = new EsObject();
+        obj.setInteger(code_action, ACTION_GREED_TRANSFER_ACTION);
+        obj.setInteger(code_client_action_required, ac_require_greed_transfer_card);
+        obj.setIntegerArray(DISPATCH_CARDS, greedUserChoseIndexCache);
+        obj.setIntegerArray(GREED_LOSE_CARDS, new int[] { greedTargetChoseIndexCache });
+        sendGamePluginMessageToUser(currentPlayer, obj);
+        
+    }
+    
+    
+    private void m_Greed_target_picking(String user, EsObject messageIn) {
+    
+        attackerCache = userCacheNone;
+        greedCaching = !greedCaching;
+        greedTargetChoseIndexCache = messageIn.getIntegerArray(INDEX)[0];
+        
+    }
+    
+    
+    private void m_Greed_user_picking(String user, EsObject messageIn) {
+    
+        greedCaching = !greedCaching;
+        int type = greedUserChoseTypeCache = messageIn.getInteger(GREED_TYPE);
+        switch (type) {
+            case type_quipment: {
+                greedUserChoseEquipIdCache = messageIn.getIntegerArray(TARGET_CARD)[0];
+                break;
+            }
+            case type_hand: {
+                greedUserChoseIndexCache = messageIn.getIntegerArray(INDEX);
+                //                int[] targetCards = new int[cardIndex.length];
+                //                for (int i = 0; i < targetCards.length; i++) {
+                //                    targetCards[i] = realPlayers[players.indexOf(target)].getHandCards().get(cardIndex[i]);
+                //                }
+                break;
+            }
+        }
+        if (strengthenCache) {
+            greedTargetChoseIndexCache = messageIn.getIntegerArray(GREED_SEND_CARDS)[0];
+        }
         
     }
     
@@ -1093,18 +1118,18 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     }
     
     
-//    private void startTicker() {
-//    
-//        timerCallback = getApi().scheduleExecution(1000,
-//                -1,
-//                new ScheduledCallback() {
-//                    
-//                    public void scheduledCallback() {
-//                    
-//                        tick();
-//                    }
-//                });
-//    }
+    //    private void startTicker() {
+    //    
+    //        timerCallback = getApi().scheduleExecution(1000,
+    //                -1,
+    //                new ScheduledCallback() {
+    //                    
+    //                    public void scheduledCallback() {
+    //                    
+    //                        tick();
+    //                    }
+    //                });
+    //    }
     
     
     @Override
@@ -1122,9 +1147,9 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         message.setInteger(code_action, -9999999);
         message.setString("message ", "  test plugin message to whole room");
         getApi().sendPluginMessageToRoom(getApi().getZoneId(), getApi().getRoomId(), message);
-//        message.setString("message ", "  test plugin sending public message");
-//        getApi().sendPublicMessageToRoomFromPlugin(currentPlayer,
-//                getApi().getZoneId(), getApi().getRoomId(), " message out of EsObject ", message, true, false);
+        //        message.setString("message ", "  test plugin sending public message");
+        //        getApi().sendPublicMessageToRoomFromPlugin(currentPlayer,
+        //                getApi().getZoneId(), getApi().getRoomId(), " message out of EsObject ", message, true, false);
         
     }
     
