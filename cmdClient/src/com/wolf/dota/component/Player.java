@@ -68,9 +68,7 @@ public class Player {
         weapons = new int[2];
         NSArray heroArray;
         try {
-            heroArray = (NSArray) PropertyListParser.parse(new File(
-                    "doc/HeroCardArray.xml"));
-            
+            heroArray = (NSArray) PropertyListParser.parse(new File("doc/HeroCardArray.xml"));
         } catch (Exception e) {
             System.err.println("init hero failed");
             e.printStackTrace();

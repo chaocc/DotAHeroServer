@@ -11,15 +11,15 @@ package com.wolf.dota.component.constants;
 public interface Code {
     
     public static final int
-            ACTION_BASE = 0,
-            ACTION_USER_READY = ACTION_BASE + 1,
-            ACTION_START_GAME = ACTION_BASE + 2,
-            ACTION_CHOOSE_CHARACTER = ACTION_BASE + 3,
-            ACTION_CHOSE_CHARACTER = ACTION_BASE + 4,
-            ACTION_ALL_HEROS = ACTION_BASE + 5,
-            ACTION_DISPATCH_FORCE = ACTION_BASE + 6,
-            ACTION_DISPATCH_HANDCARD = ACTION_BASE + 7, // should along with
-                                                        // cards
+                            ACTION_BASE = 0,
+                                        ACTION_USER_READY = ACTION_BASE + 1,
+                                        ACTION_START_GAME = ACTION_BASE + 2,
+                                        ACTION_CHOOSE_CHARACTER = ACTION_BASE + 3,
+                                        ACTION_CHOSE_CHARACTER = ACTION_BASE + 4,
+                                        ACTION_ALL_HEROS = ACTION_BASE + 5,
+                                        ACTION_DISPATCH_FORCE = ACTION_BASE + 6,
+                                        ACTION_DISPATCH_HANDCARD = ACTION_BASE + 7, // should along with
+                                                                                    // cards
             ACTION_START_TURN = ACTION_BASE + 8,
             ACTION_DRAW_CARDS = ACTION_BASE + 9, // client send to server
             ACTION_STAKE = ACTION_BASE + 10,
@@ -63,7 +63,7 @@ public interface Code {
             ;
     
     public static final int
-            ac_required_base = 100,
+                            ac_required_base = 100,
             ac_require_turn_start = 1,
             ac_require_determing = 2, // 判定阶段
             ac_require_draw = 3, // 摸牌阶段
@@ -94,7 +94,9 @@ public interface Code {
             ac_require_choosing = 19,
             ac_require_targetted_and_choosing = 20,
             ac_require_lose_equipment = 21,
-            ac_require_greed_transfer_card = 22
+            ac_require_greed_transfer_card = 22,
+            ac_require_misleaded = 23,
+            ac_require_sp_got = 24
             
             
             ;
