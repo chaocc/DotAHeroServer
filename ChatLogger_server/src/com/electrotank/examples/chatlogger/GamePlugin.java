@@ -777,7 +777,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             }
             case CardModel.function_id_s_LagunaBlade: {
                 EsObject hurt = new EsObject();
-                hurt.setInteger(code_action, ac_require_magic_hitted);
+                hurt.setInteger(code_client_action_required, ac_require_magic_hitted);
                 int[] evations = obj.getIntegerArray(USED_CARDS, new int[] {});
                 int damageAmount = 3 - evations.length;
                 dropCard(obj);
