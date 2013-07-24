@@ -37,6 +37,7 @@ public interface Code {
             ACTION_GUESS_SUCCESS = 22,
             ACTION_CHOOSED_CARD = 23,
             ACTION_GREED_TRANSFER_ACTION = 24,
+            ACTION_RESPOND_shenmied = 25,
             
             
             ACTION_TARGETTED = ACTION_BASE + 51,
@@ -96,7 +97,9 @@ public interface Code {
             ac_require_lose_equipment = 21,
             ac_require_greed_transfer_card = 22,
             ac_require_misleaded = 23,
-            ac_require_sp_got = 24
+            ac_require_sp_got = 24,
+            ac_require_s_skill_used_sp_lost = 25,
+            ac_require_shenmied = 26
             
             
             ;

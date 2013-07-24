@@ -91,65 +91,65 @@ public enum CardModel implements Params {
     // == basic ==========================================
     // == equipment ==========================================
     // == magic cards ==========================================
-    public static final int suit_club = 100; // 草花
-    public static final int suit_spade = 1000; // 黑桃
+    public static final int suit_club    = 100;   // 草花
+    public static final int suit_spade   = 1000;  // 黑桃
     public static final int suit_diamond = 10000;
-    public static final int suit_heart = 100000;
+    public static final int suit_heart   = 100000;
     
     public static final int
-            function_id_base = -100,
-            function_id_normal_attack = function_id_base - 20,
-            function_id_flame_attack = function_id_base - 21,
-            function_id_chaos_attack = function_id_base - 22,
-            function_id_heal = function_id_base - 23,
-            function_id_evasion = function_id_base - 24,
-            function_id_s_GodsStrength = function_id_base - 25,
-            function_id_s_viper_raid = function_id_base - 26,
-            kPlayingCardTimeLock = function_id_base - 27,
-            kPlayingCardSunder = function_id_base - 28,
-            function_id_s_LagunaBlade = function_id_base - 29,
-            function_id_m_Fanaticism = function_id_base - 30,
-            function_id_m_Mislead = function_id_base - 31,
-            function_id_m_Chakra = function_id_base - 32,
-            kPlayingCardWildAxe = function_id_base - 33,
-            function_id_m_Dispel = function_id_base - 34,
-            function_id_m_Disarm = function_id_base - 35,
-            function_id_m_ElunesArrow = function_id_base - 36,
-            function_id_m_EnergyTransport = function_id_base - 37,
-            function_id_m_Greed = function_id_base - 38,
-            kPlayingCardSirenSong = function_id_base - 39,
-            kPlayingCardEyeOfSkadi = function_id_base - 40,
-            kPlayingCardBladesOfAttack = function_id_base - 41,
-            kPlayingCardSacredRelic = function_id_base - 42,
-            kPlayingCardDemonEdge = function_id_base - 43,
-            kPlayingCardDiffusalBlade = function_id_base - 44,
-            kPlayingCardLotharsEdge = function_id_base - 45,
-            kPlayingCardStygianDesolator = function_id_base - 45,
-            kPlayingCardSangeAndYasha = function_id_base - 47,
-            kPlayingCardPlunderAxe = function_id_base - 48,
-            kPlayingCardMysticStaff = function_id_base - 49,
-            kPlayingCardEaglehorn = function_id_base - 50,
-            kPlayingCardQuellingBlade = function_id_base - 51,
-            kPlayingCardPhyllisRing = function_id_base - 52,
-            kPlayingCardBladeMail = function_id_base - 53,
-            kPlayingCardBootsOfSpeed = function_id_base - 54,
-            kPlayingCardPlaneswalkersCloak = function_id_base - 55,
-            kPlayingCardTalismanOfEvasion = function_id_base - 56
-            
-            ;
+                            function_id_base = -100,
+                                             function_id_normal_attack = function_id_base - 20,
+                                             function_id_flame_attack = function_id_base - 21,
+                                             function_id_chaos_attack = function_id_base - 22,
+                                             function_id_heal = function_id_base - 23,
+                                             function_id_evasion = function_id_base - 24,
+                                             function_id_s_GodsStrength = function_id_base - 25,
+                                             function_id_s_viper_raid = function_id_base - 26,
+                                             kPlayingCardTimeLock = function_id_base - 27,
+                                             kPlayingCardSunder = function_id_base - 28,
+                                             function_id_s_LagunaBlade = function_id_base - 29,
+                                             function_id_m_Fanaticism = function_id_base - 30,
+                                             function_id_m_Mislead = function_id_base - 31,
+                                             function_id_m_Chakra = function_id_base - 32,
+                                             kPlayingCardWildAxe = function_id_base - 33,
+                                             function_id_m_Dispel = function_id_base - 34,
+                                             function_id_m_Disarm = function_id_base - 35,
+                                             function_id_m_ElunesArrow = function_id_base - 36,
+                                             function_id_m_EnergyTransport = function_id_base - 37,
+                                             function_id_m_Greed = function_id_base - 38,
+                                             kPlayingCardSirenSong = function_id_base - 39,
+                                             kPlayingCardEyeOfSkadi = function_id_base - 40,
+                                             kPlayingCardBladesOfAttack = function_id_base - 41,
+                                             kPlayingCardSacredRelic = function_id_base - 42,
+                                             kPlayingCardDemonEdge = function_id_base - 43,
+                                             kPlayingCardDiffusalBlade = function_id_base - 44,
+                                             kPlayingCardLotharsEdge = function_id_base - 45,
+                                             kPlayingCardStygianDesolator = function_id_base - 45,
+                                             kPlayingCardSangeAndYasha = function_id_base - 47,
+                                             kPlayingCardPlunderAxe = function_id_base - 48,
+                                             kPlayingCardMysticStaff = function_id_base - 49,
+                                             kPlayingCardEaglehorn = function_id_base - 50,
+                                             kPlayingCardQuellingBlade = function_id_base - 51,
+                                             kPlayingCardPhyllisRing = function_id_base - 52,
+                                             kPlayingCardBladeMail = function_id_base - 53,
+                                             kPlayingCardBootsOfSpeed = function_id_base - 54,
+                                             kPlayingCardPlaneswalkersCloak = function_id_base - 55,
+                                             kPlayingCardTalismanOfEvasion = function_id_base - 56
+                                             
+                                             ;
     
-    private int cardId;
-    private String name;
-    private int functionId;
+    private int             cardId;
+    private String          name;
+    private int             functionId;
     
-    private String cardFace;
-    private int pokerValue;
-    private int suit; // 花色
-    
-    
+    private String          cardFace;
+    private int             pokerValue;
+    private int             suit;             // 花色
+                                               
+                                               
     private CardModel(int cardId, String name, int functionId, String face, int pokerValue,
             int suit) {
-    
+        
         this.cardId = cardId;
         this.name = name;
         this.functionId = functionId;
@@ -160,62 +160,62 @@ public enum CardModel implements Params {
     
     
     public int getCardId() {
-    
+        
         return cardId;
     }
     
     
     public String getName() {
-    
+        
         return name;
     }
     
     
     public int getFunctionId() {
-    
+        
         return functionId;
     }
     
     
     public String getCardFace() {
-    
+        
         return cardFace;
     }
     
     
     public int getPokerValue() {
-    
+        
         return pokerValue;
     }
     
     
     public String getColor() {
-    
+        
         return suit >= CardModel.suit_heart ? "red" : "black";
     }
     
     
     public int getColorCode() {
-    
+        
         return suit >= CardModel.suit_heart ? kCardColorRed : kCardColorBlack;
     }
     
     
     public int getSuit() {
-    
+        
         return suit;
     }
     
     
     public static int getFunctionById(int id) {
-    
+        if (id == -1) { return -1; }
         return CardModel.valueOf("_" + id).getFunctionId();
         
     }
     
     
     public int[] getObjectByFieldValue(String fieldValue) {
-    
+        
         int[] result = {};
         if (fieldValue.equals("普通攻击")) {
             result = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
@@ -227,6 +227,6 @@ public enum CardModel implements Params {
     
     
     private CardModel() {
-    
+        
     }
 }

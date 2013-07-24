@@ -38,16 +38,16 @@ import com.wolf.dota.values.Params;
 
 public class Controller implements Code, Params, Commands {
     
-    private ElectroServer es = null;
-    private Room room = null;
-    private static final String xmlPath = "settings.xml";
-    private final int no_action = -1;
-    private int currentAction = no_action;
-    private int requireAction = no_action;
-    private int[] currentData;
-    private Player player;
-    private User me;
-    private int cardStackCount = -1;
+    private ElectroServer       es             = null;
+    private Room                room           = null;
+    private static final String xmlPath        = "settings.xml";
+    private final int           no_action      = -1;
+    private int                 currentAction  = no_action;
+    private int                 requireAction  = no_action;
+    private int[]               currentData;
+    private Player              player;
+    private User                me;
+    private int                 cardStackCount = -1;
     
     
     /*******************************************************
@@ -56,7 +56,7 @@ public class Controller implements Code, Params, Commands {
      * 
      *******************************************************/
     public void initialize() {
-    
+        
         log("Initializing");
         es = new ElectroServer();
         // listen for certain events to allow the application to flow, and to
@@ -93,7 +93,7 @@ public class Controller implements Code, Params, Commands {
     
     
     public void onPluginMessageEvent(EsPluginMessageEvent e) {
-    
+        
         log("onPluginMessageEvent");
         EsObject obj = getObj(e);
         
@@ -111,9 +111,9 @@ public class Controller implements Code, Params, Commands {
         } else if (currentAction == ClientConstants.ACTION_DISPATCH_FORCE) {
             showChat("my force: " + obj.getInteger(ClientConstants.FORCE));
             showChat("remaining cards: "
-                    + obj.getInteger(ClientConstants.STACK_CARD_COUNT, 1));
+                     + obj.getInteger(ClientConstants.STACK_CARD_COUNT, 1));
         } else if (currentAction == ClientConstants.ACTION_DISPATCH_HANDCARD
-                || currentAction == ACTION_SEND_CARDS) {
+                   || currentAction == ACTION_SEND_CARDS) {
             gotInitHandCards(obj);
         } else if (currentAction == 0) {
             showChat("0 worked");
@@ -126,7 +126,7 @@ public class Controller implements Code, Params, Commands {
     
     
     public void attemptSendMessage(String message) {
-    
+        
         if (room == null) {
             log("Unable to send message.  Room is null.");
             return;
@@ -154,9 +154,9 @@ public class Controller implements Code, Params, Commands {
                 if (hero == Integer.parseInt(message)) {
                     EsObject esob = new EsObject();
                     esob.setInteger(ClientConstants.ac,
-                            ClientConstants.ACTION_CHOSE_CHARACTER);
+                                    ClientConstants.ACTION_CHOSE_CHARACTER);
                     esob.setInteger(ClientConstants.SELECTED_HERO_ID,
-                            Integer.parseInt(message));
+                                    Integer.parseInt(message));
                     sendGamePluginRequest(esob);
                     initPlayer(hero);
                     return;
@@ -175,19 +175,19 @@ public class Controller implements Code, Params, Commands {
                     EsObject esob = new EsObject();
                     esob.setInteger(ClientConstants.ac, ClientConstants.ACTION_STAKE);
                     esob.setIntegerArray(ClientConstants.USED_CARDS,
-                            new int[] { Integer.parseInt(message) });
+                                         new int[] { Integer.parseInt(message) });
                     sendGamePluginRequest(esob);
                     // player.removeCard(card);
                     return;
                 }
             }
             showChat("Wrong selection, please select card for stake from : "
-                    + Arrays.toString(currentData));
+                     + Arrays.toString(currentData));
         } else if (message.startsWith(("kill"))) {
             EsObject esob = new EsObject();
             esob.setInteger(ClientConstants.ac, ClientConstants.ACTION_USED_CARD);
             esob.setIntegerArray(ClientConstants.USED_CARDS,
-                    new int[] { 14 });
+                                 new int[] { 14 });
             esob.setStringArray(TARGET_PLAYERS, new String[] { message.substring(message.indexOf("kill") + 1) });
             sendGamePluginRequest(esob);
             // player.removeCard(card);
@@ -198,7 +198,7 @@ public class Controller implements Code, Params, Commands {
     
     
     private void showAllStakeCards(EsObject obj) {
-    
+        
         int[] stakes = obj.getIntegerArray(ALL_STAKE_CARDS);
         showChat(Arrays.toString(stakes));
         
@@ -206,7 +206,7 @@ public class Controller implements Code, Params, Commands {
     
     
     private void gotInitHandCards(EsObject obj) {
-    
+        
         int[] cards = obj.getIntegerArray(ClientConstants.DISPATCH_CARDS);
         log(obj.toString());
         currentData = cards;
@@ -218,7 +218,7 @@ public class Controller implements Code, Params, Commands {
     
     
     private EsObject getObj(EsPluginMessageEvent e) {
-    
+        
         EsObject obj = e.getParameters();
         log("currentObj: " + obj.toString());
         currentAction = no_action;
@@ -240,7 +240,7 @@ public class Controller implements Code, Params, Commands {
     // }
     
     private void initPlayer(int hero) {
-    
+        
         player = Player.getPlayerById(hero, me.getUserName());
         // read plahyer from id
         
@@ -248,7 +248,7 @@ public class Controller implements Code, Params, Commands {
     
     
     private void sendRoomPluginRequest(EsObject obj) {
-    
+        
         log("send  Room   PluginRequest");
         EsPluginRequest pmr = new EsPluginRequest();
         pmr.setPluginName("ChatPlugin");
@@ -262,7 +262,7 @@ public class Controller implements Code, Params, Commands {
     
     
     private void sendGamePluginRequest(EsObject obj) {
-    
+        
         log("sendPluginRequest");
         EsPluginRequest pmr = new EsPluginRequest();
         pmr.setPluginName("GamePlugin");
@@ -276,7 +276,7 @@ public class Controller implements Code, Params, Commands {
     
     
     private void gotCharactersToChoose(EsObject obj) {
-    
+        
         int[] charsToChoose = obj.getIntegerArray(ClientConstants.CHARACTORS_TO_CHOOSE);
         currentData = charsToChoose;
         showChat("please choose: " + Arrays.toString(charsToChoose));
@@ -284,7 +284,7 @@ public class Controller implements Code, Params, Commands {
     
     
     public void onPublicMessageEvent(EsPublicMessageEvent e) {
-    
+        
         String from = e.getUserName();
         String msg = e.getMessage();
         
@@ -309,7 +309,7 @@ public class Controller implements Code, Params, Commands {
      * Tries to create a room. If it already exists, you join that room.
      */
     private void joinRoom() {
-    
+        
         log("Attempting to join room");
         // Create the request
         EsCreateRoomRequest crr = new EsCreateRoomRequest();
@@ -338,7 +338,7 @@ public class Controller implements Code, Params, Commands {
     
     
     public void onJoinRoomEvent(EsJoinRoomEvent e) {
-    
+        
         log("Joined a room!");
         int roomId = e.getRoomId();
         int zoneId = e.getZoneId();
@@ -361,12 +361,11 @@ public class Controller implements Code, Params, Commands {
             users.add(user.getUserName());
         }
         
-        //        showUserList(users);
     }
     
     
     public void onRoomUserUpdateEvent(EsUserUpdateEvent e) {
-    
+        
         List<String> users = new ArrayList<String>();
         for (User user : room.getUsers()) {
             users.add(user.getUserName());
@@ -377,7 +376,7 @@ public class Controller implements Code, Params, Commands {
     
     
     private void logSuccessfulConnection() {
-    
+        
         List<Connection> connections = es.getEngine().getActiveConnections();
         for (Connection conn : connections) {
             String host = conn.getHost();
@@ -385,13 +384,13 @@ public class Controller implements Code, Params, Commands {
             int port = conn.getPort();
             String transport = conn.getTransportType().toString();
             log("Active connection: " + host + ", " + port + ", " + transport + ", "
-                    + serverId);
+                + serverId);
         }
     }
     
     
     public void onConnectionResponse(EsConnectionResponse e) {
-    
+        
         if (e.isSuccessful()) {
             log("Connection accepted");
             
@@ -403,7 +402,7 @@ public class Controller implements Code, Params, Commands {
     
     
     public void attemptLogin(String name) {
-    
+        
         if (name == null || name.isEmpty()) {
             name = "user" + Math.round(10000 * Math.random());
         }
@@ -419,7 +418,7 @@ public class Controller implements Code, Params, Commands {
     
     
     public void onLoginResponse(EsLoginResponse e) {
-    
+        
         if (e.isSuccessful()) {
             log("Login accepted.");
             log("You are logged in as: " + e.getUserName());
@@ -436,7 +435,7 @@ public class Controller implements Code, Params, Commands {
      * 
      ****************************************/
     private void showChat(String message) {
-    
+        
         System.out.println("==== >> current state start " + getCurrentTimeStamp() + " << ====");
         System.out.println(cardStackCount + " cards remaining");
         System.out.println(player.getHandCards().toString());
@@ -449,7 +448,7 @@ public class Controller implements Code, Params, Commands {
     
     
     public static String getCurrentTimeStamp() {
-    
+        
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// dd/MM/yyyy
         Date now = new Date();
         String strDate = sdfDate.format(now);
@@ -458,13 +457,13 @@ public class Controller implements Code, Params, Commands {
     
     
     private void log(String logMessage) {
-    
+        
         System.out.println(logMessage);
     }
     
     
     public static void main(String... args) {
-    
+        
         Controller controller = new Controller();
         controller.initialize();
     }
