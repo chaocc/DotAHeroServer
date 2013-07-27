@@ -11,15 +11,15 @@ package com.wolf.dota.component.constants;
 public interface Code {
     
     public static final int
-                            ACTION_BASE = 0,
-                                        ACTION_USER_READY = ACTION_BASE + 1,
-                                        ACTION_START_GAME = ACTION_BASE + 2,
-                                        ACTION_CHOOSE_CHARACTER = ACTION_BASE + 3,
-                                        ACTION_CHOSE_CHARACTER = ACTION_BASE + 4,
-                                        ACTION_ALL_HEROS = ACTION_BASE + 5,
-                                        ACTION_DISPATCH_FORCE = ACTION_BASE + 6,
-                                        ACTION_DISPATCH_HANDCARD = ACTION_BASE + 7, // should along with
-                                                                                    // cards
+            ACTION_BASE = 0,
+            ACTION_USER_READY = ACTION_BASE + 1,
+            ACTION_START_GAME = ACTION_BASE + 2,
+            ACTION_CHOOSE_CHARACTER = ACTION_BASE + 3,
+            ACTION_CHOSE_CHARACTER = ACTION_BASE + 4,
+            ACTION_ALL_HEROS = ACTION_BASE + 5,
+            ACTION_DISPATCH_FORCE = ACTION_BASE + 6,
+            ACTION_DISPATCH_HANDCARD = ACTION_BASE + 7, // should along with
+                                                        // cards
             ACTION_START_TURN = ACTION_BASE + 8,
             ACTION_DRAW_CARDS = ACTION_BASE + 9, // client send to server
             ACTION_STAKE = ACTION_BASE + 10,
@@ -38,6 +38,7 @@ public interface Code {
             ACTION_CHOOSED_CARD = 23,
             ACTION_GREED_TRANSFER_ACTION = 24,
             ACTION_RESPOND_shenmied = 25,
+            ACTION_USED_SKILL = 26,
             
             
             ACTION_TARGETTED = ACTION_BASE + 51,
@@ -64,7 +65,7 @@ public interface Code {
             ;
     
     public static final int
-                            ac_required_base = 100,
+            ac_required_base = 100,
             ac_require_turn_start = 1,
             ac_require_determing = 2, // 判定阶段
             ac_require_draw = 3, // 摸牌阶段

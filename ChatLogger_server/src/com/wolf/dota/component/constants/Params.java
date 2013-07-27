@@ -4,12 +4,12 @@ package com.wolf.dota.component.constants;
 public interface Params {
     
     public static final String
-                               CHARACTORS_TO_CHOOSE = "toBeSelectedHeroIds",
-                                                    SORTED_PLAYER_NAMES = "sortedPlayerNames",
-                                                    STACK_CARD_COUNT = "remainingCardCount",
-                                                    SELECTED_HERO_ID = "heroId",
-                                                    ALL_HEROS = "allHeroIds",
-                                                    ROLE_IDS = "roleIds", // value for dispatch force action
+            CHARACTORS_TO_CHOOSE = "toBeSelectedHeroIds",
+            SORTED_PLAYER_NAMES = "sortedPlayerNames",
+            STACK_CARD_COUNT = "remainingCardCount",
+            SELECTED_HERO_ID = "heroId",
+            ALL_HEROS = "allHeroIds",
+            ROLE_IDS = "roleIds", // value for dispatch force action
             DISPATCH_CARDS = "gotPlayingCardIds",
             USED_CARDS = "usedPlayingCardIds",
             TARGET_CARD = "targetCard",
@@ -29,13 +29,14 @@ public interface Params {
             INDEX = "extractedCardIdxes",
             GREED_LOSE_CARDS = "greedLoseCardIds",
             GREED_SEND_CARDS = "transferedCardIds",
-            HAND_CARDS = "handCardIds"
+            HAND_CARDS = "handCardIds",
+            USED_SKILL = "usedSkillId"
             
             
             ;
     
     public static final int
-                               kCardSuitsHearts     = 1, // 红桃
+            kCardSuitsHearts = 1, // 红桃
             kCardSuitsDiamonds = 2, // 方块
             kCardSuitsSpades = 3, // 黑桃
             kCardSuitsClubs = 4, // 梅花

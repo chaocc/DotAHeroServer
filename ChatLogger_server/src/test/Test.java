@@ -4,6 +4,7 @@ package test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,8 +15,11 @@ import java.util.Random;
 public class Test {
     
     public static void main(String... args) {
-    
         
+    }
+    public static void testDoubleformater(){
+        DecimalFormat doubleFormater  = new DecimalFormat(".00");
+        System.out.println(doubleFormater.format(2343209320.202930329));
     }
     
     

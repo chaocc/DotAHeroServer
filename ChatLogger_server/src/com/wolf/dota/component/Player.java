@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import net.sf.plist.NSArray;
 import net.sf.plist.NSDictionary;
@@ -14,6 +15,7 @@ import net.sf.plist.io.PropertyListParser;
 
 
 public class Player {
+    
     
     public static Player getPlayerById(int id, String userName) {
     
@@ -28,6 +30,7 @@ public class Player {
     
     private static Map<Integer, Player> players = new HashMap<Integer, Player>();
     
+    
     private String
             playerName,
             heroName;
@@ -41,9 +44,87 @@ public class Player {
             sp;
     
     
-    private int[]
-            skills,
-            weapons;
+    private int[] weapons;
+    private HeroSkill[] skills;
+    public static final int
+            function_id_p_fierySoul = 105,// 炙魂                                  强化不消耗怒气                 //Slayer   秀逗魔导士
+            function_id_p_lagunaBlade = 106,// 神灭斩                       2张红色手牌当神灭斩
+            function_id_p_fanaticismHeart = 107,// 狂热之心          魔法牌使用成功后本回合攻击次数+1
+            function_id_p_netherSwap = 60,//移形换位                             抽对方一张牌, 给对方一张牌, 但不能是同一张牌               //VengefulSpirit   复仇之魂
+            function_id_p_waveOfTerror = 61,//恐怖波动                      每获得1点怒气, 可以摸2张牌
+            function_id_p_warpath = 10,//战意            每受到一次伤害, 可进行一次判定, 若为红色, 则可指定任何一个人弃置1闪或对其造成1伤害           //Bristleback   刚被兽
+            function_id_p_bristlebackSkill = 11,//刚毛后背            自己每次受到伤害>1的话, 则它-1
+            function_id_p_lifeBreak = 15,//牺牲                                      对自己造成1点伤害, 弃置指定角色2张手牌              //SacredWarrior    神灵武士
+            function_id_p_burningSpear = 16,//沸血长矛,       若血量<=2,  则攻击造成的伤害+1
+            function_id_p_illuminate = 140,//冲击波                            弃置3张不同花色的牌,  对指定非自己的1~2名角色造成1点伤害      //KeeperOfTheLight    光之守卫
+            function_id_p_chakraMagic = 141,//查克拉                         可以将1张手牌当1张查克拉使用
+            function_id_p_grace = 142,//恩惠                                             这个角色的查克拉可以对任一名角色使用
+            function_id_p_manaBreak = 85,//法力损毁                             攻击成功后弃置对方一张手牌         //Antimage    敌法师
+            function_id_p_blink = 86,//闪烁                                                黑色手牌当闪
+            function_id_p_manaVoid = 87//法力虚空                                   3怒气,  造成X = 手牌上限-手牌数         点伤害
+            
+            
+            ;
+    
+    
+    class HeroSkill {
+        
+        private int id;
+        private String name;
+        private int skillType;
+        private boolean isMandatorySkill;
+        private boolean canBeDispelled;
+        private int[] whenToUse;
+        
+        
+        public HeroSkill(int id, String name, int skillType, boolean isMandatorySkill, boolean canBeDispelled, int[] whenToUse) {
+        
+            this.id = id;
+            this.name = name;
+            this.skillType = skillType;
+            this.isMandatorySkill = isMandatorySkill;
+            this.canBeDispelled = canBeDispelled;
+            this.whenToUse = whenToUse;
+        }
+        
+        
+        public int getId() {
+        
+            return id;
+        }
+        
+        
+        public String getName() {
+        
+            return name;
+        }
+        
+        
+        public int getSkillType() {
+        
+            return skillType;
+        }
+        
+        
+        public boolean isMandatorySkill() {
+        
+            return isMandatorySkill;
+        }
+        
+        
+        public boolean isCanBeDispelled() {
+        
+            return canBeDispelled;
+        }
+        
+        
+        public int[] getWhenToUse() {
+        
+            return whenToUse;
+        }
+    }
+    
+    
     private List<Integer> handCards;
     
     
@@ -84,10 +165,22 @@ public class Player {
         heroName = hero.get("heroName").getValue().toString();
         heroType = Integer.parseInt(hero.get("heroAttribute").getValue().toString());
         NSObject[] fileSkills = ((NSArray) hero.get("heroSkills")).array();
-        skills = new int[fileSkills.length];
+        skills = new HeroSkill[fileSkills.length];
         for (int i = 0; i < skills.length; i++) {
             NSDictionary fileSkill = (NSDictionary) fileSkills[i];
-            skills[i] = Integer.parseInt(fileSkill.getValue().firstKey());
+            //            skills[i] = Integer.parseInt();
+            SortedMap<String, NSObject> skillAttributes = fileSkill.getValue();
+            int skillId = Integer.parseInt(skillAttributes.firstKey());
+            String name = skillAttributes.get(skillId + "").toString();
+            int skillType = skillAttributes.get("skillType").toInteger();
+            boolean isMandatorySkill = skillAttributes.get("isMandatorySkill").toBoolean();
+            boolean canBeDispelled = skillAttributes.get("canBeDispelled").toBoolean();
+            Integer[] whenToUseInteger = skillAttributes.get("whenToUse").toList().toArray(new Integer[] {});
+            int[] whenToUse = new int[whenToUseInteger.length];
+            for (int c = 0; c < whenToUseInteger.length; c++) {
+                whenToUse[c] = whenToUseInteger[c];
+            }
+            skills[i] = new HeroSkill(skillId, name, skillType, isMandatorySkill, canBeDispelled, whenToUse);
         }
     }
     
@@ -96,19 +189,20 @@ public class Player {
     // TODO comment out to go production
     public static void main(String... args) throws Exception {
     
-        NSArray heroArray = (NSArray) PropertyListParser.parse(new File(
-                "doc/HeroCardArray.xml"));
+        NSArray heroArray = (NSArray) PropertyListParser.parse(new File("doc/HeroCardArray.xml"));
         NSDictionary hero = (NSDictionary) heroArray.array()[2];
-        System.out.println("heroName: " + hero.get("heroName").getValue().toString());
-        System.out.println("heroType: " + hero.get("heroAttribute").getValue().toString());
-        System.out.println("hpLimit: " + hero.get("healthPointLimit").getValue().toString());
-        System.out.println("spLimit: " + hero.get("manaPointLimit").getValue().toString());
-        System.out.println("handCardLimit: "
-                + hero.get("handSizeLimit").getValue().toString());
+        //        System.out.println("heroName: " + hero.get("heroName").getValue().toString());
+        //        System.out.println("heroType: " + hero.get("heroAttribute").getValue().toString());
+        //        System.out.println("hpLimit: " + hero.get("healthPointLimit").getValue().toString());
+        //        System.out.println("spLimit: " + hero.get("manaPointLimit").getValue().toString());
+        //        System.out.println("handCardLimit: " + hero.get("handSizeLimit").getValue().toString());
         NSObject[] fileSkills = ((NSArray) hero.get("heroSkills")).array();
         for (NSObject fskill : fileSkills) {
             NSDictionary fileSkill = (NSDictionary) fskill;
-            System.out.println("skill: " + fileSkill.getValue().firstKey());
+            //            System.out.println("skill: " + fileSkill.getValue().firstKey());
+            for (String ke : fileSkill.getValue().keySet()) {
+                System.out.println(ke);
+            }
         }
         
     }
@@ -314,7 +408,7 @@ public class Player {
     }
     
     
-    public int[] getSkills() {
+    public HeroSkill[] getSkills() {
     
         return skills;
     }
