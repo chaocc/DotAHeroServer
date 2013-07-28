@@ -207,16 +207,16 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             /** VengefulSpirit   复仇之魂 */
             case Player.function_id_p_netherSwap: {
                 
-                break;//移形换位                             抽对方一张牌, 给对方一张牌, 但不能是同一张牌
+                break;//移形换位             抽对方一张牌, 给对方一张牌, 但不能是同一张牌
             }
             case Player.function_id_p_waveOfTerror: {
                 
-                break;//恐怖波动                      每获得1点怒气, 可以摸2张牌
+                break;//恐怖波动               每获得1点怒气, 可以摸2张牌
             }
             /** Bristleback   刚被兽 */
             case Player.function_id_p_warpath: {
                 
-                break;//战意, 每受到一次伤害, 可进行一次判定, 若为红色, 则可指定任何一个人弃置1闪或对其造成1伤害
+                break;//战意,  每受到一次伤害, 可进行一次判定, 若为红色, 则可指定任何一个人弃置1闪或对其造成1伤害
             }
             case Player.function_id_p_bristlebackSkill: {
                 
@@ -225,11 +225,11 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             /** SacredWarrior    神灵武士 */
             case Player.function_id_p_lifeBreak: {
                 
-                break;//牺牲                                      对自己造成1点伤害, 弃置指定角色2张手牌
+                break;//牺牲                    对自己造成1点伤害, 弃置指定角色2张手牌
             }
             case Player.function_id_p_burningSpear: {
                 
-                break;//沸血长矛,       若血量<=2,  则攻击造成的伤害+1
+                break;//沸血长矛,    若血量<=2, 则攻击造成的伤害+1
             }
             /** KeeperOfTheLight    光之守卫 */
             case Player.function_id_p_illuminate: {
@@ -238,20 +238,20 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             }
             case Player.function_id_p_chakraMagic: {
                 
-                break;//查克拉                         可以将1张手牌当1张查克拉使用
+                break;//查克拉            可以将1张手牌当1张查克拉使用
             }
             case Player.function_id_p_grace: {
                 
-                break;//恩惠                                             这个角色的查克拉可以对任一名角色使用
+                break;//恩惠               这个角色的查克拉可以对任一名角色使用
             }
             /** Antimage    敌法师 */
             case Player.function_id_p_manaBreak: {
                 
-                break;//法力损毁                             攻击成功后弃置对方一张手牌
+                break;//法力损毁              攻击成功后弃置对方一张手牌
             }
             case Player.function_id_p_blink: {
                 
-                break;//闪烁                                                黑色手牌当闪
+                break;//闪烁               黑色手牌当闪
             }
             case Player.function_id_p_manaVoid: {
                 
@@ -720,7 +720,6 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         int usedCard = actionCache = messageIn.getIntegerArray(USED_CARDS)[0];
         dropStack.add(usedCard);
         realPlayers[players.indexOf(user)].removeCard(usedCard);
-        
         String target = messageIn.getStringArray(TARGET_PLAYERS)[0];
         
         EsObject obj = new EsObject();
@@ -911,12 +910,12 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     }
     
     
-    private void damage(String user, int howMuch, EsObject obj) {
-    
-        obj.setInteger(code_action, ACTION_CANCEL);
-        obj.setInteger(HP_CHANGED, howMuch);
-        sendGamePluginMessageToUser(user, obj);
-    }
+    //    private void damage(String user, int howMuch, EsObject obj) {
+    //    
+    //        obj.setInteger(code_action, ACTION_CANCEL);
+    //        obj.setInteger(HP_CHANGED, howMuch);
+    //        sendGamePluginMessageToUser(user, obj);
+    //    }
     
     
     private void evasion(String user, EsObject obj) {
@@ -964,6 +963,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
                 EsObject toVipperred = new EsObject();
                 toVipperred.setInteger(code_client_action_required, ac_require_magic_hitted);
                 toVipperred.setInteger(HP_CHANGED, -1);
+                toVipperred.setInteger(SP_CHANGED, 1);
                 this.sendGamePluginMessageToUser(user, toVipperred);
                 
                 
@@ -1079,8 +1079,8 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     final int
-            testCard_1 = 16,
-            testCard_2 = 58;
+            testCard_1 = 18,
+            testCard_2 = 19;
     
     
     private void dispatchHandCards(String player, int howmany, int action) {
