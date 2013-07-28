@@ -100,7 +100,8 @@ public interface Code {
             ac_require_misleaded = 23,
             ac_require_sp_got = 24,
             ac_require_s_skill_used_sp_lost = 25,
-            ac_require_shenmied = 26
+            ac_require_shenmied = 26,
+            ac_require_s_ViperRaid =27
             
             
             ;

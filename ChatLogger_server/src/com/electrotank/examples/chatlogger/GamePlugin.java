@@ -714,9 +714,18 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     }
     
     
+    //ACTION_DROP_CARDS
     private void s_ViperRaid(String user, EsObject messageIn) {
     
-        //TODO 
+        int usedCard = actionCache = messageIn.getIntegerArray(USED_CARDS)[0];
+        dropStack.add(usedCard);
+        realPlayers[players.indexOf(user)].removeCard(usedCard);
+        
+        String target = messageIn.getStringArray(TARGET_PLAYERS)[0];
+        
+        EsObject obj = new EsObject();
+        obj.setInteger(code_client_action_required, ac_require_s_ViperRaid);
+        this.sendGamePluginMessageToUser(target, obj);
         
     }
     
@@ -946,14 +955,35 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     private void user_action_drop_cards(String user, EsObject messageIn) {
     
-        int[] cards = messageIn.getIntegerArray(USED_CARDS);
-        for (int card : cards) {
-            dropStack.add(card);
+        if (CardModel.getFunctionById(actionCache) == CardModel.function_id_s_viper_raid) {
+            int[] droppedCard = messageIn.getIntegerArray(USED_CARDS);
+            for (int i = 0; i < droppedCard.length; i++) {
+                dropStack.add(droppedCard[i]);
+            }
+            if (droppedCard.length < 2) {
+                EsObject toVipperred = new EsObject();
+                toVipperred.setInteger(code_client_action_required, ac_require_magic_hitted);
+                toVipperred.setInteger(HP_CHANGED, -1);
+                this.sendGamePluginMessageToUser(user, toVipperred);
+                
+                
+            } else {
+                EsObject toCurrentPlayer = new EsObject();
+                toCurrentPlayer.setInteger(code_client_action_required, ac_require_play);
+                this.sendGamePluginMessageToUser(currentPlayer, toCurrentPlayer);
+            }
+            
+            actionCache = actionCacheNone;
+        } else {
+            int[] cards = messageIn.getIntegerArray(USED_CARDS);
+            for (int card : cards) {
+                dropStack.add(card);
+            }
+            actionCache = actionCacheNone;
+            EsObject obj = new EsObject();
+            obj.setInteger(code_client_action_required, ac_require_play);
+            sendGamePluginMessageToUser(currentPlayer, obj);
         }
-        actionCache = actionCacheNone;
-        EsObject obj = new EsObject();
-        obj.setInteger(code_client_action_required, ac_require_play);
-        sendGamePluginMessageToUser(currentPlayer, obj);
     }
     
     
