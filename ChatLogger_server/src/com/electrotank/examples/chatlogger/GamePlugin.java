@@ -726,6 +726,12 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         obj.setInteger(code_client_action_required, ac_require_s_ViperRaid);
         this.sendGamePluginMessageToUser(target, obj);
         
+        EsObject toUser = new EsObject();
+        toUser.setInteger(code_action, ACTION_SP_LOST);
+        toUser.setInteger(code_client_action_required, ac_require_s_skill_used_sp_lost);
+        toUser.setInteger(SP_CHANGED, -2);
+        this.sendGamePluginMessageToUser(user, toUser);
+        
     }
     
     
