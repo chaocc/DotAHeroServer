@@ -18,7 +18,7 @@ public class Player {
     
     
     public static Player getPlayerById(int id, String userName) {
-    
+        
         Player player = players.get(id);
         if (player == null) {
             player = new Player(id, userName);
@@ -32,22 +32,22 @@ public class Player {
     
     
     private String
-            playerName,
-            heroName;
+                                        playerName,
+                                        heroName;
     private int
-            heroId,
-            heroType,
-            hpLimit,
-            spLimit,
-            handCardLimit,
-            hp,
-            sp;
+                                        heroId,
+                                        heroType,
+                                        hpLimit,
+                                        spLimit,
+                                        handCardLimit,
+                                        hp,
+                                        sp;
     
     
-    private int[] weapons;
-    private HeroSkill[] skills;
+    private int[]                       weapons;
+    private HeroSkill[]                 skills;
     public static final int
-            function_id_p_fierySoul = 105,// 炙魂                                  强化不消耗怒气                 //Slayer   秀逗魔导士
+                                        function_id_p_fierySoul = 105,// 炙魂                                  强化不消耗怒气                 //Slayer   秀逗魔导士
             function_id_p_lagunaBlade = 106,// 神灭斩                       2张红色手牌当神灭斩
             function_id_p_fanaticismHeart = 107,// 狂热之心          魔法牌使用成功后本回合攻击次数+1
             function_id_p_netherSwap = 60,//移形换位                             抽对方一张牌, 给对方一张牌, 但不能是同一张牌               //VengefulSpirit   复仇之魂
@@ -69,16 +69,16 @@ public class Player {
     
     class HeroSkill {
         
-        private int id;
-        private String name;
-        private int skillType;
+        private int     id;
+        private String  name;
+        private int     skillType;
         private boolean isMandatorySkill;
         private boolean canBeDispelled;
-        private int[] whenToUse;
+        private int[]   whenToUse;
         
         
         public HeroSkill(int id, String name, int skillType, boolean isMandatorySkill, boolean canBeDispelled, int[] whenToUse) {
-        
+            
             this.id = id;
             this.name = name;
             this.skillType = skillType;
@@ -89,37 +89,37 @@ public class Player {
         
         
         public int getId() {
-        
+            
             return id;
         }
         
         
         public String getName() {
-        
+            
             return name;
         }
         
         
         public int getSkillType() {
-        
+            
             return skillType;
         }
         
         
         public boolean isMandatorySkill() {
-        
+            
             return isMandatorySkill;
         }
         
         
         public boolean isCanBeDispelled() {
-        
+            
             return canBeDispelled;
         }
         
         
         public int[] getWhenToUse() {
-        
+            
             return whenToUse;
         }
     }
@@ -136,14 +136,14 @@ public class Player {
     // 17, "kAntimage")
     
     private Player(int id, String userName) {
-    
+        
         this.playerName = userName;
         initPlayerFromPlist(id);
     }
     
     
     private void initPlayerFromPlist(int id) {
-    
+        
         this.heroId = id;
         handCards = new ArrayList<Integer>();
         weapons = new int[2];
@@ -188,7 +188,7 @@ public class Player {
     /** only for test */
     // TODO comment out to go production
     public static void main(String... args) throws Exception {
-    
+        
         NSArray heroArray = (NSArray) PropertyListParser.parse(new File("doc/HeroCardArray.xml"));
         NSDictionary hero = (NSDictionary) heroArray.array()[2];
         //        System.out.println("heroName: " + hero.get("heroName").getValue().toString());
@@ -214,23 +214,23 @@ public class Player {
      *            player's heroName, skills are read from configured file
      */
     private Player(String playerName, int order, String fileName) {
-    
+        
     }
     
     
     private Player(String playerName, String fileName) {
-    
+        
     }
     
     
     public List<Integer> getHandCards() {
-    
+        
         return handCards;
     }
     
     
     public int[] getHandCardsArray() {
-    
+        
         int[] result = new int[handCards.size()];
         for (int i = 0; i < result.length; i++) {
             result[i] = handCards.get(i);
@@ -241,20 +241,28 @@ public class Player {
     
     
     public void setHandCards(List<Integer> handCards) {
-    
+        
         this.handCards = handCards;
     }
     
+    public void setHandCardArray(int[] handCardArray) {
+        if (this.handCards == null) {
+            this.handCards = new ArrayList<Integer>();
+        }
+        for (int i = 0; i < handCardArray.length; i++) {
+            handCards.add(handCardArray[i]);
+        }
+    }
     
     // dealing hand cards
     public List<Integer> addHandCard(int card) {
-    
+        
         return handCards;
     }
     
     
     public List<Integer> addHandCards(int[] cards) {
-    
+        
         if (cards != null) {
             for (int card : cards) {
                 this.handCards.add(card);
@@ -266,14 +274,14 @@ public class Player {
     
     
     public List<Integer> removeCard(int card) {
-    
+        
         this.handCards.remove(card);
         return handCards;
     }
     
     
     public List<Integer> removeCards(int[] cards) {
-    
+        
         if (cards != null) {
             for (int card : cards) {
                 if (this.handCards.contains(cards)) {
@@ -286,20 +294,20 @@ public class Player {
     
     
     public int getHp() {
-    
+        
         return hp;
     }
     
     
     public int setHp(int hp) {
-    
+        
         this.hp = hp;
         return this.hp;
     }
     
     
     public int hpUp(int up) {
-    
+        
         this.hp += up;
         if (hp > hpLimit) {
             hp = hpLimit;
@@ -310,7 +318,7 @@ public class Player {
     
     
     public int hpDrop(int drop) {
-    
+        
         this.hp -= drop;
         if (hp < 0) {
             hp = 0;
@@ -320,13 +328,13 @@ public class Player {
     
     
     public int getSp() {
-    
+        
         return sp;
     }
     
     
     public int spUp(int up) {
-    
+        
         this.sp += up;
         if (sp > spLimit) {
             sp = spLimit;
@@ -336,7 +344,7 @@ public class Player {
     
     
     public int spDrop(int drop) {
-    
+        
         this.sp -= drop;
         if (sp < 0) {
             sp = 0;
@@ -346,7 +354,7 @@ public class Player {
     
     
     public void setSp(int sp) {
-    
+        
         if (sp >= spLimit) {
         
         return; }
@@ -355,61 +363,61 @@ public class Player {
     
     
     public int[] getWeapons() {
-    
+        
         return weapons;
     }
     
     
     public void setWeapons(int[] weapons) {
-    
+        
         this.weapons = weapons;
     }
     
     
     public String getPlayerName() {
-    
+        
         return playerName;
     }
     
     
     public String getHeroName() {
-    
+        
         return heroName;
     }
     
     
     public int getHeroId() {
-    
+        
         return heroId;
     }
     
     
     public int getHeroType() {
-    
+        
         return heroType;
     }
     
     
     public int getHpLimit() {
-    
+        
         return hpLimit;
     }
     
     
     public int getSpLimit() {
-    
+        
         return spLimit;
     }
     
     
     public int getHandCardLimit() {
-    
+        
         return handCardLimit;
     }
     
     
     public HeroSkill[] getSkills() {
-    
+        
         return skills;
     }
     
