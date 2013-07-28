@@ -215,7 +215,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         /** Slayer   秀逗魔导士 */
             case Player.function_id_p_fierySoul: {
                 
-                break;// 炙魂                                  强化不消耗怒气
+                break;// 炙魂        强化不消耗怒气
             }
             case Player.function_id_p_lagunaBlade: {
                 
@@ -795,8 +795,6 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         EsObject toTarget = new EsObject();
         toTarget.setInteger(code_client_action_required, ac_require_shenmied);
         sendGamePluginMessageToUser(obj.getStringArray(TARGET_PLAYERS)[0], toTarget);
-        
-        
         //        attack(user, obj);
         
     }
