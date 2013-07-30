@@ -43,6 +43,16 @@ public interface Params {
             kCardColorRed = 1, // 红色
             kCardColorBlack = 2, // 黑色
             type_quipment = 4,
-            type_hand = 5
+            type_hand = 5,
+            
+            
+            hero_id_kSlayer = 21,//秀逗魔导士
+            hero_id_kVengefulSpirit = 12,//复仇之魂
+            hero_id_kBristleback = 2,//刚被兽
+            hero_id_kSacredWarrior = 3,//神灵武士
+            hero_id_kKeeperOfTheLight = 28,//光之守卫
+            hero_id_kAntimage = 17//敌法师
+            
+            
             ;
 }
