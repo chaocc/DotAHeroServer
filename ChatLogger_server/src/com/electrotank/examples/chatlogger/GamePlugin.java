@@ -22,55 +22,57 @@ import com.wolf.dota.component.constants.Params;
 
 public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
-    private int                 timerCallback                    = -1;
-    private List<CharacterEnum> allCharactersForChoose           = new ArrayList<CharacterEnum>();
-    private List<String>        players;
-    private String              currentPlayer;
-    private Player[]            realPlayers;
-    private int[]               playerChoseCharactors;
-    private boolean             gameStarted                      = false;
-    private List<CardModel>     cardStack;
-    private List<Integer>       dropStack;
+    private int timerCallback = -1;
+    private List<CharacterEnum> allCharactersForChoose = new ArrayList<CharacterEnum>();
+    private List<String> players;
+    private String currentPlayer;
+    private Player[] realPlayers;
+    private int[] playerChoseCharactors;
+    private boolean gameStarted = false;
+    private List<CardModel> cardStack;
+    private List<Integer> dropStack;
     
-    private String[]            playerStates;
-    private final String        player_state_character_confirmed = "char_confirmed";
-    private final String        player_state_staked              = "staked";
-    private final String        player_state_waiting_for_stake   = "wait_stake";
+    private String[] playerStates;
+    private final String player_state_character_confirmed = "char_confirmed";
+    private final String player_state_staked = "staked";
+    private final String player_state_waiting_for_stake = "wait_stake";
     // 势力
-    private Integer[]           force;
-    private final int           force_a                          = 1;
-    private final int           force_b                          = 5;
+    private Integer[] force;
+    private final int force_a = 1;
+    private final int force_b = 5;
     
     /******** game state start ********/
-    private final int           playerFlagInGameState            = 1;
-    private final int           stateFlagInGameState             = 0;
-    private final int           gameStage_none                   = -1;
-    private final int           playerIndex_none                 = -1;
-    private int[]               gameState                        = new int[2];
+    private final int playerFlagInGameState = 1;
+    private final int stateFlagInGameState = 0;
+    private final int gameStage_none = -1;
+    private final int playerIndex_none = -1;
+    private int[] gameState = new int[2];
     {
         gameState[stateFlagInGameState] = gameStage_none;
         gameState[playerFlagInGameState] = playerIndex_none;
     }
     
-    private int[]               playerStakes;
+    private int[] playerStakes;
     @SuppressWarnings("unused")
-    private DeskModel           desk;
+    private DeskModel desk;
     
     /******** action caches *********/
-    private final int           actionCacheNone                  = -1;
-    private int                 actionCache                      = actionCacheNone;
-    private int                 additionalEffect                 = actionCacheNone;
-    private String              userCacheNone                    = "";
-    private String              attackerCache                    = userCacheNone;
-    private String              targetCache                      = userCacheNone;
-    private boolean             strengthenCache                  = false;
+    private final int actionCacheNone = -1;
+    private int actionCache = actionCacheNone;
+    private int skillCache = actionCacheNone;
+    private boolean isSkillCache = false;
+    private int additionalEffect = actionCacheNone;
+    private String userCacheNone = "";
+    private String attackerCache = userCacheNone;
+    private String targetCache = userCacheNone;
+    private boolean strengthenCache = false;
     
     
     /******** game state end ********/
     
     @Override
     public void init(EsObjectRO parameters) {
-        
+    
         initCharactorsRandomly();
         getApi().getLogger().debug("GamePlugin initialized");
         //        startTicker();
@@ -79,7 +81,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void initCharactorsRandomly() {
-        
+    
         allCharactersForChoose = Arrays.asList(CharacterEnum.values());
         Collections.shuffle(allCharactersForChoose);
         d.debug("List<CharacterEnum> charactors is ready");
@@ -88,7 +90,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     @Override
     public void request(String user, EsObjectRO message) {
-        
+    
         EsObject messageIn = new EsObject();
         messageIn.addAll(message);
         getApi().getLogger().debug(user + " requests: " + messageIn.toString());
@@ -137,14 +139,18 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         }
     }
     
+    
     private void startFinishTurnDropCardStage(String user, EsObject messageIn) {
+    
         EsObject eso = new EsObject();
         eso.setInteger(code_client_action_required, ac_require_turn_end_drop);
         this.sendGamePluginMessageToUser(user, eso);
         
     }
     
+    
     private void finishTurnDropCard(String user, EsObject meIn) {
+    
         int[] handCards = meIn.getIntegerArray(HAND_CARDS);
         int[] dropCards = meIn.getIntegerArray(USED_CARDS);
         for (int i = 0; i < dropCards.length; i++) {
@@ -156,7 +162,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_choosed_card(String user, EsObject messageIn) {
-        
+    
         int functionId = CardModel.getFunctionById(actionCache);
         switch (functionId) {
             case CardModel.function_id_m_Greed: {
@@ -172,7 +178,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_Chakra_guess(String user, EsObject messageIn) {
-        
+    
         int color = messageIn.getInteger(TARGET_COLOR);
         CardModel preparedCard = cardStack.get(0);
         d.debug(logprefix + "cardStack size : " + cardStack.size());
@@ -194,7 +200,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void continuePlay(String user, EsObject messageIn) {
-        
+    
         EsObject turner = new EsObject();
         turner.setInteger(code_client_action_required, ac_require_play);
         sendGamePluginMessageToUser(currentPlayer, turner);
@@ -203,7 +209,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void usedSkill(String player, EsObject meIn) {
-        
+    
         int[] cards = meIn.getIntegerArray(USED_CARDS);
         if (cards == null || cards.length == 0) {
             EsObject obj = new EsObject();
@@ -218,7 +224,6 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
                 break;// 炙魂        强化不消耗怒气
             }
             case Player.function_id_p_lagunaBlade: {
-                
                 break;// 神灭斩                       2张红色手牌当神灭斩
             }
             case Player.function_id_p_fanaticismHeart: {
@@ -284,7 +289,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void usedCard(String player, EsObject messageIn) {
-        
+    
         int[] cards = messageIn.getIntegerArray(USED_CARDS);
         if (cards == null || cards.length == 0) {
             EsObject obj = new EsObject();
@@ -349,7 +354,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
                 break;
             }
             case CardModel.function_id_s_LagunaBlade: {
-                s_LagunaBlade(player, messageIn);
+                s_LagunaBlade(player, messageIn, false);
                 break;
             }
             case CardModel.function_id_s_viper_raid: {
@@ -361,7 +366,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_EnergyTransport(String player, EsObject messageIn) {
-        
+    
         dropCard(messageIn);
         actionCache = messageIn.getIntegerArray(USED_CARDS)[0];
         strengthenCache = true;
@@ -379,7 +384,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_EnergyTransport_result(String user, EsObject mi) {
-        
+    
         int[] cards = mi.getIntegerArray(DISPATCH_CARDS);
         int startCount = players.indexOf(user);
         for (int i = 0; i < cards.length; i++) {
@@ -426,7 +431,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
      * @param player 出greed那个玩家
      */
     private void m_Greed(String user, EsObject messageIn) {
-        
+    
         dropCard(messageIn);
         actionCache = messageIn.getIntegerArray(USED_CARDS)[0];
         Player player = realPlayers[players.indexOf(user)];
@@ -459,18 +464,18 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     }
     
     
-    boolean greedCaching               = false;
-    int     greedUserChoseTypeCache    = -1;
-    int[]   greedUserChoseIndexCache   = { -1, -1 };
-    int     greedUserChoseEquipIdCache = -1;
-    int     greedTargetChoseIndexCache = -1;
-    String  greedTarget                = userCacheNone;
-    int[]   greedUserHandcards         = new int[] {};
-    int[]   greedTargetHandcards       = new int[] {};
+    boolean greedCaching = false;
+    int greedUserChoseTypeCache = -1;
+    int[] greedUserChoseIndexCache = { -1, -1 };
+    int greedUserChoseEquipIdCache = -1;
+    int greedTargetChoseIndexCache = -1;
+    String greedTarget = userCacheNone;
+    int[] greedUserHandcards = new int[] {};
+    int[] greedTargetHandcards = new int[] {};
     
     
     private synchronized void m_Greed_picked(String user, EsObject messageIn) {
-        
+    
         if (user.equals(currentPlayer)) {
             m_Greed_user_picking(user, messageIn);
         } else {
@@ -499,7 +504,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void clearGreedCacheAndContinuePlay() {
-        
+    
         greedCaching = false;
         greedUserChoseTypeCache = -1;
         greedUserChoseIndexCache = new int[] { -1, -1 };
@@ -518,7 +523,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void objToTarget() {
-        
+    
         EsObject obj = new EsObject();
         obj.setInteger(code_action, ACTION_GREED_TRANSFER_ACTION);
         obj.setInteger(code_client_action_required, ac_require_greed_transfer_card);
@@ -536,7 +541,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private int[] cardIndexToCardId(int[] indexes, int[] idList) {
-        
+    
         int[] result = new int[indexes.length];
         for (int i = 0; i < indexes.length; i++) {
             result[i] = idList[indexes[i]];
@@ -546,7 +551,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void objToUser() {
-        
+    
         d.debug(logprefix + " function: objToUser");
         EsObject obj = new EsObject();
         obj.setInteger(code_action, ACTION_GREED_TRANSFER_ACTION);
@@ -563,7 +568,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_Greed_target_picking(String user, EsObject messageIn) {
-        
+    
         greedCaching = !greedCaching;
         greedTargetChoseIndexCache = messageIn.getIntegerArray(INDEX)[0];
         d.debug("target, " + user + ", " + realPlayers[players.indexOf(user)].getHandCards().toString());
@@ -574,7 +579,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_Greed_user_picking(String user, EsObject messageIn) {
-        
+    
         greedCaching = !greedCaching;
         int type = greedUserChoseTypeCache = messageIn.getInteger(GREED_TYPE);
         switch (type) {
@@ -600,7 +605,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_Fanaticism(String player, EsObject messageIn) {
-        
+    
         int[] cards = messageIn.getIntegerArray(USED_CARDS, new int[] {});
         if (dropStack != null) {
             for (int card : cards) {
@@ -624,7 +629,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_Chakra(String player, EsObject messageIn) {
-        
+    
         int[] cards = messageIn.getIntegerArray(USED_CARDS, new int[] {});
         if (dropStack != null) {
             for (int card : cards) {
@@ -641,7 +646,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_ElunesArrow(String player, EsObject messageIn) {
-        
+    
         int[] cards = messageIn.getIntegerArray(USED_CARDS, new int[] {});
         if (dropStack != null) {
             for (int card : cards) {
@@ -669,7 +674,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_Disarm(String user, EsObject messageIn) {
-        
+    
         String target = messageIn.getStringArray(TARGET_PLAYERS)[0];
         dropCard(messageIn, TARGET_CARD);
         
@@ -692,7 +697,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_Dispel(String user, EsObject obj) {
-        
+    
         actionCache = actionCacheNone;
         additionalEffect = actionCacheNone;
         int[] cards = obj.getIntegerArray(USED_CARDS);
@@ -705,7 +710,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void m_Mislead(String user, EsObject obj) {
-        
+    
         dropCard(obj);
         String[] ps = obj.getStringArray(TARGET_PLAYERS);
         String spLoster = ps[0];
@@ -736,7 +741,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void s_ViperRaid(String user, EsObject messageIn) {
-        
+    
         int usedCard = actionCache = messageIn.getIntegerArray(USED_CARDS)[0];
         dropStack.add(usedCard);
         //        realPlayers[players.indexOf(user)].removeCard(usedCard);
@@ -756,7 +761,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void s_GodsStrength(String user, EsObject obj) {
-        
+    
         additionalEffect = obj.getInteger(code_action);
         int[] cards = obj.getIntegerArray(USED_CARDS);
         if (cards != null) {
@@ -783,9 +788,14 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     }
     
     
-    private void s_LagunaBlade(String user, EsObject obj) {
-        
-        actionCache = obj.getIntegerArray(USED_CARDS)[0];
+    private void s_LagunaBlade(String user, EsObject obj, boolean skill) {
+    
+        if (skill) {
+            skillCache = Player.function_id_p_lagunaBlade;
+            isSkillCache = true;
+        } else {
+            actionCache = obj.getIntegerArray(USED_CARDS)[0];
+        }
         EsObject toUser = new EsObject();
         toUser.setInteger(code_client_action_required, ac_require_s_skill_used_sp_lost);
         toUser.setInteger(SP_CHANGED, -3);
@@ -801,7 +811,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void heal(String user, EsObject obj) {
-        
+    
         obj.setInteger(code_action, ACTION_HP_RESTORE);
         obj.setInteger(HP_CHANGED, 1);
         obj.setInteger(code_client_action_required, ac_require_restored_hp);
@@ -815,7 +825,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void attack(String user, EsObject obj) {
-        
+    
         int[] cards = obj.getIntegerArray(USED_CARDS);
         if (cards != null) {
             for (int card : cards) {
@@ -837,7 +847,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void hitted(String user, EsObject obj) {
-        
+    
         int[] cards = obj.getIntegerArray(USED_CARDS, new int[] {});
         if (cards != null && cards.length > 0) {
             for (int card : cards) {
@@ -849,88 +859,114 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             d.debug("no action cache");
             return;
         }
-        int function = CardModel.getFunctionById(actionCache);
         
-        switch (function) {
-            case CardModel.function_id_normal_attack: {
-                EsObject hurt = new EsObject();
-                int hurtAmount = (1 + additionalHit);
-                hurt.setInteger(code_action, ACTION_CANCEL);
-                hurt.setInteger(code_client_action_required, ac_require_attack_hitted);
-                hurt.setInteger(HP_CHANGED, -hurtAmount);
-                hurt.setInteger(SP_CHANGED, hurtAmount);
-                hurt.setInteger(USED_CARDS, actionCache);
-                sendGamePluginMessageToUser(user, hurt);
-                EsObject attacker = new EsObject();
-                attacker.setInteger(code_client_action_required, ac_require_made_damage);
-                sendGamePluginMessageToUser(attackerCache, attacker);
-                break;
-            }
-            case CardModel.function_id_flame_attack: {
-                EsObject hurt = new EsObject();
-                int hurtAmount = (1 + additionalHit);
-                hurt.setInteger(code_action, ACTION_CANCEL);
-                hurt.setInteger(code_client_action_required, ac_require_attack_hitted);
-                hurt.setInteger(HP_CHANGED, -hurtAmount);
-                hurt.setInteger(SP_CHANGED, hurtAmount + 1);
-                hurt.setInteger(USED_CARDS, actionCache);
-                sendGamePluginMessageToUser(user, hurt);
-                EsObject attacker = new EsObject();
-                attacker.setInteger(code_client_action_required, ac_require_made_damage);
-                sendGamePluginMessageToUser(attackerCache, attacker);
-                break;
-            }
-            case CardModel.function_id_chaos_attack: {
-                EsObject hurt = new EsObject();
-                int hurtAmount = (1 + additionalHit);
-                hurt.setInteger(code_action, ACTION_CANCEL);
-                hurt.setInteger(code_client_action_required, ac_require_attack_hitted);
-                hurt.setInteger(HP_CHANGED, -hurtAmount);
-                hurt.setInteger(SP_CHANGED, hurtAmount);
-                hurt.setInteger(USED_CARDS, actionCache);
-                sendGamePluginMessageToUser(user, hurt);
-                EsObject angry = new EsObject();
-                angry.setInteger(code_action, ACTION_SP_UP);
-                angry.setInteger(code_client_action_required, ac_require_made_damage);
-                angry.setInteger(SP_CHANGED, 1);
-                sendGamePluginMessageToUser(attackerCache, angry);
-                break;
-            }
-            case CardModel.function_id_s_LagunaBlade: {
-                EsObject hurt = new EsObject();
-                hurt.setInteger(code_client_action_required, ac_require_magic_hitted);
-                int[] evations = obj.getIntegerArray(USED_CARDS, new int[] {});
-                int damageAmount = 3 - evations.length;
-                dropCard(obj);
-                hurt.setInteger(SP_CHANGED, damageAmount);
-                hurt.setInteger(HP_CHANGED, -damageAmount);
-                sendGamePluginMessageToUser(user, hurt);
-                
-                EsObject hurter = new EsObject();
-                hurter.setInteger(code_client_action_required, ac_require_play);
-                sendGamePluginMessageToUser(currentPlayer, hurter);
-                break;
-            }
-            case CardModel.function_id_m_ElunesArrow: {
-                EsObject hurt = new EsObject();
-                int hurtAmount = 1;
-                hurt.setInteger(code_action, ACTION_CANCEL);
-                hurt.setInteger(code_client_action_required, ac_require_magic_hitted);
-                hurt.setInteger(HP_CHANGED, -hurtAmount);
-                hurt.setInteger(SP_CHANGED, hurtAmount);
-                hurt.setInteger(USED_CARDS, actionCache);
-                sendGamePluginMessageToUser(user, hurt);
-                EsObject attacker = new EsObject();
-                attacker.setInteger(code_client_action_required, ac_require_play);
-                sendGamePluginMessageToUser(currentPlayer, attacker);
-                break;
+        
+        if (isSkillCache) {
+            switch (skillCache) {
+                case Player.function_id_p_lagunaBlade: {
+                    EsObject hurt = new EsObject();
+                    hurt.setInteger(code_client_action_required, ac_require_magic_hitted);
+                    int[] evations = obj.getIntegerArray(USED_CARDS, new int[] {});
+                    int damageAmount = 3 - evations.length;
+                    dropCard(obj);
+                    hurt.setInteger(SP_CHANGED, damageAmount);
+                    hurt.setInteger(HP_CHANGED, -damageAmount);
+                    sendGamePluginMessageToUser(user, hurt);
+                    
+                    EsObject hurter = new EsObject();
+                    hurter.setInteger(code_client_action_required, ac_require_play);
+                    sendGamePluginMessageToUser(currentPlayer, hurter);
+                    break;
+                }
             }
             
+            isSkillCache = false;
+            skillCache = actionCacheNone;
+        } else {
+            
+            int function = CardModel.getFunctionById(actionCache);
+            
+            switch (function) {
+                case CardModel.function_id_normal_attack: {
+                    EsObject hurt = new EsObject();
+                    int hurtAmount = (1 + additionalHit);
+                    hurt.setInteger(code_action, ACTION_CANCEL);
+                    hurt.setInteger(code_client_action_required, ac_require_attack_hitted);
+                    hurt.setInteger(HP_CHANGED, -hurtAmount);
+                    hurt.setInteger(SP_CHANGED, hurtAmount);
+                    hurt.setInteger(USED_CARDS, actionCache);
+                    sendGamePluginMessageToUser(user, hurt);
+                    EsObject attacker = new EsObject();
+                    attacker.setInteger(code_client_action_required, ac_require_made_damage);
+                    sendGamePluginMessageToUser(attackerCache, attacker);
+                    break;
+                }
+                case CardModel.function_id_flame_attack: {
+                    EsObject hurt = new EsObject();
+                    int hurtAmount = (1 + additionalHit);
+                    hurt.setInteger(code_action, ACTION_CANCEL);
+                    hurt.setInteger(code_client_action_required, ac_require_attack_hitted);
+                    hurt.setInteger(HP_CHANGED, -hurtAmount);
+                    hurt.setInteger(SP_CHANGED, hurtAmount + 1);
+                    hurt.setInteger(USED_CARDS, actionCache);
+                    sendGamePluginMessageToUser(user, hurt);
+                    EsObject attacker = new EsObject();
+                    attacker.setInteger(code_client_action_required, ac_require_made_damage);
+                    sendGamePluginMessageToUser(attackerCache, attacker);
+                    break;
+                }
+                case CardModel.function_id_chaos_attack: {
+                    EsObject hurt = new EsObject();
+                    int hurtAmount = (1 + additionalHit);
+                    hurt.setInteger(code_action, ACTION_CANCEL);
+                    hurt.setInteger(code_client_action_required, ac_require_attack_hitted);
+                    hurt.setInteger(HP_CHANGED, -hurtAmount);
+                    hurt.setInteger(SP_CHANGED, hurtAmount);
+                    hurt.setInteger(USED_CARDS, actionCache);
+                    sendGamePluginMessageToUser(user, hurt);
+                    EsObject angry = new EsObject();
+                    angry.setInteger(code_action, ACTION_SP_UP);
+                    angry.setInteger(code_client_action_required, ac_require_made_damage);
+                    angry.setInteger(SP_CHANGED, 1);
+                    sendGamePluginMessageToUser(attackerCache, angry);
+                    break;
+                }
+                case CardModel.function_id_s_LagunaBlade: {
+                    EsObject hurt = new EsObject();
+                    hurt.setInteger(code_client_action_required, ac_require_magic_hitted);
+                    int[] evations = obj.getIntegerArray(USED_CARDS, new int[] {});
+                    int damageAmount = 3 - evations.length;
+                    dropCard(obj);
+                    hurt.setInteger(SP_CHANGED, damageAmount);
+                    hurt.setInteger(HP_CHANGED, -damageAmount);
+                    sendGamePluginMessageToUser(user, hurt);
+                    
+                    EsObject hurter = new EsObject();
+                    hurter.setInteger(code_client_action_required, ac_require_play);
+                    sendGamePluginMessageToUser(currentPlayer, hurter);
+                    break;
+                }
+                case CardModel.function_id_m_ElunesArrow: {
+                    EsObject hurt = new EsObject();
+                    int hurtAmount = 1;
+                    hurt.setInteger(code_action, ACTION_CANCEL);
+                    hurt.setInteger(code_client_action_required, ac_require_magic_hitted);
+                    hurt.setInteger(HP_CHANGED, -hurtAmount);
+                    hurt.setInteger(SP_CHANGED, hurtAmount);
+                    hurt.setInteger(USED_CARDS, actionCache);
+                    sendGamePluginMessageToUser(user, hurt);
+                    EsObject attacker = new EsObject();
+                    attacker.setInteger(code_client_action_required, ac_require_play);
+                    sendGamePluginMessageToUser(currentPlayer, attacker);
+                    break;
+                }
+                
+            }
+            
+            actionCache = actionCacheNone;
+            attackerCache = "";
+            targetCache = "";
         }
-        
-        actionCache = actionCacheNone;
-        attackerCache = "";
-        targetCache = "";
     }
     
     
@@ -943,7 +979,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void evasion(String user, EsObject obj) {
-        
+    
         int[] cards = obj.getIntegerArray(USED_CARDS);
         if (cards != null) {
             for (int card : cards) {
@@ -960,7 +996,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void dropCard(EsObject obj, String key) {
-        
+    
         int[] cards = obj.getIntegerArray(key, new int[] {});
         
         for (int card : cards) {
@@ -971,13 +1007,13 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void dropCard(EsObject obj) {
-        
+    
         dropCard(obj, USED_CARDS);
     }
     
     
     private void user_action_drop_cards(String user, EsObject messageIn) {
-        
+    
         if (CardModel.getFunctionById(actionCache) == CardModel.function_id_s_viper_raid) {
             int[] droppedCard = messageIn.getIntegerArray(USED_CARDS);
             for (int i = 0; i < droppedCard.length; i++) {
@@ -1015,7 +1051,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     // todo user also need drop his/her cards
     
     private void initSizes() {
-        
+    
         playerChoseCharactors = new int[players.size()];
         force = new Integer[players.size()];
         playerStates = new String[players.size()];
@@ -1027,7 +1063,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void gotStakeCard(String user, EsObject messageIn) {
-        
+    
         playerStates[players.indexOf(user)] = player_state_staked;
         playerStakes[players.indexOf(user)] = messageIn
                 .getIntegerArray(USED_CARDS)[0];
@@ -1060,6 +1096,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void gameTurn(int playerIndex) {
+    
         int pIndex = playerIndex;
         if (pIndex >= players.size()) {
             pIndex = 0;
@@ -1072,7 +1109,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void updateRequiredAction(String player, int actionRequired) {
-        
+    
         d.debug("sending state : " + actionRequired);
         EsObject obj = new EsObject();
         obj.setInteger(code_client_action_required, actionRequired);
@@ -1086,7 +1123,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     /**************** logic before game start start ***************************/
     
     private void initCardStack() {
-        
+    
         cardStack = new LinkedList<CardModel>(Arrays.asList(CardModel.values()));
         Collections.shuffle(cardStack);
         getApi().getLogger().debug("card stack is ready to use,");
@@ -1095,24 +1132,24 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void dispatchHandCards(String player) {
-        
+    
         dispatchHandCards(player, 2);
     }
     
     
     private void dispatchHandCards(String player, int howMany) {
-        
+    
         dispatchHandCards(player, howMany, ACTION_SEND_CARDS);
     }
     
     
     final int
-              testCard_1 = 18,
-                         testCard_2 = 19;
+            testCard_1 = 18,
+            testCard_2 = 19;
     
     
     private void dispatchHandCards(String player, int howmany, int action) {
-        
+    
         EsObject obj = new EsObject();
         int[] cards = new int[howmany + 2];
         for (int i = 0; i < howmany + 2; i++) {
@@ -1147,7 +1184,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private synchronized void choseCharacter(String user, EsObject messageIn) {
-        
+    
         getApi().getLogger().debug(logprefix + "set to user : " + user + " of index in players list : " + players.indexOf(user));
         playerChoseCharactors[players.indexOf(user)] = messageIn.getInteger(SELECTED_HERO_ID);
         
@@ -1158,7 +1195,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         for (int i = 0; i < players.size(); i++) {
             String playerState = playerStates[i];
             if (playerState == null ||
-                !playerState.equals(player_state_character_confirmed)) { return; }
+                    !playerState.equals(player_state_character_confirmed)) { return; }
         }
         sendAllHeros();
         initRealPlayers();
@@ -1177,17 +1214,17 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void initRealPlayers() {
-        
+    
         for (int i = 0; i < playerChoseCharactors.length; i++) {
             realPlayers[i] = Player.getPlayerById(playerChoseCharactors[i],
-                                                  players.get(i));
+                    players.get(i));
         }
     }
     
     
     @SuppressWarnings("unused")
     private int nextPlayer() {
-        
+    
         actionCache = actionCacheNone;
         additionalEffect = actionCacheNone;
         int nextPlayerIndex = gameState[playerFlagInGameState] + 1;
@@ -1200,7 +1237,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void sendAllHeros() {
-        
+    
         EsObject obj = new EsObject();
         obj.setInteger(code_action, ACTION_ALL_HEROS);
         obj.setIntegerArray(ALL_HEROS, playerChoseCharactors);
@@ -1213,7 +1250,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void dispatchForce() {
-        
+    
         EsObject obj = new EsObject();
         List<Integer> forceList = Arrays.asList(new Integer[] { force_a,
                 force_b });
@@ -1249,7 +1286,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         Collections.shuffle(forceList);
         force = forceList.toArray(new Integer[players.size()]);
         getApi().getLogger().debug(
-                                   "dispatching force: " + Arrays.toString(force));
+                "dispatching force: " + Arrays.toString(force));
         
         obj.setInteger(code_action, ACTION_DISPATCH_FORCE);
         obj.setInteger(STACK_CARD_COUNT, cardStack.size());
@@ -1262,40 +1299,40 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void reorderUsers() {
-        
+    
         for (UserValue user : getApi().getUsersInRoom(getApi().getZoneId(),
-                                                      getApi().getRoomId())) {
+                getApi().getRoomId())) {
             players.add(user.getUserName());
         }
     }
     
     
     private void chooseCharacters(EsObject obj) {
-        
+    
         getApi().getLogger().debug("players = " + players.size());
         for (int i = 0; i < players.size(); i++) {
             int[] charsToChoose = new int[3];
             String player = players.get(i);
             for (int choosingCount = 0; choosingCount < charsToChoose.length; choosingCount++) {
                 int shouldAddCharacterCount = i * charsToChoose.length
-                                              + choosingCount;
+                        + choosingCount;
                 getApi().getLogger()
                         .debug(
-                               "charsToChoose = "
-                                       + Arrays.toString(charsToChoose) + "\n"
-                                       + "choosingCount = " + choosingCount
-                                       + "\n"
-                                       + "shouldAddCharacterCount = "
-                                       + shouldAddCharacterCount);
+                                "charsToChoose = "
+                                        + Arrays.toString(charsToChoose) + "\n"
+                                        + "choosingCount = " + choosingCount
+                                        + "\n"
+                                        + "shouldAddCharacterCount = "
+                                        + shouldAddCharacterCount);
                 charsToChoose[choosingCount] = allCharactersForChoose.get(
-                                                                          shouldAddCharacterCount).getId();
+                        shouldAddCharacterCount).getId();
             }
             obj.setInteger(code_action, ACTION_CHOOSE_CHARACTER);
             obj.setIntegerArray(CHARACTORS_TO_CHOOSE, charsToChoose);
             sendGamePluginMessageToUser(player, obj);
             getApi().getLogger().debug(
-                                       "Characters " + Arrays.toString(charsToChoose)
-                                               + " are sending to player " + player);
+                    "Characters " + Arrays.toString(charsToChoose)
+                            + " are sending to player " + player);
         }
         
     }
@@ -1310,7 +1347,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     // }
     
     private void sendGamePluginMessageToUser(String user, EsObject obj) {
-        
+    
         d.debug(logprefix + "sending plugin message to user " + user + " with obj: \r\n" + obj);
         if (cardStack != null) {
             obj.setInteger(STACK_CARD_COUNT, cardStack.size());
@@ -1335,14 +1372,14 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     @Override
     public void destroy() {
-        
+    
         getApi().cancelScheduledExecution(timerCallback);
         super.destroy();
     }
     
     
     public void tick() {
-        
+    
         EsObject message = new EsObject();
         message.setString(action, action_tick);
         message.setInteger(code_action, -9999999);
@@ -1361,7 +1398,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     private class D {
         
         public void debug(String message) {
-            
+        
             getApi().getLogger().debug(message);
         }
     }
