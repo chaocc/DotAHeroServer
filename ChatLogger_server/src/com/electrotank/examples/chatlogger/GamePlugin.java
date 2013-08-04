@@ -127,7 +127,11 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         } else if (action == ACTION_GUESS_GOLOR) {
             m_Chakra_guess(user, messageIn);
         } else if (action == ACTION_CHOOSED_CARD) {
-            m_choosed_card(user, messageIn);
+            if (isSkillCache) {
+                p_netherSwapChoosedCard(user, messageIn);
+            } else {
+                m_choosed_card(user, messageIn);
+            }
         } else if (action == ACTION_RESPOND_shenmied) {
             hitted(user, messageIn);
         } else if (action == ACTION_USED_SKILL) {
@@ -136,7 +140,32 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             finishTurnDropCard(user, messageIn);
         } else if (action == ACTION_START_TURN_FINISH_STAGE) {
             startFinishTurnDropCardStage(user, messageIn);
+        } else if (action == ACTION_SPECIFY_INDEX) {
+            specifyIndex(user, messageIn);
         }
+    }
+    
+    
+    private void specifyIndex(String user, EsObject messageIn) {//lifeBreak
+    
+        int[] cardIndexes = messageIn.getIntegerArray(INDEX, new int[] {});
+        //        int[] cardIds = new int[cardIndexes.length];
+        //        Player p = realPlayers[players.indexOf(targetCache)];
+        //        
+        //        for (int i = 0; i < cardIndexes.length; i++) {
+        //            cardIds[i] = p.getHandCards().get(cardIndexes[i]);
+        //        }
+        
+        EsObject toTarget = new EsObject();
+        toTarget.setInteger(code_client_action_required, ac_require_p_drop_card_by_index);
+        toTarget.setIntegerArray(INDEX, cardIndexes);
+        this.sendGamePluginMessageToUser(targetCache, toTarget);
+        
+        
+        isSkillCache = false;
+        skillCache = actionCacheNone;
+        targetCache = userCacheNone;
+        
     }
     
     
@@ -225,30 +254,18 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             }
             /** VengefulSpirit   复仇之魂 */
             case Player.function_id_p_netherSwap: {
-                
-                break;//移形换位             抽对方一张牌, 给对方一张牌, 但不能是同一张牌
-            }
-            case Player.function_id_p_waveOfTerror: {
-                
-                break;//恐怖波动               每获得1点怒气, 可以摸2张牌
+                p_netherSwap(player, meIn);
+                break;//移形换位    
             }
             /** Bristleback   刚被兽 */
             case Player.function_id_p_warpath: {
                 
                 break;//战意,  每受到一次伤害, 可进行一次判定, 若为红色, 则可指定任何一个人弃置1闪或对其造成1伤害
             }
-            case Player.function_id_p_bristlebackSkill: {
-                
-                break;//刚毛后背            自己每次受到伤害>1的话, 则它-1
-            }
             /** SacredWarrior    神灵武士 */
             case Player.function_id_p_lifeBreak: {
-                
-                break;//牺牲                    对自己造成1点伤害, 弃置指定角色2张手牌
-            }
-            case Player.function_id_p_burningSpear: {
-                
-                break;//沸血长矛,    若血量<=2, 则攻击造成的伤害+1
+                p_lifeBreak(player, meIn);
+                break;//牺牲       对自己造成1点伤害, 弃置指定角色2张手牌
             }
             /** KeeperOfTheLight    光之守卫 */
             case Player.function_id_p_illuminate: {
@@ -277,12 +294,80 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
                 break;//法力虚空         3怒气,  造成X = 手牌上限-手牌数         点伤害
             }
         }
+    }
+    
+    
+    /**
+     * 移形换位,   抽对方一张牌, 给对方一张牌, 但不能是同一张牌
+     * 1, 发来移形换位,  + target,
+     * 2, 返回给swap user 手牌数,  
+     * 3, swap user 发来抽的index, 给的id,  
+     * 4, 发给swap target要弃掉的index和给他的牌
+     * 5, 发给swap user continue play
+     */
+    private void p_netherSwap(String player, EsObject meIn) {
+    
+        isSkillCache = true;
+        targetCache = meIn.getStringArray(TARGET_PLAYERS)[0];
+        //        int swapTargetHandcardCount = realPlayers[players.indexOf(targetCache)].getHandCards().size();
+        EsObject obj = new EsObject();
+        obj.setInteger(code_client_action_required, ac_require_p_netherSwap_user_picking);
+        this.sendGamePluginMessageToUser(player, obj);
+        
+    }
+    
+    
+    private void p_netherSwapChoosedCard(String user, EsObject message) {
+    
+        EsObject toSwapTarget = new EsObject();
+        toSwapTarget.setInteger(code_client_action_required, ac_require_p_swap_cards);
+        toSwapTarget.setIntegerArray(INDEX, message.getIntegerArray(INDEX));
+        toSwapTarget.setIntegerArray(DISPATCH_CARDS, message.getIntegerArray(USED_CARDS));
+        
+        this.sendGamePluginMessageToUser(targetCache, toSwapTarget);
+        
+        isSkillCache = false;
+        targetCache = userCacheNone;
+        
+        // TODO Auto-generated method stub
+        
+    }
+    
+    
+    /**
+     * 拿到出了技能后
+     * 1, 先发给技能使用者掉血和摸牌
+     * 2, 收到ACTION_SPECIFY_INDEX, 指定弃掉对手的牌的index
+     * 3, 发给对手要弃掉指定的index
+     * 4, 对手再发来弃掉的牌的id们,
+     * 5, 发给使用者继续play
+     * 
+     */
+    private void p_lifeBreak(String player, EsObject meIn) {
+    
+        isSkillCache = true;
+        skillCache = Player.function_id_p_lifeBreak;
+        targetCache = meIn.getStringArray(TARGET_PLAYERS, new String[] { userCacheNone })[0];
+        
+        
+        EsObject toLifeBreakUser = new EsObject();
+        toLifeBreakUser.setInteger(code_client_action_required, ac_require_p_specify_target_index);
+        toLifeBreakUser.setInteger(HP_CHANGED, -1);
+        toLifeBreakUser.setInteger(TARGET_CARD_COUNT, 2);
+        this.sendGamePluginMessageToUser(currentPlayer, toLifeBreakUser);
+        
+        //        EsObject toLifeBreakTarget = new EsObject();
+        //        toLifeBreakTarget.setInteger(code_client_action_required, ac_require_p_drop_card_by_index);
+        //        toLifeBreakTarget.setIntegerArray(name, value);
+        
         
     }
     
     
     private void usedCard(String player, EsObject messageIn) {
     
+        syncHp(player, messageIn);
+        
         int[] cards = messageIn.getIntegerArray(USED_CARDS);
         if (cards == null || cards.length == 0) {
             EsObject obj = new EsObject();
@@ -294,67 +379,81 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             return;
         }
         realPlayers[players.indexOf(player)].removeCards(cards);
-        int function = CardModel.getFunctionById(cards[0]);
-        switch (function) {
-            case CardModel.function_id_normal_attack:
-            case CardModel.function_id_flame_attack:
-            case CardModel.function_id_chaos_attack: {
-                attack(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_evasion: {
-                evasion(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_heal: {
-                heal(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_m_ElunesArrow: {// done
-                m_ElunesArrow(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_m_Chakra: {// done
-                m_Chakra(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_m_EnergyTransport: {// m_2
-                m_EnergyTransport(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_m_Fanaticism: {// done
-                m_Fanaticism(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_m_Greed: {// did
-                m_Greed(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_m_Mislead: {// did
-                m_Mislead(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_m_Dispel: {// m_6
-                m_Dispel(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_m_Disarm: {// m_7
-                m_Disarm(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_s_GodsStrength: {
-                s_GodsStrength(player, messageIn);
-                break;
-            }
-            case CardModel.function_id_s_LagunaBlade: {
-                s_LagunaBlade(player, messageIn, false);
-                break;
-            }
-            case CardModel.function_id_s_viper_raid: {
-                s_ViperRaid(player, messageIn);
-                break;
+        
+        if (CardModel.isEquipment(CardModel.getFunctionById(cards[0]))) {
+            continuePlay(currentPlayer, new EsObject());
+        } else {
+            
+            int function = CardModel.getFunctionById(cards[0]);
+            switch (function) {
+                case CardModel.function_id_normal_attack:
+                case CardModel.function_id_flame_attack:
+                case CardModel.function_id_chaos_attack: {
+                    attack(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_evasion: {
+                    evasion(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_heal: {
+                    heal(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_m_ElunesArrow: {// done
+                    m_ElunesArrow(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_m_Chakra: {// done
+                    m_Chakra(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_m_EnergyTransport: {// m_2
+                    m_EnergyTransport(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_m_Fanaticism: {// done
+                    m_Fanaticism(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_m_Greed: {// did
+                    m_Greed(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_m_Mislead: {// did
+                    m_Mislead(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_m_Dispel: {// m_6
+                    m_Dispel(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_m_Disarm: {// m_7
+                    m_Disarm(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_s_GodsStrength: {
+                    s_GodsStrength(player, messageIn);
+                    break;
+                }
+                case CardModel.function_id_s_LagunaBlade: {
+                    s_LagunaBlade(player, messageIn, false);
+                    break;
+                }
+                case CardModel.function_id_s_viper_raid: {
+                    s_ViperRaid(player, messageIn);
+                    break;
+                }
             }
         }
+    }
+    
+    
+    private void syncHp(String player, EsObject messageIn) {
+    
+        Player p = realPlayers[players.indexOf(player)];
+        p.setHp(messageIn.getInteger(HP, 1));
+        
     }
     
     
@@ -819,7 +918,12 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         obj.setInteger(code_action, ACTION_HP_RESTORE);
         obj.setInteger(HP_CHANGED, 1);
         obj.setInteger(code_client_action_required, ac_require_restored_hp);
-        sendGamePluginMessageToUser(obj.getStringArray(TARGET_PLAYERS)[0], obj);
+        String[] targetPlayers = obj.getStringArray(TARGET_PLAYERS, new String[] { currentPlayer });
+        if (targetPlayers.length > 0) {
+            sendGamePluginMessageToUser(targetPlayers[0], obj);
+        }else{
+            sendGamePluginMessageToUser(currentPlayer, obj);
+        }
         
         EsObject p = new EsObject();
         p.setInteger(code_client_action_required, ac_require_play);
@@ -851,6 +955,7 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     
     private void hitted(String user, EsObject obj) {
+    
         int[] cards = obj.getIntegerArray(USED_CARDS, new int[] {});
         if (cards != null && cards.length > 0) {
             for (int card : cards) {
@@ -858,6 +963,10 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             }
         }
         int additionalHit = CardModel.getFunctionById(additionalEffect) == CardModel.function_id_s_GodsStrength ? 1 : 0;
+        Player p = realPlayers[players.indexOf(currentPlayer)];
+        if (p.getHeroId() == hero_id_kSacredWarrior && p.getHp() <= 2) {
+            additionalHit = additionalHit + 1;
+        }
         
         if (isSkillCache) {
             switch (skillCache) {
@@ -1016,35 +1125,52 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     
     private void user_action_drop_cards(String user, EsObject messageIn) {
     
-        if (CardModel.getFunctionById(actionCache) == CardModel.function_id_s_viper_raid) {
-            int[] droppedCard = messageIn.getIntegerArray(USED_CARDS);
-            for (int i = 0; i < droppedCard.length; i++) {
-                dropStack.add(droppedCard[i]);
+        if (isSkillCache) {
+            switch (skillCache) {
+                case Player.function_id_p_lifeBreak: {
+                    int[] cardIds = messageIn.getIntegerArray(USED_CARDS);
+                    for (int cardId : cardIds) {
+                        dropStack.add(cardId);
+                    }
+                    EsObject obj = new EsObject();
+                    obj.setInteger(code_client_action_required, ac_require_play);
+                    this.sendGamePluginMessageToUser(currentPlayer, obj);
+                    break;
+                }
             }
-            if (droppedCard.length < 2) {
-                EsObject toVipperred = new EsObject();
-                toVipperred.setInteger(code_client_action_required, ac_require_magic_hitted);
-                toVipperred.setInteger(HP_CHANGED, -1);
-                addSp(toVipperred, 1);
-                this.sendGamePluginMessageToUser(user, toVipperred);
-                
-                
-            } else {
-                EsObject toCurrentPlayer = new EsObject();
-                toCurrentPlayer.setInteger(code_client_action_required, ac_require_play);
-                this.sendGamePluginMessageToUser(currentPlayer, toCurrentPlayer);
-            }
-            
-            actionCache = actionCacheNone;
         } else {
-            int[] cards = messageIn.getIntegerArray(USED_CARDS);
-            for (int card : cards) {
-                dropStack.add(card);
+            
+            
+            if (CardModel.getFunctionById(actionCache) == CardModel.function_id_s_viper_raid) {
+                int[] droppedCard = messageIn.getIntegerArray(USED_CARDS);
+                for (int i = 0; i < droppedCard.length; i++) {
+                    dropStack.add(droppedCard[i]);
+                }
+                if (droppedCard.length < 2) {
+                    EsObject toVipperred = new EsObject();
+                    toVipperred.setInteger(code_client_action_required, ac_require_magic_hitted);
+                    toVipperred.setInteger(HP_CHANGED, -1);
+                    addSp(toVipperred, 1);
+                    this.sendGamePluginMessageToUser(user, toVipperred);
+                    
+                    
+                } else {
+                    EsObject toCurrentPlayer = new EsObject();
+                    toCurrentPlayer.setInteger(code_client_action_required, ac_require_play);
+                    this.sendGamePluginMessageToUser(currentPlayer, toCurrentPlayer);
+                }
+                
+                actionCache = actionCacheNone;
+            } else {
+                int[] cards = messageIn.getIntegerArray(USED_CARDS);
+                for (int card : cards) {
+                    dropStack.add(card);
+                }
+                actionCache = actionCacheNone;
+                EsObject obj = new EsObject();
+                obj.setInteger(code_client_action_required, ac_require_play);
+                sendGamePluginMessageToUser(currentPlayer, obj);
             }
-            actionCache = actionCacheNone;
-            EsObject obj = new EsObject();
-            obj.setInteger(code_client_action_required, ac_require_play);
-            sendGamePluginMessageToUser(currentPlayer, obj);
         }
     }
     
@@ -1103,8 +1229,9 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
         if (pIndex >= players.size()) {
             pIndex = 0;
         }
-        
+        d.debug(logprefix + " changing current player from " + currentPlayer);
         currentPlayer = players.get(pIndex);
+        d.debug(logprefix + " changing current player to " + currentPlayer);
         updateRequiredAction(currentPlayer, ac_require_turn_start);
         updateRequiredAction(currentPlayer, ac_require_draw);
     }
@@ -1145,30 +1272,31 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     }
     
     
-    final int
-            testCard_1 = 18,
-            testCard_2 = 19;
+    //    final int
+    //            testCard_1 = 18,
+    //            testCard_2 = 19;
     
     
     private void dispatchHandCards(String player, int howmany, int action) {
     
         EsObject obj = new EsObject();
-        int[] cards = new int[howmany + 2];
-        for (int i = 0; i < howmany + 2; i++) {
+        //        howmany=howmany+2;// only for test
+        int[] cards = new int[howmany];
+        for (int i = 0; i < howmany; i++) {
             if (i < howmany) {
                 cards[i] = cardStack.get(i).getCardId();
                 d.debug(logprefix + "cardStack size : " + cardStack.size());
                 cardStack.remove(0);
                 checkNoMoreCard();
             }
-            else {
-                
-                if (actionCache == actionCacheNone || CardModel.getFunctionById(actionCache) != CardModel.function_id_m_Chakra) {
-                    cards[i] = testCard_1;
-                    cards[i + 1] = testCard_2;
-                }
-                break;
-            }
+            //            else {
+            //                
+            //                if (actionCache == actionCacheNone || CardModel.getFunctionById(actionCache) != CardModel.function_id_m_Chakra) {
+            //                    cards[i] = testCard_1;
+            //                    cards[i + 1] = testCard_2;
+            //                }
+            //                break;
+            //            }
         }
         if (actionCache != actionCacheNone && CardModel.getFunctionById(actionCache) == CardModel.function_id_m_Chakra) {
             obj.setInteger(code_client_action_required, ac_require_somebody_using_magic);
@@ -1371,6 +1499,34 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
     }
     
     
+    // 钢背兽掉血判定
+    private void checkHpForBristleback(String user, EsObject obj) {
+    
+        Player p = realPlayers[players.indexOf(user)];
+        if (p == null) { return; }
+        int heroId = p.getHeroId();
+        int hpChanged = obj.getInteger(HP_CHANGED, 0);
+        if (heroId == hero_id_kBristleback && hpChanged < -1) {
+            obj.setInteger(HP_CHANGED, hpChanged + 1);
+        }
+        
+        
+    }
+    
+    
+    private void sendGamePluginMessageToUser(String user, EsObject obj) {
+    
+        addCardsForSpirit(user, obj);
+        checkHpForBristleback(user, obj);
+        d.debug(logprefix + " current player: " + currentPlayer);
+        d.debug(logprefix + "sending plugin message to user " + user + " with obj: \r\n" + obj);
+        if (cardStack != null) {
+            obj.setInteger(STACK_CARD_COUNT, cardStack.size());
+        }
+        getApi().sendPluginMessageToUser(user, obj);
+    }
+    
+    
     private void checkNoMoreCard() {
     
         if (cardStack.size() < 1) {
@@ -1381,19 +1537,6 @@ public class GamePlugin extends BasePlugin implements Code, Commands, Params {
             dropStack = new ArrayList<Integer>();
         }
         
-    }
-    
-    
-    private void sendGamePluginMessageToUser(String user, EsObject obj) {
-    
-        addCardsForSpirit(user, obj);
-        
-        
-        d.debug(logprefix + "sending plugin message to user " + user + " with obj: \r\n" + obj);
-        if (cardStack != null) {
-            obj.setInteger(STACK_CARD_COUNT, cardStack.size());
-        }
-        getApi().sendPluginMessageToUser(user, obj);
     }
     
     

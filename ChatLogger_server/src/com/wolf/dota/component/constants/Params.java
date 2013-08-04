@@ -30,7 +30,8 @@ public interface Params {
             GREED_LOSE_CARDS = "greedLoseCardIds",
             GREED_SEND_CARDS = "transferedCardIds",
             HAND_CARDS = "handCardIds",
-            USED_SKILL = "usedSkillId"
+            USED_SKILL = "usedSkillId",
+            HP = "heroHP"
             
             
             ;

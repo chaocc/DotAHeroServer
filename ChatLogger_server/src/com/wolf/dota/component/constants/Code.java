@@ -40,6 +40,7 @@ public interface Code {
             ACTION_RESPOND_shenmied = 25,
             ACTION_TURN_FINISH_DROP_CARD = 27,
             ACTION_START_TURN_FINISH_STAGE = 26,
+            ACTION_SPECIFY_INDEX = 29,
             ACTION_USED_SKILL = 30,
             
             
@@ -92,7 +93,7 @@ public interface Code {
             kPlayerStateIsDying = 13, // 濒死状态
             ac_require_made_damage = 14, // 只有杀, 造成1次伤害
             kPlayerStateIsDead = 15, // 已死亡
-            ac_require_arrow_drop_card = 16, // 成为任意1张魔法牌的目标时
+            ac_require_arrow_drop_card = 16,
             kPlayerStateTargetOfHeroSkill = 17, // 成为任意英雄技能的目标时
             ac_require_restored_hp = 18,
             ac_require_choosing = 19,
@@ -103,7 +104,11 @@ public interface Code {
             ac_require_sp_got = 24,
             ac_require_s_skill_used_sp_lost = 25,
             ac_require_shenmied = 26,
-            ac_require_s_ViperRaid = 27
+            ac_require_s_ViperRaid = 27,
+            ac_require_p_specify_target_index = 28,
+            ac_require_p_drop_card_by_index = 29,
+            ac_require_p_netherSwap_user_picking = 30,
+            ac_require_p_swap_cards = 31
             
             
             ;
