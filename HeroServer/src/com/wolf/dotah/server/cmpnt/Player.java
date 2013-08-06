@@ -1,4 +1,4 @@
-package com.wolf.dotah.server.component;
+package com.wolf.dotah.server.cmpnt;
 
 
 import java.util.List;

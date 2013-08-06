@@ -6,9 +6,8 @@ import com.electrotank.electroserver5.extensions.BasePlugin;
 import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
-import com.wolf.dotah.server.component.DeskModel;
-import com.wolf.dotah.server.component.Player;
-import com.wolf.dotah.server.util.c;
+import com.wolf.dotah.server.cmpnt.DeskModel;
+import com.wolf.dotah.server.tool.c;
 
 public class DeskController extends BasePlugin {
     private DeskModel desk;

@@ -5,4 +5,4 @@
  * @author Solomon
  *
  */
-package com.wolf.dotah.server.component;
+package com.wolf.dotah.server.cmpnt.util;

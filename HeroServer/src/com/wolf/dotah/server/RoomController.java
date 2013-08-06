@@ -3,7 +3,7 @@ package com.wolf.dotah.server;
 import com.electrotank.electroserver5.extensions.BasePlugin;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
-import com.wolf.dotah.server.util.c;
+import com.wolf.dotah.server.tool.c;
 
 
 public class RoomController extends BasePlugin {
