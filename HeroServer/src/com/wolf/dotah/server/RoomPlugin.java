@@ -3,10 +3,11 @@ package com.wolf.dotah.server;
 import com.electrotank.electroserver5.extensions.BasePlugin;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
+import com.wolf.dotah.server.cmpnt.translator.commands;
 import com.wolf.dotah.server.tool.c;
 
 
-public class RoomController extends BasePlugin {
+public class RoomPlugin extends BasePlugin {
     @Override
     public void init(EsObjectRO parameters) {
         
@@ -21,8 +22,8 @@ public class RoomController extends BasePlugin {
         messageIn.addAll(message);
         d.debug(user + " requests: " + messageIn.toString());
         //TODO 这个逻辑还需要理清楚, 这样太简陋了
-        int action = messageIn.getInteger(c.legacy.action);
-        if (action == c.legacy.action_user_ready) {
+        int action = messageIn.getInteger(c.action);
+        if (action == commands.action.action_user_ready) {
             getApi().sendPluginMessageToUser(user, messageIn);
         }
     }

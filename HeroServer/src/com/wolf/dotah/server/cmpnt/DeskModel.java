@@ -4,7 +4,7 @@ package com.wolf.dotah.server.cmpnt;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.wolf.dotah.server.DeskController;
+import com.wolf.dotah.server.DeckPlugin;
 import com.wolf.dotah.testframework.User;
 
 
@@ -14,10 +14,10 @@ public class DeskModel {
     
     List<Player> players;
     
-    private DeskController controller;
+    private DeckPlugin controller;
     private Integer[] fakeHeroIds = { 21, 12, 2, 3, 28, 17 };
     
-    public DeskModel(DeskController deskController) {
+    public DeskModel(DeckPlugin deskController) {
         // 21, 12, 2, 3, 28, 17
         
         // pick ( 3* player size ) heros for choosing
