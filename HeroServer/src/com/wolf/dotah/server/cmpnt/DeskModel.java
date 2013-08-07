@@ -14,7 +14,7 @@ public class DeskModel {
     
     List<Player> players;
     
-    private DeckPlugin controller;
+    private DeckPlugin dispatcher;
     private Integer[] fakeHeroIds = { 21, 12, 2, 3, 28, 17 };
     
     public DeskModel(DeckPlugin deskController) {
@@ -27,17 +27,17 @@ public class DeskModel {
         //TODO 移到 Players里
         players = new ArrayList<Player>();
         
-        this.controller = deskController;
+        this.dispatcher = deskController;
         int userIndex = 0;
         for (String userName : deskController.getApi().getUsers()) {
-            Player player = new Player(controller);
+            Player player = new Player(dispatcher);
             player.setUserName(userName);
             List<Integer> heroIdsForChoose = new ArrayList<Integer>();
             for (int i = 0; i < 3; i++) {
                 int heroIndex = i + 3 * userIndex;
                 heroIdsForChoose.add(heroIndex);
             }
-            player.setHerosForChoosing(heroIdsForChoose);
+//            player.setHerosForChoosing(heroIdsForChoose);
             players.add(player);
             userIndex++;
         }
@@ -55,7 +55,7 @@ public class DeskModel {
     public Player getPlayerByUser(User user) {
         
         
-        return new Player(controller);
+        return new Player(dispatcher);
         
     }
     

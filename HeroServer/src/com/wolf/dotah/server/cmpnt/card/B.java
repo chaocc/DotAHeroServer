@@ -1,5 +1,6 @@
 package com.wolf.dotah.server.cmpnt.card;
 
-public class Equipment {
+
+public class B {
     
 }

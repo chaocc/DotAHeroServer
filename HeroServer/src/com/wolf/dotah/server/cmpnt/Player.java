@@ -4,6 +4,12 @@ package com.wolf.dotah.server.cmpnt;
 import java.util.List;
 
 import com.wolf.dotah.server.DeckPlugin;
+import com.wolf.dotah.server.cmpnt.player.AvailableTargetModel;
+import com.wolf.dotah.server.cmpnt.player.HandCardsModel;
+import com.wolf.dotah.server.cmpnt.player.HeroInfo;
+import com.wolf.dotah.server.cmpnt.player.HpModel;
+import com.wolf.dotah.server.cmpnt.player.SpModel;
+import com.wolf.dotah.server.cmpnt.player.StateModel;
 import com.wolf.dotah.testframework.ClientRequest;
 
 
@@ -14,24 +20,13 @@ public class Player {
     
     
     String userName;
-    List<Integer> herosForChoosing;
-    int heroId;
+    HeroInfo hero;
     
     StateModel state;
     HandCardsModel handCards;
-    HeroModel hero;
-    
-    
-    public int getHeroId() {
-    
-        return heroId;
-    }
-    
-    
-    public void setHeroId(int heroId) {
-    
-        this.heroId = heroId;
-    }
+    HpModel hp;
+    SpModel sp;
+    AvailableTargetModel targets;
     
     
     public String getUserName() {
@@ -43,18 +38,6 @@ public class Player {
     public void setUserName(String userName) {
     
         this.userName = userName;
-    }
-    
-    
-    public List<Integer> getHerosForChoosing() {
-    
-        return herosForChoosing;
-    }
-    
-    
-    public void setHerosForChoosing(List<Integer> herosForChoosing) {
-    
-        this.herosForChoosing = herosForChoosing;
     }
     
     

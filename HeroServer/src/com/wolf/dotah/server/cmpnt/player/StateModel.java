@@ -1,11 +1,12 @@
-package com.wolf.dotah.server.cmpnt;
+package com.wolf.dotah.server.cmpnt.player;
 
 
 import java.util.List;
 
 
 /**
- * 每个Player 里都有一个 state, 来表示当前的状态
+ * 每个Player 里都有一个 state, 来表示当前处于的play状态,
+ * free play 或者 choosing 等
  * @author Solomon
  *
  */
