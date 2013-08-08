@@ -1,7 +1,7 @@
 package com.wolf.dotah.server.cmpnt.card;
 
 
-public class M extends Card {
+public class W extends E {
     
-
+    
 }

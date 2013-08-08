@@ -1,15 +1,14 @@
 package com.wolf.dotah.server.cmpnt;
 
 
-import java.util.List;
-
-import com.wolf.dotah.server.DeckPlugin;
+import com.wolf.dotah.server.TablePlugin;
 import com.wolf.dotah.server.cmpnt.player.AvailableTargetModel;
+import com.wolf.dotah.server.cmpnt.player.Equipments;
 import com.wolf.dotah.server.cmpnt.player.HandCardsModel;
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.HpModel;
+import com.wolf.dotah.server.cmpnt.player.PlayerState;
 import com.wolf.dotah.server.cmpnt.player.SpModel;
-import com.wolf.dotah.server.cmpnt.player.StateModel;
 import com.wolf.dotah.testframework.ClientRequest;
 
 
@@ -22,12 +21,12 @@ public class Player {
     String userName;
     HeroInfo hero;
     
-    StateModel state;
+    PlayerState state;
     HandCardsModel handCards;
     HpModel hp;
     SpModel sp;
     AvailableTargetModel targets;
-    
+    Equipments equips;
     
     public String getUserName() {
     
@@ -41,10 +40,10 @@ public class Player {
     }
     
     
-    DeckPlugin controller;
+    TablePlugin controller;
     
     
-    public Player(DeckPlugin deskController) {
+    public Player(TablePlugin deskController) {
     
         this.controller = deskController;
     }

@@ -1,5 +1,6 @@
 package com.wolf.dotah.server.cmpnt.card;
 
+
 /**
  * 以下都属于这个类别
  * 基本牌    B
@@ -7,17 +8,27 @@ package com.wolf.dotah.server.cmpnt.card;
  * S技能牌 S
  * 驱散
  * 装备牌    E
+ * 武器        W
  * 
  * @author Solomon
  */
 public class Card {
+    
     int id;
     String name;
     int suits;
     int color;
     int faceNumber;
+    boolean distanceLimited;
+    boolean dispellable;
+    boolean equipable;
+    int type;
+    
+    
+    int distance;
     
     int function;
     boolean enhancable;
     int enhancedFunction;
+    
 }

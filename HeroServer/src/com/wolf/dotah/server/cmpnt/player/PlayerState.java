@@ -10,7 +10,7 @@ import java.util.List;
  * @author Solomon
  *
  */
-public class StateModel {
+public class PlayerState {
     
     int stage;//choosing    / free play
     boolean currentPlayer;

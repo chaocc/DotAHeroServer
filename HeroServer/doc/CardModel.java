@@ -14,6 +14,7 @@ public enum CardModel implements Params {
     _6(6, "普通攻击", CardModel.function_id_normal_attack, "黑桃7", 7, 7 + CardModel.suit_spade),
     _7(7, "普通攻击", CardModel.function_id_normal_attack, "黑桃8", 8, 8 + CardModel.suit_spade),
     _8(8, "普通攻击", CardModel.function_id_normal_attack, "黑桃9", 9, 9 + CardModel.suit_spade),
+    
     _9(9, "混乱攻击", CardModel.function_id_chaos_attack, "黑桃10", 10, 10 + CardModel.suit_spade),
     _10(10, "混乱攻击", CardModel.function_id_chaos_attack, "黑桃A", 1, 1 + CardModel.suit_spade),
     _11(11, "混乱攻击", CardModel.function_id_chaos_attack, "黑桃2", 2, 2 + CardModel.suit_spade),
@@ -21,10 +22,12 @@ public enum CardModel implements Params {
     _13(13, "混乱攻击", CardModel.function_id_chaos_attack, "黑桃4", 4, 4 + CardModel.suit_spade),
     _14(14, "混乱攻击", CardModel.function_id_chaos_attack, "黑桃5", 5, 5 + CardModel.suit_spade),
     _15(15, "混乱攻击", CardModel.function_id_chaos_attack, "黑桃6", 6, 6 + CardModel.suit_spade),
+    
     _16(16, "神灭斩_S", CardModel.function_id_s_LagunaBlade, "黑桃7", 7, 7 + CardModel.suit_spade),
     _17(17, "神灭斩_S", CardModel.function_id_s_LagunaBlade, "黑桃8", 8, 8 + CardModel.suit_spade),
     _18(18, "蝮蛇突袭_S", CardModel.function_id_s_viper_raid, "黑桃9", 9, 9 + CardModel.suit_spade),
     _19(19, "蝮蛇突袭_S", CardModel.function_id_s_viper_raid, "黑桃10", 10, 10 + CardModel.suit_spade),
+    
     _20(20, "误导_M_1", CardModel.function_id_m_Mislead, "梅花A", 1, 1 + CardModel.suit_club),
     _21(21, "误导_M", CardModel.function_id_m_Mislead, "梅花2", 2, 2 + CardModel.suit_club),
     _22(22, "贪婪_M_2", CardModel.function_id_m_Greed, "梅花3", 3, 3 + CardModel.suit_club),
@@ -42,9 +45,11 @@ public enum CardModel implements Params {
     _34(34, "月神之箭_M_6", CardModel.function_id_m_ElunesArrow, "梅花5", 5, 5 + CardModel.suit_club),
     _35(35, "狂热_M_7", CardModel.function_id_m_Fanaticism, "梅花6", 6, 6 + CardModel.suit_club),
     _36(36, "狂热_M_7", CardModel.function_id_m_Fanaticism, "梅花7", 7, 7 + CardModel.suit_club),
+    
     _37(37, "速度之靴_W", CardModel.function_id_e_BootsOfSpeed, "梅花8", 8, 8 + CardModel.suit_club),
     _38(38, "菲丽丝之戒_W", CardModel.function_id_e_PhyllisRing, "梅花9", 9, 9 + CardModel.suit_club),
     _39(39, "闪避护符_W", CardModel.function_id_e_TalismanOfEvasion, "梅花10", 10, 10 + CardModel.suit_club),
+    
     _40(40, "火焰攻击", CardModel.function_id_flame_attack, "红桃A", 1, 1 + CardModel.suit_heart),
     _41(41, "火焰攻击", CardModel.function_id_flame_attack, "红桃2", 2, 2 + CardModel.suit_heart),
     _42(42, "火焰攻击", CardModel.function_id_flame_attack, "红桃3", 3, 3 + CardModel.suit_heart),
@@ -55,16 +60,21 @@ public enum CardModel implements Params {
     _47(47, "治疗药膏", CardModel.function_id_heal, "红桃8", 8, 8 + CardModel.suit_heart),
     _48(48, "治疗药膏", CardModel.function_id_heal, "红桃9", 9, 9 + CardModel.suit_heart),
     _49(49, "治疗药膏", CardModel.function_id_heal, "红桃10", 10, 10 + CardModel.suit_heart),
+    
     _50(50, "驱散_M_8", CardModel.function_id_m_Dispel, "红桃A", 1, 1 + CardModel.suit_heart),
     _51(51, "驱散_M_8", CardModel.function_id_m_Dispel, "红桃2", 2, 2 + CardModel.suit_heart),
     _52(52, "驱散_M_8", CardModel.function_id_m_Dispel, "红桃3", 3, 3 + CardModel.suit_heart),
     _53(53, "驱散_M_8", CardModel.function_id_m_Dispel, "红桃4", 4, 4 + CardModel.suit_heart),
     _54(54, "驱散_M_8", CardModel.function_id_m_Dispel, "红桃5", 5, 5 + CardModel.suit_heart),
+    
     _55(55, "治疗药膏", CardModel.function_id_heal, "红桃6", 6, 6 + CardModel.suit_heart),
     _56(56, "治疗药膏", CardModel.function_id_heal, "红桃7", 7, 7 + CardModel.suit_heart),
+    
     _57(57, "流浪法师斗篷", CardModel.function_id_e_PlaneswalkersCloak, "红桃8", 8, 8 + CardModel.suit_heart),
+    
     _58(58, "神之力量S", CardModel.function_id_s_GodsStrength, "红桃9", 9, 9 + CardModel.suit_heart),
     _59(59, "神之力量S", CardModel.function_id_s_GodsStrength, "红桃10", 10, 10 + CardModel.suit_heart),
+    
     _60(60, "闪避", CardModel.function_id_evasion, "方块A", 1, 1 + CardModel.suit_diamond),
     _61(61, "闪避", CardModel.function_id_evasion, "方块2", 2, 2 + CardModel.suit_diamond),
     _62(62, "闪避", CardModel.function_id_evasion, "方块3", 3, 3 + CardModel.suit_diamond),
@@ -75,6 +85,7 @@ public enum CardModel implements Params {
     _67(67, "闪避", CardModel.function_id_evasion, "方块8", 8, 8 + CardModel.suit_diamond),
     _68(68, "闪避", CardModel.function_id_evasion, "方块9", 9, 9 + CardModel.suit_diamond),
     _69(69, "闪避", CardModel.function_id_evasion, "方块10", 10, 10 + CardModel.suit_diamond),
+    
     _70(70, "散失之刃_W", CardModel.function_id_e_DiffusalBlade, "方块A", 1, 1 + CardModel.suit_diamond),
     _71(71, "洛萨之锋_W", CardModel.function_id_e_LotharsEdge, "方块2", 2, 2 + CardModel.suit_diamond),
     _72(72, "冰魄之眼_W", CardModel.function_id_e_EyeOfSkadi, "方块3", 3, 3 + CardModel.suit_diamond),
@@ -84,6 +95,7 @@ public enum CardModel implements Params {
     _76(76, "恶魔刀锋_W", CardModel.function_id_e_DemonEdge, "方块7", 7, 7 + CardModel.suit_diamond),
     _77(77, "圣者遗物_W", CardModel.function_id_e_SacredRelic, "方块8", 8, 8 + CardModel.suit_diamond),
     _78(78, "刃甲_W", CardModel.function_id_e_BladeMail, "方块9", 9, 9 + CardModel.suit_diamond),
+    
     _79(79, "闪避", CardModel.function_id_evasion, "方块10", 10, 10 + CardModel.suit_diamond)
     
     ;
