@@ -1,4 +1,4 @@
-cards: [
+"cards": [
 	{"id":"0", "suits":"黑桃", "faceNumber":"1", "type":"b", "name":"普通攻击" },
 	{"id":"1", "suits":"黑桃", "faceNumber":"2", "type":"b", "name":"普通攻击" },
 	{"id":"2", "suits":"黑桃", "faceNumber":"3", "type":"b", "name":"普通攻击" },
