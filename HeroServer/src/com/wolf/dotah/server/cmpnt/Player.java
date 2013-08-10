@@ -2,13 +2,13 @@ package com.wolf.dotah.server.cmpnt;
 
 
 import com.wolf.dotah.server.TablePlugin;
-import com.wolf.dotah.server.cmpnt.player.AvailableTargetModel;
-import com.wolf.dotah.server.cmpnt.player.Equipments;
-import com.wolf.dotah.server.cmpnt.player.HandCardsModel;
+import com.wolf.dotah.server.cmpnt.player.PlayerAvailableTargetModel;
+import com.wolf.dotah.server.cmpnt.player.PlayerEquipments;
+import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
-import com.wolf.dotah.server.cmpnt.player.HpModel;
+import com.wolf.dotah.server.cmpnt.player.PlayerHpModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerState;
-import com.wolf.dotah.server.cmpnt.player.SpModel;
+import com.wolf.dotah.server.cmpnt.player.PlayerSpModel;
 import com.wolf.dotah.testframework.ClientRequest;
 
 
@@ -22,11 +22,11 @@ public class Player {
     HeroInfo hero;
     
     PlayerState state;
-    HandCardsModel handCards;
-    HpModel hp;
-    SpModel sp;
-    AvailableTargetModel targets;
-    Equipments equips;
+    PlayerHandCardsModel handCards;
+    PlayerHpModel hp;
+    PlayerSpModel sp;
+    PlayerAvailableTargetModel targets;
+    PlayerEquipments equips;
     
     public String getUserName() {
     

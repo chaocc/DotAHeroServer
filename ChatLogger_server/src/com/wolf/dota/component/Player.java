@@ -180,11 +180,11 @@ public class Player {
     
         NSArray heroArray = (NSArray) PropertyListParser.parse(new File("doc/HeroCardArray.plist"));
         NSDictionary hero = (NSDictionary) heroArray.array()[0];
-        //        System.out.println("heroName: " + hero.get("heroName").getValue().toString());
-        //        System.out.println("heroType: " + hero.get("heroAttribute").getValue().toString());
-        //        System.out.println("hpLimit: " + hero.get("healthPointLimit").getValue().toString());
-        //        System.out.println("spLimit: " + hero.get("manaPointLimit").getValue().toString());
-        //        System.out.println("handCardLimit: " + hero.get("handSizeLimit").getValue().toString());
+        System.out.println("heroName: " + hero.get("heroName").getValue().toString());
+        System.out.println("heroType: " + hero.get("heroAttribute").getValue().toString());
+        System.out.println("hpLimit: " + hero.get("healthPointLimit").getValue().toString());
+        System.out.println("spLimit: " + hero.get("manaPointLimit").getValue().toString());
+        System.out.println("handCardLimit: " + hero.get("handSizeLimit").getValue().toString());
         NSObject[] fileSkills = ((NSArray) hero.get("heroSkills")).array();
         for (NSObject fskill : fileSkills) {
             NSObject fileSkill = fskill;

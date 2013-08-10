@@ -1,8 +1,6 @@
 package com.wolf.dotah.server.cmpnt.player;
 
 
-public class HpModel {
+public interface hero_const {
     
-    int hpLimit;
-    int hp;
 }

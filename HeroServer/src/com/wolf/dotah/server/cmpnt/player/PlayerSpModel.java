@@ -1,7 +1,7 @@
 package com.wolf.dotah.server.cmpnt.player;
 
 
-public class SpModel {
+public class PlayerSpModel {
     
     int spLimit;
     int sp;

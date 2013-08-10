@@ -118,6 +118,7 @@ public enum CardModel implements Params {
             function_id_m_EnergyTransport = function_id_base - 37,
             function_id_m_Greed = function_id_base - 38,
             kPlayingCardSirenSong = function_id_base - 39,
+            
             function_id_e_EyeOfSkadi = function_id_base - 40,
             function_id_e_BladesOfAttack = function_id_base - 41,
             function_id_e_SacredRelic = function_id_base - 42,
@@ -146,10 +147,6 @@ public enum CardModel implements Params {
     //    kPlayingCardLotharsEdge,            // 洛萨之锋
     //    kPlayingCardStygianDesolator,       // 黯灭之刃
     //    kPlayingCardSangeAndYasha,          // 散夜对剑
-    //    kPlayingCardPlunderAxe,             // 掠夺之斧
-    //    kPlayingCardMysticStaff,            // 神秘法杖
-    //    kPlayingCardEaglehorn,              // 鹰角弓
-    //    kPlayingCardQuellingBlade,          // 补刀斧
     //    
     //    kPlayingCardPhyllisRing,            // 菲丽丝之戒
     //    kPlayingCardBladeMail,              // 刃甲

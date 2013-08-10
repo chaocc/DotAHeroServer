@@ -1,7 +1,7 @@
 package com.wolf.dotah.server.tool;
 
 
-public interface client_con {
+public interface client_const {
     public static final String kActionStartGame = "startGame"; // 开始游戏
     public static final String kActionUseCard = "useCard"; // 使用卡牌
     public static final String kActionUseHeroSkill = "useHeroSkill"; // 使用英雄技能

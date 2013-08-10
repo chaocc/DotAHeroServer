@@ -1,7 +1,7 @@
 package com.wolf.dotah.server.tool;
 
 
-public class BasicCardInfoGenerator {
+public class CardInfoGenerator {
     
     public static void main(String... args) {
     

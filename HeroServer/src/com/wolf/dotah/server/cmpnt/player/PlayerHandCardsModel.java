@@ -6,7 +6,7 @@ import java.util.List;
 import com.wolf.dotah.server.cmpnt.card.Card;
 
 
-public class HandCardsModel {
+public class PlayerHandCardsModel {
     
     int limit;
     List<Card> cards;

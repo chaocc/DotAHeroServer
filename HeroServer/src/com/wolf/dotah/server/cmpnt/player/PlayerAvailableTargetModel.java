@@ -6,6 +6,6 @@ package com.wolf.dotah.server.cmpnt.player;
  * @author Solomon
  *
  */
-public class AvailableTargetModel {
+public class PlayerAvailableTargetModel {
     
 }
