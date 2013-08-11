@@ -12,21 +12,6 @@ public class CardRemainStack {
     private static CardRemainStack remainStackModel;
     
     
-    public static CardRemainStack getRemainStackModel() {
-    
-        if (remainStackModel == null) {
-            remainStackModel = new CardRemainStack();
-        }
-        return remainStackModel;
-    }
-    
-    
-    private CardRemainStack() {
-    
-        remainStack = new ArrayList<Integer>();
-    }
-    
-    
     public void initWithCardList(List<Integer> list) {
     
         for (Integer card : list) {
@@ -53,6 +38,21 @@ public class CardRemainStack {
     public void setRemainStack(List<Integer> remainStack) {
     
         this.remainStack = remainStack;
+    }
+    
+    
+    public static CardRemainStack getRemainStackModel() {
+    
+        if (remainStackModel == null) {
+            remainStackModel = new CardRemainStack();
+        }
+        return remainStackModel;
+    }
+    
+    
+    private CardRemainStack() {
+    
+        remainStack = new ArrayList<Integer>();
     }
     
     

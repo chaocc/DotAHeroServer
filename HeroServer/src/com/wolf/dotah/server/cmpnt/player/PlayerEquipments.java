@@ -1,9 +1,9 @@
 package com.wolf.dotah.server.cmpnt.player;
 
-import com.wolf.dotah.server.cmpnt.card.E;
+import com.wolf.dotah.server.cmpnt.card.Card;
 
 
 public class PlayerEquipments {
-    E weapon;
-    E armor;
+    Card weapon;
+    Card armor;
 }

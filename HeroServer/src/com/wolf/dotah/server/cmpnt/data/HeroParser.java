@@ -2,6 +2,7 @@ package com.wolf.dotah.server.cmpnt.data;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,11 +10,12 @@ import net.sf.plist.NSArray;
 import net.sf.plist.NSDictionary;
 import net.sf.plist.NSInteger;
 import net.sf.plist.NSObject;
+import net.sf.plist.io.PropertyListException;
 import net.sf.plist.io.PropertyListParser;
 
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
+import com.wolf.dotah.server.cmpnt.player.HeroSkill;
 import com.wolf.dotah.server.cmpnt.player.HeroSkills;
-import com.wolf.dotah.server.cmpnt.player.HeroSkills.Skill;
 
 
 public class HeroParser {
@@ -34,21 +36,48 @@ public class HeroParser {
     public List<HeroInfo> getHeroInfoList() {
     
         List<HeroInfo> heroInfoList = new ArrayList<HeroInfo>();
+        NSObject[] heros = getNSHeroArray();
+        for (int i = 0; i < heros.length; i++) {
+            NSDictionary hero = (NSDictionary) heros[i];
+            HeroInfo heroInfo = genHeroInfoFromNSDictWithId(hero, i);
+            heroInfoList.add(heroInfo);
+        }
+        
+        return heroInfoList;
+    }
+    
+    
+    public HeroInfo getHeroInfoById(int id) {
+    
+        NSDictionary hero = (NSDictionary) getNSHeroArray()[id];
+        HeroInfo heroInfo = genHeroInfoFromNSDictWithId(hero, id);
+        return heroInfo;
+    }
+    
+    
+    public List<Integer> getHeroIdList() {
+    
+        List<Integer> heroIdList = new ArrayList<Integer>();
+        int size = getNSHeroArray().length;
+        for (int i = 0; i < size; i++) {
+            heroIdList.add(i);
+        }
+        return heroIdList;
+    }
+    
+    
+    private NSObject[] getNSHeroArray() {
+    
         try {
             NSArray heroArray = (NSArray) PropertyListParser.parse(new File(path));
             NSObject[] heros = heroArray.array();
-            for (int i = 0; i < heros.length; i++) {
-                NSDictionary hero = (NSDictionary) heros[i];
-                HeroInfo heroInfo = genHeroInfoFromNSDictWithId(hero, i);
-                heroInfoList.add(heroInfo);
-                
-            }
-        } catch (Exception e) {
+            return heros;
+        } catch (PropertyListException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        
-        return heroInfoList;
+        return null;
     }
     
     
@@ -64,14 +93,12 @@ public class HeroParser {
         HeroSkills heroSkills = new HeroSkills();
         for (int i = 0; i < skillIdArray.length; i++) {
             NSInteger skillId = (NSInteger) skillIdArray[i];
-            Skill heroSkill = heroSkills.new Skill(skillId.toInteger());
-            
+            HeroSkill heroSkill = SkillParser.getParser().getSkillById(skillId.toInteger());
             heroSkills.addSkill(heroSkill);
         }
         
         HeroInfo heroInfo = new HeroInfo(id, heroName, hpLimit, spLimit, handCardLimit, heroType, heroSkills);
-        
-        return heroInfo;
+        return heroInfo.genInfo();
     }
     
     

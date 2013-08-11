@@ -51,7 +51,6 @@ public class Card implements card_const, function_const {
         genColor();
         genColorCode();
         
-        
         switch (this.type) {
             case typecon.e: {
                 genEinfo();
@@ -139,28 +138,24 @@ public class Card implements card_const, function_const {
         } else if (name.equals(namecon.evasion)) {
             this.function = functioncon.b_evasion;
         }
-        
     }
     
     
     private void genDinfo() {
     
         this.equipable = true;
-        
     }
     
     
     private void genWinfo() {
     
         this.equipable = true;
-        
     }
     
     
     private void genEinfo() {
     
         this.equipable = true;
-        
     }
     
     
@@ -496,6 +491,4 @@ public class Card implements card_const, function_const {
     
         this.enhancedFunction = enhancedFunction;
     }
-    
-    
 }

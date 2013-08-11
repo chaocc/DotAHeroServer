@@ -1,6 +1,8 @@
 package com.wolf.dotah.server.cmpnt;
 
 
+import java.util.List;
+
 import com.wolf.dotah.server.TablePlugin;
 import com.wolf.dotah.server.cmpnt.table.CardDropStack;
 import com.wolf.dotah.server.cmpnt.table.CardRemainStack;
@@ -10,13 +12,24 @@ import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.Ticker;
 
-
+/**
+ * 
+ * 生成牌, 洗牌
+ * 发英雄牌
+ * 分发手牌
+ * 切牌, 
+ * 决定势力, 先出的为近卫, 然后往下交替
+ * 5, 切牌后即开始进入6个阶段的循环, 每6个阶段完成后进入下个角色的6个阶段
+ * 6, 每个阶段都有时间限制, 10秒或者15秒什么的
+ * @author Solomon
+ *
+ */
 public class TableModel {
     
     TablePlugin dispatcher;
     TableState state; //TODO define states
-    HeroCandidateModel heroCandidates;
     PlayerList players;
+    List<Integer[]> heroCandidateList;
     CardRemainStack remainStack;
     CardDropStack dropStack;
     Ticker ticker;
@@ -25,59 +38,41 @@ public class TableModel {
     public TableModel(TablePlugin tablePlugin) {
     
         this.dispatcher = tablePlugin;
-        initHeroCandidates();
         initPlayerList();
+        initHeroCandidates();
         initCardModels();
-        
-        
-        //TODO init hero candidates,   parsing and model behaviors
+        //TODO init hero candidates,  parsing and model behaviors
         //TODO init player basic info, from plugin api
         //TODO design ticker
         // 21, 12, 2, 3, 28, 17
         
-        // pick ( 3* player size ) heros for choosing
-        // shuffle
         // each give 3
         
-        //TODO 移到 Players里
-        //        players = new ArrayList<Player>();
-        //        
-        //        this.dispatcher = deskController;
-        //        int userIndex = 0;
-        //        for (String userName : deskController.getApi().getUsers()) {
-        //            Player player = new Player(dispatcher);
-        //            player.setUserName(userName);
-        //            List<Integer> heroIdsForChoose = new ArrayList<Integer>();
-        //            for (int i = 0; i < 3; i++) {
-        //                int heroIndex = i + 3 * userIndex;
-        //                heroIdsForChoose.add(heroIndex);
-        //            }
-        //            //            player.setHerosForChoosing(heroIdsForChoose);
-        //            players.add(player);
-        //            userIndex++;
-        //        }
         
     }
     
     
     private void initHeroCandidates() {
     
-        // TODO Auto-generated method stub
+        heroCandidateList = HeroCandidateModel.getCandidateModel().getCandidateForAll(players.getCount());
         
     }
     
     
     private void initPlayerList() {
     
-        // TODO Auto-generated method stub
+        int zone = dispatcher.getApi().getZoneId();
+        int room = dispatcher.getApi().getRoomId();
+        PlayerList.getModel().initWithUserCollection(dispatcher.getApi().getUsersInRoom(zone, room));
+        
         
     }
     
     
     private void initCardModels() {
     
-        //        DeckModel should have many behaviors;
         DeckModel deck = DeckModel.getDeckModel();
+        //remain stack should have the behavior of dispatching handcards
         CardRemainStack.getRemainStackModel().initWithCardList(deck.getSimpleDeck());
         CardDropStack.getDropStackModel().syncWithRemainStack();
         

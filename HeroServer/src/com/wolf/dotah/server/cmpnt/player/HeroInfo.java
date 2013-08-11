@@ -29,7 +29,18 @@ public class HeroInfo implements hero_const {
     public HeroInfo genInfo() {
     
         switch (heroTypeCode) {
-        
+            case typecon.agilityCode: {
+                this.heroType = typecon.agility;
+                break;
+            }
+            case typecon.intelligenceCode: {
+                this.heroType = typecon.intelligence;
+                break;
+            }
+            case typecon.strengthCode: {
+                this.heroType = typecon.strength;
+                break;
+            }
         }
         return this;
     }

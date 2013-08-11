@@ -1,10 +1,7 @@
 package com.wolf.dotah.server;
 
 
-import java.util.Collection;
-
 import com.electrotank.electroserver5.extensions.BasePlugin;
-import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
 import com.wolf.dotah.server.cmpnt.TableModel;
@@ -65,7 +62,7 @@ public class TablePlugin extends BasePlugin {
 
     
     
-    private void sendMessageToUser(String user, EsObject obj) {
+    public void sendMessageToUser(String user, EsObject obj) {
     
         getApi().sendPluginMessageToUser(user, obj);
     }

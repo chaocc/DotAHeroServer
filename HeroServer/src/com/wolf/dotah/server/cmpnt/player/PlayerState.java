@@ -10,13 +10,19 @@ import java.util.List;
  * @author Solomon
  *
  */
-public class PlayerState {
+public class PlayerState implements player_const {
     
     int stage;//choosing    / free play
     boolean currentPlayer;
     List<Integer> usableCardContext;
     List<Integer> heroSkillContext;
     List<Integer> equipmentContext;
+    
+    
+    public PlayerState() {
+    
+        this.stage = statecon.stage.unavailable;
+    }
     
     
     public int getStage() {
