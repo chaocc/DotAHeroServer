@@ -14,4 +14,8 @@ public interface player_const {
             int idle = 4;//没进度条, 什么都没做, 比如有人在free_play
         }
     }
+    
+    
+    String aiName = "AI Player ";
+    String aiPlayerName = "I'm AI ";
 }

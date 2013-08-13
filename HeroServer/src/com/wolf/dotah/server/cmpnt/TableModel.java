@@ -3,7 +3,6 @@ package com.wolf.dotah.server.cmpnt;
 
 import java.util.List;
 
-import com.wolf.dotah.server.TablePlugin;
 import com.wolf.dotah.server.cmpnt.table.CardDropStack;
 import com.wolf.dotah.server.cmpnt.table.CardRemainStack;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
@@ -11,6 +10,8 @@ import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.Ticker;
+import com.wolf.dotah.server.cmpnt.translator.TableTranslator;
+
 
 /**
  * 
@@ -26,7 +27,19 @@ import com.wolf.dotah.server.cmpnt.table.Ticker;
  */
 public class TableModel {
     
-    TablePlugin dispatcher;
+    /**
+     * 牌桌行为主要有:
+     * 
+     * 1, 轮换turn
+     * 2, 发牌,
+     * 3, 洗牌
+     * 4, 将用过的牌扔到弃牌堆
+     * 
+     * 
+     * 
+     */
+    
+    
     TableState state; //TODO define states
     PlayerList players;
     List<Integer[]> heroCandidateList;
@@ -35,10 +48,11 @@ public class TableModel {
     Ticker ticker;
     
     
-    public TableModel(TablePlugin tablePlugin) {
+    TableTranslator translator;
     
-        this.dispatcher = tablePlugin;
-        initPlayerList();
+    
+    public TableModel() {
+    
         initHeroCandidates();
         initCardModels();
         //TODO init hero candidates,  parsing and model behaviors
@@ -59,22 +73,19 @@ public class TableModel {
     }
     
     
-    private void initPlayerList() {
-    
-        int zone = dispatcher.getApi().getZoneId();
-        int room = dispatcher.getApi().getRoomId();
-        PlayerList.getModel().initWithUserCollection(dispatcher.getApi().getUsersInRoom(zone, room));
-        
-        
-    }
-    
-    
     private void initCardModels() {
     
         DeckModel deck = DeckModel.getDeckModel();
         //remain stack should have the behavior of dispatching handcards
         CardRemainStack.getRemainStackModel().initWithCardList(deck.getSimpleDeck());
         CardDropStack.getDropStackModel().syncWithRemainStack();
+        
+    }
+    
+    
+    public void setTranslator(TableTranslator tableTranslator) {
+    
+        // TODO Auto-generated method stub
         
     }
     

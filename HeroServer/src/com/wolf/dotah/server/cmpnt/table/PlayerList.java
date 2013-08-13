@@ -18,21 +18,43 @@ public class PlayerList implements player_const {
     
     public void initWithUserCollection(Collection<UserValue> input) {
     
-        List<String> users = new ArrayList<String>();
-        for (UserValue userv : input) {
-            users.add(userv.getUserName());
-        }
-        this.userList = users;
-        initPlayerList();
+        initWithUserCollectionAndPlayerCount(input, -1);
         
     }
     
     
-    private void initPlayerList() {
+    public void initWithUserCollectionAndPlayerCount(Collection<UserValue> usersInRoom, int playerCount) {
     
+        /**
+         * 保证多次调用init 方法是不管用的
+         */
+        if (playerList == null || playerList.size() == 0) {
+            
+            List<String> users = new ArrayList<String>();
+            for (UserValue userv : usersInRoom) {
+                users.add(userv.getUserName());
+            }
+            this.userList = users;
+            initPlayerList(playerCount);
+        }
+    }
+    
+    
+    private void initPlayerList(int playerCount) {
+    
+        
         for (String userName : userList) {
             Player player = new Player(userName);
             playerList.add(player);
+        }
+        if (playerCount > userList.size()) {
+            int aiCount = playerCount - userList.size();
+            for (int i = 0; i < aiCount; i++) {
+                
+                Player player = new Player(aiName + i);
+                player.setAi(true);
+                playerList.add(player);
+            }
         }
     }
     
@@ -59,4 +81,5 @@ public class PlayerList implements player_const {
     
         playerList = new ArrayList<Player>();
     }
+    
 }

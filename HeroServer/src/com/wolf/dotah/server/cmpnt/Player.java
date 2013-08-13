@@ -29,13 +29,33 @@ public class Player implements player_const {
     PlayerAvailableTargetModel targets;
     PlayerEquipments equips;
     PlayerForce force;
+    boolean ai;
     
     
     public Player(String name) {
     
         this.userName = name;
         state = new PlayerState();
-        equips = new PlayerEquipments();
+    }
+    
+    
+    @Override
+    public String toString() {
+    
+        return "Player [userName=" + userName + ", hero=" + hero + ", state=" + state + ", handCards=" + handCards + ", hp=" + hp + ", sp="
+                + sp + ", targets=" + targets + ", equips=" + equips + ", force=" + force + ", ai=" + ai + "]";
+    }
+    
+    
+    public boolean isAi() {
+    
+        return ai;
+    }
+    
+    
+    public void setAi(boolean ai) {
+    
+        this.ai = ai;
     }
     
     
@@ -48,10 +68,6 @@ public class Player implements player_const {
     public void setHero(HeroInfo hero) {
     
         this.hero = hero;
-        
-        
-        
-        
     }
     
     
