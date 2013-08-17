@@ -11,6 +11,7 @@ import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.Ticker;
 import com.wolf.dotah.server.layer.translator.TableTranslator;
+import com.wolf.dotah.server.util.u;
 
 
 /**
@@ -47,10 +48,8 @@ public class TableModel {
      */
     
     
-    
     TableState state; //TODO define states
     PlayerList players;
-    List<Integer[]> heroCandidateList;
     CardRemainStack remainStack;
     CardDropStack dropStack;
     Ticker ticker;
@@ -63,7 +62,6 @@ public class TableModel {
     
     public TableModel() {
         players = PlayerList.getModel();
-        initHeroCandidates();
         initCardModels();
         //TODO init player basic info, from plugin api
         //TODO design ticker
@@ -75,18 +73,22 @@ public class TableModel {
         System.out.println(tag + "TableModel: " + this.toString());
     }
     
-    
-    private void initHeroCandidates() {
-        HeroCandidateModel heroModel = HeroCandidateModel.getCandidateModel();
-        heroCandidateList = heroModel.getCandidateForAll(players.getCount());
-        System.out.println(tag + "hero candidates inited. \n" + heroCandidateList);
-    }
-    
     /**
      * init完后的第一件事就是发待选英雄
      */
     public void dispatchHeroCandidates() {
+        HeroCandidateModel heroModel = HeroCandidateModel.getCandidateModel();
+        List<Integer[]> heroCandidateList = heroModel.getCandidateForAll(players.getCount());
+        System.out.println(tag + "hero candidates inited. \n" + heroCandidateList);
         
+        //TODO table 事件发给每个player都要做事的活动可以尝试叫table action, 
+        //具体是否可行还有待思考
+        for (int i = 0; i < players.getCount(); i++) {
+            Integer[] candidatesForSingle = heroCandidateList.get(i);
+            Player single = PlayerList.getModel().getPlayerByIndex(i);
+            //updateState传进state?
+            single.updateState("choosing_hero", new Data().addIntegerArray("", u.integerArrayToIntArray(candidatesForSingle)));
+        }
     }
     
     private void initCardModels() {

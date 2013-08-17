@@ -3,7 +3,7 @@ package com.wolf.dotah.server;
 import com.electrotank.electroserver5.extensions.BasePlugin;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
-import com.wolf.dotah.server.layer.translator.Dispatcher;
+import com.wolf.dotah.server.layer.translator.MessageDispatcher;
 
 /**
  * Plugin 只负责分发请求, 以及和客户端互发信息, 不处理任何逻辑
@@ -17,7 +17,7 @@ public class GamePlugin extends BasePlugin {
     
     @Override
     public void init(EsObjectRO parameters) {
-        Dispatcher.getDispatcher(this);
+        MessageDispatcher.getDispatcher(this);
         d.debug("DeskPlugin initialized " + d.version);
     }
     
@@ -30,13 +30,14 @@ public class GamePlugin extends BasePlugin {
         sender = user;
         messageArrived();
         
-        Dispatcher.getDispatcher(this).handleMessage(user, currentMessageObject);
+        MessageDispatcher.getDispatcher(this).handleMessage(user, currentMessageObject);
     }
     
     //TODO only for test, need remove for production
     private void messageArrived() {
         EsObject obj = new EsObject();
         obj.addAll(currentMessageObject);
+        obj.setBoolean("message_arrived", true);
         sendMessageToSingleUser(sender, obj);
         
     }

@@ -5,7 +5,7 @@ import com.wolf.dotah.server.GamePlugin;
 import com.wolf.tool.c;
 import com.wolf.tool.client_const;
 
-public class Dispatcher {
+public class MessageDispatcher {
     /*
      * TODO 问题, 如何来判断该给哪个translator呢, 如何把拿来的信息翻译成有用的信息呢
      * 需要有一个完美的依照理论
@@ -34,16 +34,16 @@ public class Dispatcher {
         //        }
     }
     
-    private static Dispatcher dispatcher;
+    private static MessageDispatcher dispatcher;
     
-    public static Dispatcher getDispatcher(GamePlugin gamePlugin) {
+    public static MessageDispatcher getDispatcher(GamePlugin gamePlugin) {
         if (dispatcher == null) {
-            dispatcher = new Dispatcher(gamePlugin);
+            dispatcher = new MessageDispatcher(gamePlugin);
         }
         return dispatcher;
     }
     
-    private Dispatcher(GamePlugin gamePlugin) {
+    private MessageDispatcher(GamePlugin gamePlugin) {
         tableTranslator = TableTranslator.getTranslator(gamePlugin);
         playerTranslator = PlayerTranslator.getTranslator(gamePlugin);
         decisionTranslator = DecisionTranslator.getTranslator(gamePlugin);
