@@ -1,4 +1,4 @@
-package com.wolf.dotah.server.cmpnt.util;
+package com.wolf.dotah.server.util;
 
 /**
  * 以下都属于这个类别

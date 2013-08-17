@@ -1,4 +1,4 @@
-package com.wolf.dotah.server.cmpnt.translator;
+package com.wolf.dotah.server.layer.translator;
 
 
 public interface commands {

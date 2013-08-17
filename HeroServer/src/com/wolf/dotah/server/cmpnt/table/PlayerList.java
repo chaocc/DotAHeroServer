@@ -14,12 +14,11 @@ public class PlayerList implements player_const {
     
     List<Player> playerList;
     List<String> userList;
-    
+    final String tag = "====>> PlayerList: ";
     
     public void initWithUserCollection(Collection<UserValue> input) {
-    
-        initWithUserCollectionAndPlayerCount(input, -1);
-        
+        System.out.println(tag+"initWithUserCollection");
+        initWithUserCollectionAndPlayerCount(input, defaultPlayerCount);
     }
     
     

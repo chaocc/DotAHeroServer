@@ -5,4 +5,4 @@
  * @author Solomon
  *
  */
-package com.wolf.dotah.server.cmpnt.translator;
+package com.wolf.dotah.server.layer.translator;

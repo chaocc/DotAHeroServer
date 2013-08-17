@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.wolf.dotah.server.cmpnt.data.HeroParser;
+import com.wolf.dotah.server.layer.data.HeroParser;
 
 
 public class HeroCandidateModel implements table_const {
@@ -86,6 +86,12 @@ public class HeroCandidateModel implements table_const {
         availableList = new ArrayList<Integer>();
         availableList.addAll(allHeroList);
         
+    }
+
+
+    @Override
+    public String toString() {
+        return "HeroCandidateModel [allHeroList=" + allHeroList + ", availableList=" + availableList + "]";
     }
     
 }

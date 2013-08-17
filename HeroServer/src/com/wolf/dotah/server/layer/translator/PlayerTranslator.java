@@ -1,4 +1,4 @@
-package com.wolf.dotah.server.cmpnt.translator;
+package com.wolf.dotah.server.layer.translator;
 
 
 import com.wolf.dotah.server.GamePlugin;

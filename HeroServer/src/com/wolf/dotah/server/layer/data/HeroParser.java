@@ -1,8 +1,7 @@
-package com.wolf.dotah.server.cmpnt.data;
+package com.wolf.dotah.server.layer.data;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import net.sf.plist.NSArray;
 import net.sf.plist.NSDictionary;
 import net.sf.plist.NSInteger;
 import net.sf.plist.NSObject;
-import net.sf.plist.io.PropertyListException;
 import net.sf.plist.io.PropertyListParser;
 
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
@@ -25,7 +23,7 @@ public class HeroParser {
     
     
     public static HeroParser getParser() {
-    
+        
         if (parser == null) {
             parser = new HeroParser();
         }
@@ -34,7 +32,7 @@ public class HeroParser {
     
     
     public List<HeroInfo> getHeroInfoList() {
-    
+        
         List<HeroInfo> heroInfoList = new ArrayList<HeroInfo>();
         NSObject[] heros = getNSHeroArray();
         for (int i = 0; i < heros.length; i++) {
@@ -48,7 +46,7 @@ public class HeroParser {
     
     
     public HeroInfo getHeroInfoById(int id) {
-    
+        
         NSDictionary hero = (NSDictionary) getNSHeroArray()[id];
         HeroInfo heroInfo = genHeroInfoFromNSDictWithId(hero, id);
         return heroInfo;
@@ -56,7 +54,7 @@ public class HeroParser {
     
     
     public List<Integer> getHeroIdList() {
-    
+        
         List<Integer> heroIdList = new ArrayList<Integer>();
         int size = getNSHeroArray().length;
         for (int i = 0; i < size; i++) {
@@ -67,22 +65,24 @@ public class HeroParser {
     
     
     private NSObject[] getNSHeroArray() {
-    
+        
         try {
-            NSArray heroArray = (NSArray) PropertyListParser.parse(new File(path));
+            File file = new File(path);
+            System.out.println(file.exists());
+            System.out.println(file.getAbsolutePath());
+            NSArray heroArray = (NSArray) PropertyListParser.parse(file);
             NSObject[] heros = heroArray.array();
             return heros;
-        } catch (PropertyListException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+            return null;
+        } 
+//        return null;
     }
     
     
     private HeroInfo genHeroInfoFromNSDictWithId(NSDictionary hero, int id) {
-    
+        
         int hpLimit = Integer.parseInt(hero.get("bloodPointLimit").getValue().toString());
         int spLimit = Integer.parseInt(hero.get("angerPointLimit").getValue().toString());
         int handCardLimit = Integer.parseInt(hero.get("handSizeLimit").getValue().toString());
@@ -103,12 +103,12 @@ public class HeroParser {
     
     
     private HeroParser() {
-    
+        
     }
     
     
     public static void main(String... args) {
-    
+        
         for (HeroInfo hero : HeroParser.getParser().getHeroInfoList()) {
             System.out.println(hero);
         }

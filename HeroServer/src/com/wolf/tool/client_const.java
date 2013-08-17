@@ -1,4 +1,4 @@
-package com.wolf.dotah.server.tool;
+package com.wolf.tool;
 
 
 public interface client_const {

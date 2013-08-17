@@ -5,4 +5,4 @@
  * @author Solomon
  *
  */
-package com.wolf.dotah.server.cmpnt.data;
+package com.wolf.tool;

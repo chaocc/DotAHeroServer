@@ -10,7 +10,7 @@ import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.Ticker;
-import com.wolf.dotah.server.cmpnt.translator.TableTranslator;
+import com.wolf.dotah.server.layer.translator.TableTranslator;
 
 
 /**
@@ -40,6 +40,14 @@ public class TableModel {
      */
     
     
+    /*
+     * TODO wait 有几种,  所有人等待特定的人, 所有人等待未知的人, 一个人等待特定的一个人, 一个列表的人等待特定的人
+     * TODO 发message有几种: 发给一个人, 发给几个人, 发给所有人, 还要区分是否只有自己可见的(好像不发给所有人的都是只有自己可见)
+     * TODO decision 有几种
+     */
+    
+    
+    
     TableState state; //TODO define states
     PlayerList players;
     List<Integer[]> heroCandidateList;
@@ -51,30 +59,38 @@ public class TableModel {
     TableTranslator translator;
     
     
-    public TableModel() {
+    final String tag = "====>> TableModel: ";
     
+    public TableModel() {
+        players = PlayerList.getModel();
         initHeroCandidates();
         initCardModels();
-        //TODO init hero candidates,  parsing and model behaviors
         //TODO init player basic info, from plugin api
         //TODO design ticker
         // 21, 12, 2, 3, 28, 17
         
         // each give 3
         
-        
+        System.out.println(tag + " table model inited. ");
+        System.out.println(tag + "TableModel: " + this.toString());
     }
     
     
     private void initHeroCandidates() {
+        HeroCandidateModel heroModel = HeroCandidateModel.getCandidateModel();
+        heroCandidateList = heroModel.getCandidateForAll(players.getCount());
+        System.out.println(tag + "hero candidates inited. \n" + heroCandidateList);
+    }
     
-        heroCandidateList = HeroCandidateModel.getCandidateModel().getCandidateForAll(players.getCount());
+    /**
+     * init完后的第一件事就是发待选英雄
+     */
+    public void dispatchHeroCandidates() {
         
     }
     
-    
     private void initCardModels() {
-    
+        
         DeckModel deck = DeckModel.getDeckModel();
         //remain stack should have the behavior of dispatching handcards
         CardRemainStack.getRemainStackModel().initWithCardList(deck.getSimpleDeck());
@@ -84,8 +100,8 @@ public class TableModel {
     
     
     public void setTranslator(TableTranslator tableTranslator) {
-    
-        // TODO Auto-generated method stub
+        
+        this.translator = tableTranslator;
         
     }
     
