@@ -1,15 +1,11 @@
 package com.wolf.dotah.server.cmpnt;
 
 
-import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.PlayerAvailableTargetModel;
-import com.wolf.dotah.server.cmpnt.player.PlayerEquipments;
-import com.wolf.dotah.server.cmpnt.player.PlayerForce;
-import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
-import com.wolf.dotah.server.cmpnt.player.PlayerHpModel;
-import com.wolf.dotah.server.cmpnt.player.PlayerSpModel;
+import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
 import com.wolf.dotah.server.cmpnt.player.PlayerState;
 import com.wolf.dotah.server.cmpnt.player.player_const;
+import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
 import com.wolf.dotah.testframework.ClientRequest;
 
 
@@ -19,17 +15,10 @@ public class Player implements player_const {
     //TODO disarmable
     
     
-    String userName;
-    HeroInfo hero;
+    private PlayerState state;//hero 在干嘛, 可以干嘛
+    private PlayerProperty property;//player 属性的状态
     
-    PlayerState state;
-    PlayerHandCardsModel handCards;
-    PlayerHpModel hp;
-    PlayerSpModel sp;
-    PlayerAvailableTargetModel targets;
-    PlayerEquipments equips;
-    PlayerForce force;
-    boolean ai;
+    private PlayerAvailableTargetModel targets;
     
     public void act(ClientRequest request) {
         //TODO 这个还要吗? 不知道是否有用
@@ -37,19 +26,36 @@ public class Player implements player_const {
         //4, 把改变后的状态或者需要新信息的请求发给客户端
     }
     
-    public void updateState(String state, Data params) {
-        updateState(new PlayerState(state), params);
-        
+    /**
+     * 每一个public的update方法, 都要把update的过程加入到update steps里, 供translate时候用
+     */
+    public void updateState(String state, Data params, ServerUpdateSequence sequence) {
+        //如果sequence是空的, 就可以抛出update sequence not start exception
+        updateState(this.getState().setStateDesp(state), params, sequence);
     }
     
-    public void updateState(PlayerState state, Data params) {
-        state.updateDetail(params);
-        //TODO state update完了, 就该update decision了, 
-        //TODO update完decision, 就该发给client了
-    }
-    
-    public void updateProperty(String propertyName, Data result) {
+    /**
+     * 每一个public的update方法, 都要把update的过程加入到update steps里, 供translate时候用
+     */
+    public void updateProperty(String propertyName, Data result, ServerUpdateSequence sequence) {
+        //TODO 先要把update property 翻译成server action, 然后把server action放到step里, 而不是property name
+        // sequence.add(some server action,  and data);
         // TODO Auto-generated method stub
+    }
+    
+    private void updateState(PlayerState state, Data params, ServerUpdateSequence sequence) {
+        this.state = state;
+        state.updateDetail(params);
+        sequence.add(state.getStateDesp(), this.getState().toData());
+    }
+    
+    public Data toData() {
+        Data result = new Data();
+        //TODO 加state
+        //TODO 加property
+        //TODO 加PlayerAvailableTargetModel
+        return result;
+        //TODO 是否要加username 和ai?
     }
     
     public Player(String name) {
@@ -59,141 +65,42 @@ public class Player implements player_const {
     }
     
     
-    @Override
-    public String toString() {
-        
-        return "Player [userName=" + userName + ", hero=" + hero + ", state=" + state + ", handCards=" + handCards + ", hp=" + hp + ", sp="
-               + sp + ", targets=" + targets + ", equips=" + equips + ", force=" + force + ", ai=" + ai + "]";
+    public PlayerProperty getProperty() {
+        return property;
     }
     
-    
-    public boolean isAi() {
-        
-        return ai;
-    }
-    
-    
-    public void setAi(boolean ai) {
-        
-        this.ai = ai;
-    }
-    
-    
-    public HeroInfo getHero() {
-        
-        return hero;
-    }
-    
-    
-    public void setHero(HeroInfo hero) {
-        
-        this.hero = hero;
+    public void setProperty(PlayerProperty property) {
+        this.property = property;
     }
     
     
     public PlayerState getState() {
-        
         return state;
     }
     
-    
     public void setState(PlayerState state) {
-        
         this.state = state;
     }
     
     
-    public PlayerHandCardsModel getHandCards() {
-        
-        return handCards;
+    private String userName;
+    private boolean ai;
+    
+    public boolean isAi() {
+        return ai;
     }
     
-    
-    public void setHandCards(PlayerHandCardsModel handCards) {
-        
-        this.handCards = handCards;
+    public void setAi(boolean ai) {
+        this.ai = ai;
     }
     
-    
-    public PlayerHpModel getHp() {
-        
-        return hp;
-    }
-    
-    
-    public void setHp(PlayerHpModel hp) {
-        
-        this.hp = hp;
-    }
-    
-    
-    public PlayerSpModel getSp() {
-        
-        return sp;
-    }
-    
-    
-    public void setSp(PlayerSpModel sp) {
-        
-        this.sp = sp;
-    }
-    
-    
-    public PlayerAvailableTargetModel getTargets() {
-        
-        return targets;
-    }
-    
-    
-    public void setTargets(PlayerAvailableTargetModel targets) {
-        
-        this.targets = targets;
-    }
-    
-    
-    public PlayerEquipments getEquips() {
-        
-        return equips;
-    }
-    
-    
-    public void setEquips(PlayerEquipments equips) {
-        
-        this.equips = equips;
-    }
-    
-    
-    public PlayerForce getForce() {
-        
-        return force;
-    }
-    
-    
-    public void setForce(PlayerForce force) {
-        
-        this.force = force;
-    }
-    
-    
-    String getUserName() {
-        
+    public String getUserName() {
         return userName;
     }
     
-    
     public void setUserName(String userName) {
-        
         this.userName = userName;
     }
-    
-    
-    //    TablePlugin controller;
-    //    
-    //    
-    //    public Player(TablePlugin deskController) {
-    //    
-    //        this.controller = deskController;
-    //    }
     
     
 }

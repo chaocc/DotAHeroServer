@@ -2,29 +2,44 @@ package com.wolf.dotah.server.layer.translator;
 
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.GamePlugin;
-import com.wolf.tool.c;
+import com.wolf.dotah.server.util.c;
 import com.wolf.tool.client_const;
 
 public class MessageDispatcher {
-    /*
-     * TODO 问题, 如何来判断该给哪个translator呢, 如何把拿来的信息翻译成有用的信息呢
-     * 需要有一个完美的依照理论
-     * 
-     * 解答,
-     * 1, 对于client message来说比较好办, 会调用哪个model的行为就给哪个translator
-     * 2, 对于model要给客户端的, 走哪个translator, 要写到更多逻辑才能清晰
-     * 
-     */
     
     
     private TableTranslator tableTranslator;
     private PlayerTranslator playerTranslator;
     private DecisionTranslator decisionTranslator;
+    private GamePlugin plugin;
+    
+    public void sendMessageToSingleUser(String user, EsObject msg) {
+        
+        plugin.getApi().sendPluginMessageToUser(user, msg);
+    }
+    
+    public void sendMessageToAll(EsObject msg) {
+        
+    }
+    
+    public void sendMessageToAllWithoutSpecificUser(EsObject msg, String exceptionUser) {
+        
+    }
+    
+    public MessageDispatcher waitingForEverybody() {
+        // TODO start waiting
+        return this;
+    }
+    
+    public void becauseOf(String serverAction) {
+        // TODO 根据becauseOf莱判断waiting结束条件
+        
+    }
     
     public void handleMessage(String user, EsObject msg) {
         String client_message = msg.getString(c.action, "");
         if (client_const.kActionStartGame.equals(client_message)) {
-            tableTranslator.translateGameStartFromClient(client_const.kActionStartGame, msg);
+            tableTranslator.translateGameStartFromClient(plugin, msg);
         }
         //TODO 这个chose hero id的action, 就该交给decision translator?
         //        else if (c.client_constants.kActionChooseHeroId.equals(client_message)) {
@@ -33,6 +48,7 @@ public class MessageDispatcher {
         //            //            desk.
         //        }
     }
+    
     
     private static MessageDispatcher dispatcher;
     
@@ -44,9 +60,11 @@ public class MessageDispatcher {
     }
     
     private MessageDispatcher(GamePlugin gamePlugin) {
-        tableTranslator = TableTranslator.getTranslator(gamePlugin);
-        playerTranslator = PlayerTranslator.getTranslator(gamePlugin);
-        decisionTranslator = DecisionTranslator.getTranslator(gamePlugin);
+        tableTranslator = TableTranslator.getTranslator();
+        playerTranslator = PlayerTranslator.getTranslator();
+        decisionTranslator = DecisionTranslator.getTranslator();
         playerTranslator.setDecisionTranslator(decisionTranslator);
     }
+    
+    
 }

@@ -19,6 +19,10 @@ public interface client_const {
     
     public static final String kActionArrangeCardId = "arrangeCardId";
     
+    interface action {
+        int choosing_hero = 2;
+//        int 
+    }
     
     //    typedef NS_ENUM(NSInteger, BGCardColor) {
     //        kCardColorInvalid = 0,

@@ -4,7 +4,7 @@ import com.electrotank.electroserver5.extensions.BasePlugin;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
 import com.wolf.dotah.server.layer.translator.commands;
-import com.wolf.tool.c;
+import com.wolf.dotah.server.util.c;
 
 
 public class RoomPlugin extends BasePlugin {

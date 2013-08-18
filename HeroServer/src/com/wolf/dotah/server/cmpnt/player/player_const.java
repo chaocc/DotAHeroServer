@@ -5,15 +5,55 @@ public interface player_const {
     int defaultPlayerCount = 6;
     
     interface playercon {
+        interface property {
+            
+        }
+        
         interface state {
             
-            interface stage {
+            //            interface state_code {
+            //                
+            //                int unavailable = -10;
+            //                int free_play = 10;
+            //                int idle = 20;//没进度条, 什么都没做, 比如有人在free_play
+            //                int waiting = 30;//有进度条, 比如等待某人的驱散
+            //                int choosing = 40;
+            //            }
+            
+            interface desp {
+                String unavailable = "unavailable";
+                String free_play = "free_play";
+                String idle = "idle";//没进度条, 什么都没做, 比如有人在free_play
                 
-                int unavailable = -1;
-                int free_play = 1;
-                int choosing = 2;
-                int waiting = 3;//有进度条, 比如等待某人的驱散
-                int idle = 4;//没进度条, 什么都没做, 比如有人在free_play
+                
+                interface waiting {
+                    String waiting = "waiting"; //有进度条, 比如等待某人的驱散
+                    
+                }
+                
+                interface choosing {
+                    String choosing = "choosing";
+                    String choosing_hero = "choosing_hero";
+                }
+            }
+            
+            interface param_key {
+                interface general {
+                    String choosing_card = "choosing_card";
+                }
+                
+                interface detail {
+                    String hero_candidates = "hero_candidates";
+                }
+            }
+        }
+        
+        interface sequence {
+            interface step {
+                interface type {
+                    String state = "state";
+                    String property = "property";
+                }
             }
         }
     }

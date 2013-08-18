@@ -3,6 +3,7 @@ package com.wolf.dotah.server.cmpnt;
 
 import java.util.List;
 
+import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.CardDropStack;
 import com.wolf.dotah.server.cmpnt.table.CardRemainStack;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
@@ -10,7 +11,11 @@ import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.Ticker;
+import com.wolf.dotah.server.cmpnt.table.table_const;
+import com.wolf.dotah.server.layer.translator.MessageDispatcher;
+import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
 import com.wolf.dotah.server.layer.translator.TableTranslator;
+import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.u;
 
 
@@ -26,7 +31,7 @@ import com.wolf.dotah.server.util.u;
  * @author Solomon
  *
  */
-public class TableModel {
+public class TableModel implements table_const, player_const {
     
     /**
      * 牌桌行为主要有:
@@ -81,14 +86,23 @@ public class TableModel {
         List<Integer[]> heroCandidateList = heroModel.getCandidateForAll(players.getCount());
         System.out.println(tag + "hero candidates inited. \n" + heroCandidateList);
         
-        //TODO table 事件发给每个player都要做事的活动可以尝试叫table action, 
-        //具体是否可行还有待思考
         for (int i = 0; i < players.getCount(); i++) {
             Integer[] candidatesForSingle = heroCandidateList.get(i);
             Player single = PlayerList.getModel().getPlayerByIndex(i);
-            //updateState传进state?
-            single.updateState("choosing_hero", new Data().addIntegerArray("", u.integerArrayToIntArray(candidatesForSingle)));
+            /**
+             * 所以从一开始消息dispatch 进来的时候,  就知道是要choosing了!
+             * 中间一系列过程只是为了责任分离, 让代码更易理解, 更易维护!
+             */
+            
+            ServerUpdateSequence updateSequence = new ServerUpdateSequence(c.server_action.choosing, single);
+            
+            Data stateDetail = new Data().addIntegerArray(playercon.state.param_key.general.choosing_card, u.intArrayMapping(candidatesForSingle));
+            single.updateState(playercon.state.desp.choosing.choosing_hero, stateDetail, updateSequence);
+            
+            updateSequence.submitServerUpdate();
         }
+        //TODO waiting for everybody to choose
+        MessageDispatcher.getDispatcher(null).waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing);
     }
     
     private void initCardModels() {

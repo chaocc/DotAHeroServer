@@ -7,8 +7,13 @@ import com.wolf.dotah.server.layer.translator.MessageDispatcher;
 
 /**
  * Plugin 只负责分发请求, 以及和客户端互发信息, 不处理任何逻辑
+ * 核心逻辑在sequence和toData等地方
  * @author Solomon
- *
+ * 
+ * Choosing, update player info,  等等, 这些 
+ * 叫做server action, 
+ * 又叫做action category, 
+ * 也叫做state等in general\
  */
 public class GamePlugin extends BasePlugin {
     
@@ -38,21 +43,7 @@ public class GamePlugin extends BasePlugin {
         EsObject obj = new EsObject();
         obj.addAll(currentMessageObject);
         obj.setBoolean("message_arrived", true);
-        sendMessageToSingleUser(sender, obj);
-        
-    }
-    
-    
-    public void sendMessageToSingleUser(String user, EsObject msg) {
-        
-        getApi().sendPluginMessageToUser(user, msg);
-    }
-    
-    public void sendMessageToAll(EsObject msg) {
-        
-    }
-    
-    public void sendMessageToAllWithoutSpecificUser(EsObject msg, String exceptionUser) {
+        getApi().sendPluginMessageToUser(sender, obj);
         
     }
     
