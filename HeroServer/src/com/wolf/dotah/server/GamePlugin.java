@@ -22,6 +22,9 @@ public class GamePlugin extends BasePlugin {
     
     @Override
     public void init(EsObjectRO parameters) {
+        //TODO 别忘了init 时候也可以收EsObj! 可以带参数来用来init!
+        
+        
         MessageDispatcher.getDispatcher(this);
         d.debug("DeskPlugin initialized " + d.version);
     }

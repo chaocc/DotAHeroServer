@@ -25,16 +25,16 @@ public interface c {
         public String cancel = "player_cancel";
     }
     
+    public interface param_key {
+        public String left = "left";
+        String player_count = "player_count";
+    }
+    
     
     public interface game_state {
         
         public String none = "";
         public String waiting = "waiting";
-    }
-    
-    public interface param {
-        
-        String player_count = "player_count";
     }
     
     

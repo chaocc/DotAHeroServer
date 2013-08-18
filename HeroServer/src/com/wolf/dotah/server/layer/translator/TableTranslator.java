@@ -38,7 +38,7 @@ public class TableTranslator {
     
     public void translateGameStartFromClient(GamePlugin gamePlugin, EsObject currentMessageObject) {
         if (table == null) {
-            int playerCount = currentMessageObject.getInteger(c.param.player_count, -1);
+            int playerCount = currentMessageObject.getInteger(c.param_key.player_count, -1);
             int zone = gamePlugin.getApi().getZoneId();
             int room = gamePlugin.getApi().getRoomId();
             if (playerCount != -1) {

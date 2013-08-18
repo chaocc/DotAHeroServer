@@ -20,8 +20,9 @@ public interface client_const {
     public static final String kActionArrangeCardId = "arrangeCardId";
     
     interface action {
+        int count_down = -100;
         int choosing_hero = 2;
-//        int 
+        //        int 
     }
     
     //    typedef NS_ENUM(NSInteger, BGCardColor) {
