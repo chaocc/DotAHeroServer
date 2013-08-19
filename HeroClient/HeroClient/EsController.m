@@ -96,7 +96,7 @@
 - (void)onPluginMessageEvent:(EsPluginMessageEvent *)e{
     EsObject *obj = e.parameters;
     NSString* action = [obj stringWithKey:Action];
-    NSLog(@"Receive room plugin message event with action(%@)", action);
+    NSLog(@"Receive plugin message event with action(%@)", action);
     
     if ([action isEqualToString:@"update0"]) {
         

@@ -1171,15 +1171,12 @@
 		7BDFD93417BE4AEE000DB5FF /* client */ = {
 			isa = PBXGroup;
 			children = (
-				7BDFD92717BD14D2000DB5FF /* ClientViewController.h */,
+				7BDFDD4C17C24927000DB5FF /* h */,
+				7BDFDD4517BE5478000DB5FF /* EsController.m */,
 				7BDFD92817BD14D2000DB5FF /* ClientViewController.m */,
 				7BDFD92917BD14D2000DB5FF /* ClientViewController.xib */,
-				7BDFD92D17BE39ED000DB5FF /* Player.h */,
 				7BDFD92E17BE39ED000DB5FF /* Player.m */,
-				7BDFD93017BE441C000DB5FF /* Card.h */,
 				7BDFD93117BE441C000DB5FF /* Card.m */,
-				7BDFDD4417BE5478000DB5FF /* EsController.h */,
-				7BDFDD4517BE5478000DB5FF /* EsController.m */,
 			);
 			name = client;
 			sourceTree = "<group>";
@@ -1869,6 +1866,17 @@
 				7BDFDBC817BE4B8D000DB5FF /* TTransportException.m */,
 			);
 			path = "objective c";
+			sourceTree = "<group>";
+		};
+		7BDFDD4C17C24927000DB5FF /* h */ = {
+			isa = PBXGroup;
+			children = (
+				7BDFD92717BD14D2000DB5FF /* ClientViewController.h */,
+				7BDFD92D17BE39ED000DB5FF /* Player.h */,
+				7BDFD93017BE441C000DB5FF /* Card.h */,
+				7BDFDD4417BE5478000DB5FF /* EsController.h */,
+			);
+			name = h;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
