@@ -15,16 +15,16 @@ public class MessageDispatcher {
     private GamePlugin plugin;
     
     public void sendMessageToSingleUser(String user, EsObject msg) {
-        
+    
         plugin.getApi().sendPluginMessageToUser(user, msg);
     }
     
     public void sendMessageToAll(EsObject msg) {
-        
+    
     }
     
     public void sendMessageToAllWithoutSpecificUser(EsObject msg, String exceptionUser) {
-        
+    
     }
     
     private int schedule_waiting_for_everybody_id = -1;
@@ -32,6 +32,7 @@ public class MessageDispatcher {
     
     //TODO 想想能不能抽出来waiter之类的 组件
     public MessageDispatcher waitingForEverybody() {
+    
         schedule_waiting_for_everybody_id = plugin.getApi().scheduleExecution(1000, -1, new WaitingForEverybody());
         return this;
     }
@@ -40,6 +41,7 @@ public class MessageDispatcher {
         
         @Override
         public void scheduledCallback() {
+        
             tick();
             
             //TODO 2种条件cancel count down, 
@@ -48,7 +50,8 @@ public class MessageDispatcher {
         }
         
         public void tick() {
-//            if (gameState != GameState.Waiting) { return; }
+        
+            //            if (gameState != GameState.Waiting) { return; }
             if (tickCounter < 1) {
                 //TODO 自动发给每个人牌, 然后cancel tick
                 plugin.getApi().cancelScheduledExecution(schedule_waiting_for_everybody_id);
@@ -58,6 +61,7 @@ public class MessageDispatcher {
         }
         
         private void sendCountDownSecondsLeftMessage() {
+        
             EsObject message = new EsObject();
             message.setInteger(c.action, client_const.action.count_down);
             message.setInteger(c.param_key.left, tickCounter);
@@ -68,11 +72,13 @@ public class MessageDispatcher {
     }
     
     public void becauseOf(String serverAction) {
+    
         // TODO 根据becauseOf莱判断waiting结束条件
         
     }
     
     public void handleMessage(String user, EsObject msg) {
+    
         String client_message = msg.getString(c.action, "");
         if (client_const.kActionStartGame.equals(client_message)) {
             tableTranslator.translateGameStartFromClient(plugin, msg);
@@ -89,6 +95,7 @@ public class MessageDispatcher {
     private static MessageDispatcher dispatcher;
     
     public static MessageDispatcher getDispatcher(GamePlugin gamePlugin) {
+    
         if (dispatcher == null) {
             dispatcher = new MessageDispatcher(gamePlugin);
         }
@@ -96,6 +103,7 @@ public class MessageDispatcher {
     }
     
     private MessageDispatcher(GamePlugin gamePlugin) {
+    
         tableTranslator = TableTranslator.getTranslator();
         playerTranslator = PlayerTranslator.getTranslator();
         decisionTranslator = DecisionTranslator.getTranslator();
