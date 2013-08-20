@@ -39,6 +39,7 @@ public class TableTranslator {
     public void translateGameStartFromClient(GamePlugin gamePlugin, EsObject currentMessageObject) {
         if (table == null) {
             int playerCount = currentMessageObject.getInteger(c.param_key.player_count, -1);
+            //TODO start game不要携带player count,  而是player name列表, 使用player name来新建player
             int zone = gamePlugin.getApi().getZoneId();
             int room = gamePlugin.getApi().getRoomId();
             if (playerCount != -1) {
@@ -46,7 +47,6 @@ public class TableTranslator {
             } else {
                 PlayerList.getModel().initWithUserCollection(gamePlugin.getApi().getUsersInRoom(zone, room));
             }
-            //TODO init table 是个特例, 一般都要这些都该是table的行为, translatr只是负责翻译, 这个看看是否能改
             table = new TableModel();
             table.setTranslator(this);
             System.out.println(tag + " table translator inited");
