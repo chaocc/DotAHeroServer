@@ -2,9 +2,9 @@ package com.wolf.dotah.server.layer.translator;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
+import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.util.c;
 
 /**
@@ -13,16 +13,17 @@ import com.wolf.dotah.server.util.c;
  * @param tag 这个tag目前没什么用, 只是保存了PlayerState. 当有复杂的sequence时候也许可以用来判断什么
  */
 public class ServerUpdateSequence {
-    private String sequenceType;// server action in general, also called action category
+    private String finalTarget;// server action in general, also called action category
     private List<Step> updateSequence = new ArrayList<Step>();
-    private Player playerAsSubject;
+    private Player subjectPlayer;
+    private TableModel subjectTable;
     private boolean singleStepSequence = true;
     
     //TODO    private TableModel tableAsSubject;
     
-    public ServerUpdateSequence(String type, Player subject) {
-        this.sequenceType = type;
-        this.playerAsSubject = subject;
+    public ServerUpdateSequence(String serverAction, Player subject) {
+        this.finalTarget = serverAction;
+        this.subjectPlayer = subject;
     }
     
     public void add(String stepKey, Data data) {
@@ -36,13 +37,21 @@ public class ServerUpdateSequence {
     * 并且这个是一开始就已经确定的!
     */
     public void submitServerUpdate() {
-        if (sequenceType.equals(c.server_action.choosing)) {
+        if (subjectPlayer != null && subjectPlayer.isAi()) {
+            submitAi();
+        }
+        if (finalTarget.equals(c.server_action.choosing)) {
             DecisionTranslator.getTranslator().translate(this);
-        } else if (sequenceType.equals(c.server_action.update_player_info)) {
+        } else if (finalTarget.equals(c.server_action.update_player_info)) {
             System.out.println("submit as update player info, not implemented");
-        } else if (sequenceType.equals(c.server_action.free_play)) {
+        } else if (finalTarget.equals(c.server_action.free_play)) {
             System.out.println("submit as update player to free play, not implemented");
         }
+        
+    }
+    
+    private void submitAi() {
+        subjectPlayer.performAiAction(finalTarget);
         
     }
     
@@ -54,20 +63,20 @@ public class ServerUpdateSequence {
         this.singleStepSequence = singleStepSequence;
     }
     
-    public Player getPlayerAsSubject() {
-        return playerAsSubject;
+    public Player getSubjectPlayer() {
+        return subjectPlayer;
     }
     
-    public void setPlayerAsSubject(Player playerAsSubject) {
-        this.playerAsSubject = playerAsSubject;
+    public void setSubjectPlayer(Player subjectPlayer) {
+        this.subjectPlayer = subjectPlayer;
     }
     
-    public String getSequenceType() {
-        return sequenceType;
+    public String getFinalTarget() {
+        return finalTarget;
     }
     
-    public void setSequenceType(String sequenceType) {
-        this.sequenceType = sequenceType;
+    public void setFinalTarget(String finalTarget) {
+        this.finalTarget = finalTarget;
     }
     
     public Step get(int i) {
@@ -87,7 +96,6 @@ public class ServerUpdateSequence {
     public void setUpdateSequence(List<Step> updateSequence) {
         this.updateSequence = updateSequence;
     }
-    
     
     @Override
     public String toString() {
@@ -115,7 +123,6 @@ public class ServerUpdateSequence {
         public Data getData() {
             return data;
         }
-        
         
     }
 }

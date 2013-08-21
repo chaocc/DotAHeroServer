@@ -1,19 +1,19 @@
 package com.wolf.dotah.server.cmpnt;
 
-
+import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.PlayerAvailableTargetModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
 import com.wolf.dotah.server.cmpnt.player.PlayerState;
 import com.wolf.dotah.server.cmpnt.player.player_const;
+import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
+import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.testframework.ClientRequest;
-
 
 public class Player implements player_const {
     
     //TODO attackable
     //TODO disarmable
-    
     
     private PlayerState state;//hero 在干嘛, 可以干嘛
     private PlayerProperty property;//player 属性的状态
@@ -64,7 +64,6 @@ public class Player implements player_const {
         state = new PlayerState();
     }
     
-    
     public PlayerProperty getProperty() {
         return property;
     }
@@ -72,7 +71,6 @@ public class Player implements player_const {
     public void setProperty(PlayerProperty property) {
         this.property = property;
     }
-    
     
     public PlayerState getState() {
         return state;
@@ -82,16 +80,19 @@ public class Player implements player_const {
         this.state = state;
     }
     
-    
     private String userName;
-    private boolean ai;
+    private Ai ai;
     
     public boolean isAi() {
-        return ai;
+        return ai.isAi();
     }
     
-    public void setAi(boolean ai) {
+    public void setAi(Ai ai) {
         this.ai = ai;
+    }
+    
+    public Ai getAi() {
+        return ai;
     }
     
     public String getUserName() {
@@ -102,5 +103,18 @@ public class Player implements player_const {
         this.userName = userName;
     }
     
+    /**
+     * 相当于客户端拿来了新消息, 在做判断
+     * @param action
+     */
+    public void performAiAction(String action) {
+        if (action.equals(c.server_action.free_play)) {
+        } else {// choosing
+            if (state.getStateDesp().equals(playercon.state.desp.choosing.choosing_hero)) {
+                ai.chooseSingle(state.toData().getIntegerArray(playercon.state.param_key.detail.hero_candidates, new int[] {}));
+                //选完了要translate ai,  可能是decisionTranslator里的方法, 模拟收到了客户端的消息
+            }
+        }
+    }
     
 }

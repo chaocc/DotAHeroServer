@@ -8,7 +8,6 @@ import com.wolf.tool.client_const;
 
 public class MessageDispatcher {
     
-    
     private TableTranslator tableTranslator;
     private PlayerTranslator playerTranslator;
     private DecisionTranslator decisionTranslator;
@@ -92,7 +91,6 @@ public class MessageDispatcher {
         //        }
     }
     
-    
     private static MessageDispatcher dispatcher;
     
     public static MessageDispatcher getDispatcher(GamePlugin gamePlugin) {
@@ -110,6 +108,5 @@ public class MessageDispatcher {
         decisionTranslator = DecisionTranslator.getTranslator();
         playerTranslator.setDecisionTranslator(decisionTranslator);
     }
-    
     
 }

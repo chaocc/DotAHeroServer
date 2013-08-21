@@ -1,14 +1,12 @@
 package com.wolf.dotah.server.cmpnt.table;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
 import com.wolf.dotah.server.cmpnt.Player;
+import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.player_const;
-
 
 public class PlayerList implements player_const {
     
@@ -20,7 +18,6 @@ public class PlayerList implements player_const {
         System.out.println(tag + "initWithUserCollection");
         initWithUserCollectionAndPlayerCount(input, defaultPlayerCount);
     }
-    
     
     public void initWithUserCollectionAndPlayerCount(Collection<UserValue> usersInRoom, int playerCount) {
         
@@ -38,12 +35,11 @@ public class PlayerList implements player_const {
         }
     }
     
-    
     private void initPlayerList(int playerCount) {
-        
         
         for (String userName : userList) {
             Player player = new Player(userName);
+            System.out.println("adding player " + userName);
             playerList.add(player);
         }
         if (playerCount > userList.size()) {
@@ -51,18 +47,17 @@ public class PlayerList implements player_const {
             for (int i = 0; i < aiCount; i++) {
                 
                 Player player = new Player(aiName + i);
-                player.setAi(true);
+                player.setAi(new Ai());
+                System.out.println("adding ai " + aiName + i);
                 playerList.add(player);
             }
         }
     }
     
-    
     public int getCount() {
         
         return playerList.size();
     }
-    
     
     public static PlayerList getModel() {
         
@@ -72,15 +67,12 @@ public class PlayerList implements player_const {
         return model;
     }
     
-    
     private static PlayerList model;
-    
     
     private PlayerList() {
         
         playerList = new ArrayList<Player>();
     }
-    
     
     public Player getPlayerByIndex(int i) {
         
