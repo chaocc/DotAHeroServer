@@ -1,6 +1,7 @@
 package com.wolf.dotah.server.util;
 
 import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
+import com.wolf.tool.client_const;
 
 public class u {
     public static int[] intArrayMapping(Integer[] integerArray) {
@@ -24,7 +25,7 @@ public class u {
     public static int actionMapping(String action) {
         int result = -1;
         if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
-            result = 0;
+            result = client_const.action_code_choosing_hero;
         }
         
         return result;

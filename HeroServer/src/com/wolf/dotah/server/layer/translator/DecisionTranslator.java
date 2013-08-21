@@ -25,7 +25,7 @@ public class DecisionTranslator {
         String serverAction = sequence.get(0).getStepDesp();
         
         //add action
-        obj.setInteger(c.action, u.actionMapping(serverAction));
+        obj.setAction(serverAction);
         obj.setString(c.action_category, sequence.getFinalTarget());
         //add param
         obj.addAll(sequence.get(0).getData());
@@ -41,6 +41,7 @@ public class DecisionTranslator {
         }
         // TODO 每个translate 方法做更多的事情, 
         // 比如把 table 的状态和各个player的属性和状态, 该加的都加进来!
+        // TODO 比如 which property updated, 是个例子
         MessageDispatcher.getDispatcher(null).sendMessageToSingleUser(sequence.getSubjectPlayer().getUserName(), obj);
     }
     

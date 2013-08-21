@@ -43,9 +43,20 @@
 
 #pragma mark - table delegates
 
+//@property (strong) NSMutableArray* players;
+//@property (strong) Player* player;
+//@property (strong) NSMutableArray* handCards;
+//@property (strong) NSMutableArray* happeningOrChoosing;
+//@property (assign) NSInteger timer;
+//@property (strong) NSString* happeningMessageText;
 
+//@property (weak) IBOutlet NSTableView *handCardTable;
+//@property (weak) IBOutlet NSTableView *playersTable;
+//@property (weak) IBOutlet NSTableView *choosingTable;
+//@property (weak) IBOutlet NSTableView *selfInfoTable;
+//@property (weak) IBOutlet NSTextField *countDown;
+//@property (weak) IBOutlet NSTextField *happeningMessage;
 -(NSView*)tableView:(NSTableView*)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row{
-    
     
     NSTableCellView* cellView = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
     if([tableColumn.identifier isEqualToString:@"BugColumn"]){
@@ -54,22 +65,26 @@
     }
     return cellView;
 }
-
 -(void)tableViewSelectionDidChange:(NSNotification*)notification{
 //    NSControl *obj = [notification object]; //get the object sent the notification
     
 }
-
 -(NSInteger)numberOfRowsInTableView:(NSTableView*)tableView{
     
-//    return [self.bugs count];
+    if ([tableView isEqualTo:_choosingTable]) {
+        return [_happeningOrChoosing count];
+    }else if([tableView isEqualTo:_playersTable]){
+        return [_players count];
+    }else if([tableView isEqualTo:_handCardTable]){
+        return [_handCards count];
+    }else if([tableView isEqualTo:_selfInfoTable]){
+        return 4;
+    }
     return 0;
 }
 -(NSIndexSet*)selectedRowIndexes{
     return 0;
 }
-
-
 
 
 
@@ -94,6 +109,14 @@
 }
 
 
+
+
+
+#pragma mark - update data and update ui according to server 
+-(void)setChoosingCandidates:(NSArray*)choosingCandidates{
+    [_happeningOrChoosing setArray:choosingCandidates];
+    [_choosingTable reloadData];
+}
 
 
 @end

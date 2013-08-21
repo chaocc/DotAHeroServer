@@ -1,12 +1,11 @@
 package com.wolf.dotah.server.util;
 
-
 public interface c {
     
     public String action = "action";
+    public String action_description = "action_description";
     public String action_category = "action_category";
     int default_player_count = 6;
-    
     
     public interface server_action {
         
@@ -30,12 +29,10 @@ public interface c {
         String player_count = "player_count";
     }
     
-    
     public interface game_state {
         
         public String none = "";
         public String waiting = "waiting";
     }
-    
     
 }

@@ -24,4 +24,8 @@
 @property (strong) EsController* esControl;
 
 
+
+-(void)setChoosingCandidates:(NSArray*)choosingCandidates;
+
+
 @end

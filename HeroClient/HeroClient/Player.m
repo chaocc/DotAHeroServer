@@ -10,4 +10,13 @@
 
 @implementation Player
 
+
+-(id)initWithHero:(int)hero{
+    if(self = [super init]){
+        
+        
+    }
+    return self;
+}
+
 @end

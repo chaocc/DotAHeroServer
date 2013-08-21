@@ -5,7 +5,6 @@ import com.wolf.dotah.server.cmpnt.player.PlayerAvailableTargetModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
 import com.wolf.dotah.server.cmpnt.player.PlayerState;
 import com.wolf.dotah.server.cmpnt.player.player_const;
-import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.testframework.ClientRequest;
@@ -38,7 +37,7 @@ public class Player implements player_const {
      * 每一个public的update方法, 都要把update的过程加入到update steps里, 供translate时候用
      */
     public void updateProperty(String propertyName, Data result, ServerUpdateSequence sequence) {
-        //TODO 先要把update property 翻译成server action, 然后把server action放到step里, 而不是property name
+        // TODO 先要把update property 翻译成server action, 然后把server action放到step里, 而不是property name
         // sequence.add(some server action,  and data);
         // TODO Auto-generated method stub
     }

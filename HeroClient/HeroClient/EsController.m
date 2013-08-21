@@ -95,11 +95,13 @@
 
 - (void)onPluginMessageEvent:(EsPluginMessageEvent *)e{
     EsObject *obj = e.parameters;
-    NSString* action = [obj stringWithKey:Action];
-    NSLog(@"Receive plugin message event with action(%@)", action);
+//    NSString* action = [obj stringWithKey:Action];
+    int action = [obj intWithKey:Action];
+    NSLog(@"Receive plugin message event with action(%i)", action);
     
-    if ([action isEqualToString:@"update0"]) {
-        
+    if (action == 3) {
+        NSArray* choosingCandidates = [obj intArrayWithKey:@""];
+        [_clientViewController setChoosingCandidates:choosingCandidates];
     }
 }
 
