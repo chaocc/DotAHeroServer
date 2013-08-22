@@ -26,6 +26,6 @@
 
 
 -(void)setChoosingCandidates:(NSArray*)choosingCandidates;
-
+-(void)reloadData;
 
 @end

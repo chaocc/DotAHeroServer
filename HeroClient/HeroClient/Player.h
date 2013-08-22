@@ -9,8 +9,10 @@
 #import <Foundation/Foundation.h>
 
 @interface Player : NSObject
+@property (strong) NSString* name;
+@property (assign) NSInteger hero;
 @property (assign) NSInteger hp;
 @property (assign) NSInteger sp;
-@property (strong) NSString* weapon;
-@property (strong) NSString* armor;
+@property (assign) NSInteger weapon;
+@property (assign) NSInteger armor;
 @end

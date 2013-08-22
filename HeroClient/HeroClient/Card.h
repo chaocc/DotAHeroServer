@@ -10,6 +10,6 @@
 
 @interface Card : NSObject
 @property (assign) NSInteger suits;
-@property (assign) NSInteger points;
+@property (assign) NSInteger point;
 @property (strong) NSString* name;
 @end

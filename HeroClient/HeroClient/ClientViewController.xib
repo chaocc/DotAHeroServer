@@ -325,7 +325,7 @@
 									<object class="NSTableView" id="385355674">
 										<reference key="NSNextResponder" ref="336205602"/>
 										<int key="NSvFlags">256</int>
-										<string key="NSFrameSize">{185, 76}</string>
+										<string key="NSFrameSize">{185, 95}</string>
 										<reference key="NSSuperview" ref="336205602"/>
 										<reference key="NSWindow"/>
 										<reference key="NSNextKeyView" ref="968808239"/>
@@ -413,7 +413,7 @@
 										<int key="NSTableViewGroupRowStyle">1</int>
 									</object>
 								</array>
-								<string key="NSFrame">{{1, 1}, {185, 76}}</string>
+								<string key="NSFrame">{{1, 1}, {185, 95}}</string>
 								<reference key="NSSuperview" ref="547086374"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="385355674"/>
@@ -448,7 +448,7 @@
 								<double key="NSPercent">0.9946236559139785</double>
 							</object>
 						</array>
-						<string key="NSFrame">{{20, 79}, {187, 78}}</string>
+						<string key="NSFrame">{{20, 79}, {187, 97}}</string>
 						<reference key="NSSuperview" ref="1005"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="336205602"/>
@@ -848,7 +848,7 @@
 									<object class="NSTableView" id="338602568">
 										<reference key="NSNextResponder" ref="1041008147"/>
 										<int key="NSvFlags">256</int>
-										<string key="NSFrameSize">{198, 247}</string>
+										<string key="NSFrameSize">{198, 228}</string>
 										<reference key="NSSuperview" ref="1041008147"/>
 										<reference key="NSWindow"/>
 										<reference key="NSNextKeyView" ref="537891232"/>
@@ -973,7 +973,7 @@
 										<int key="NSTableViewGroupRowStyle">1</int>
 									</object>
 								</array>
-								<string key="NSFrame">{{1, 17}, {198, 247}}</string>
+								<string key="NSFrame">{{1, 17}, {198, 228}}</string>
 								<reference key="NSSuperview" ref="461583345"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="338602568"/>
@@ -1024,7 +1024,7 @@
 								<int key="NScvFlags">4</int>
 							</object>
 						</array>
-						<string key="NSFrame">{{20, 165}, {200, 265}}</string>
+						<string key="NSFrame">{{20, 184}, {200, 246}}</string>
 						<reference key="NSSuperview" ref="1005"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="210780285"/>
@@ -1488,7 +1488,7 @@
 									<object class="NSTextFieldCell" key="NSCell" id="943041758">
 										<int key="NSCellFlags">67239488</int>
 										<int key="NSCellFlags2">272631808</int>
-										<string key="NSContents">hp</string>
+										<string key="NSContents">hero</string>
 										<reference key="NSSupport" ref="531901935"/>
 										<reference key="NSControlView" ref="368505162"/>
 										<reference key="NSBackgroundColor" ref="892992840"/>
@@ -2543,6 +2543,7 @@
 						<string key="cancelClicked:">id</string>
 						<string key="confirmClicked:">id</string>
 						<string key="dropClicked:">id</string>
+						<string key="reconnectClicked:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="cancelClicked:">
@@ -2555,6 +2556,10 @@
 						</object>
 						<object class="IBActionInfo" key="dropClicked:">
 							<string key="name">dropClicked:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="reconnectClicked:">
+							<string key="name">reconnectClicked:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>

@@ -36,6 +36,7 @@
         lr.userName = @"Sol";
         [_es.engine sendMessage:lr];
     }
+    [_clientViewController reloadData];
 }
 
 
@@ -100,7 +101,7 @@
     NSLog(@"Receive plugin message event with action(%i)", action);
     
     if (action == 3) {
-        NSArray* choosingCandidates = [obj intArrayWithKey:@""];
+        NSArray* choosingCandidates = [obj intArrayWithKey:@"hero_candidates"];
         [_clientViewController setChoosingCandidates:choosingCandidates];
     }
 }
