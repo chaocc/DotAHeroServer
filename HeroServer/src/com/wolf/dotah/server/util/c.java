@@ -27,6 +27,7 @@ public interface c {
     public interface param_key {
         public String left = "left";
         String player_count = "player_count";
+        String pick_result = "pick_result";
     }
     
     public interface game_state {

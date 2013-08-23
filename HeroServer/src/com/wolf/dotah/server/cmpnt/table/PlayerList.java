@@ -15,12 +15,13 @@ public class PlayerList implements player_const {
     final String tag = "====>> PlayerList: ";
     
     public void initWithUserCollection(Collection<UserValue> input) {
+    
         System.out.println(tag + "initWithUserCollection");
         initWithUserCollectionAndPlayerCount(input, defaultPlayerCount);
     }
     
     public void initWithUserCollectionAndPlayerCount(Collection<UserValue> usersInRoom, int playerCount) {
-        
+    
         /**
          * 保证多次调用init 方法是不管用的
          */
@@ -36,7 +37,7 @@ public class PlayerList implements player_const {
     }
     
     private void initPlayerList(int playerCount) {
-        
+    
         for (String userName : userList) {
             Player player = new Player(userName);
             System.out.println("adding player " + userName);
@@ -55,12 +56,12 @@ public class PlayerList implements player_const {
     }
     
     public int getCount() {
-        
+    
         return playerList.size();
     }
     
     public static PlayerList getModel() {
-        
+    
         if (model == null) {
             model = new PlayerList();
         }
@@ -70,13 +71,19 @@ public class PlayerList implements player_const {
     private static PlayerList model;
     
     private PlayerList() {
-        
+    
         playerList = new ArrayList<Player>();
     }
     
     public Player getPlayerByIndex(int i) {
-        
+    
         return playerList.get(i);
+    }
+    
+    public Player getPlayerByUserName(String user) {
+    
+        //TODO 现在player 一定是在ai前边的, 所以player index和user index是一样的
+        return playerList.get(userList.indexOf(user));
     }
     
 }
