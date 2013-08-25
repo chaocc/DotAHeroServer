@@ -8,15 +8,15 @@ public interface client_const {
     public static final String kActionCancel = "cancel"; // 取消
     //        public static final String kActionDiscard = "discard"; // 确定弃牌
     
-    public static final String kActionHeroList = "heroList"; // 所有玩家选中的英雄
-    
-    public static final String kActionChooseHeroId = "chooseHeroId"; // 选择英雄牌
-    public static final String kActionChooseCardId = "chooseCardId"; // 选择卡牌ID
-    public static final String kActionChooseColor = "chooseColor"; // 选择卡牌颜色
-    public static final String kActionChooseSuits = "chooseSuits"; // 选择卡牌花色
-    public static final String kActionChooseYesNo = "chooseYesNo"; // 选择Yes/No
-    
-    public static final String kActionArrangeCardId = "arrangeCardId";
+    //    public static final String kActionHeroList = "heroList"; // 所有玩家选中的英雄
+    //    
+    //    public static final String kActionChooseHeroId = "chooseHeroId"; // 选择英雄牌
+    //    public static final String kActionChooseCardId = "chooseCardId"; // 选择卡牌ID
+    //    public static final String kActionChooseColor = "chooseColor"; // 选择卡牌颜色
+    //    public static final String kActionChooseSuits = "chooseSuits"; // 选择卡牌花色
+    //    public static final String kActionChooseYesNo = "chooseYesNo"; // 选择Yes/No
+    //    
+    //    public static final String kActionArrangeCardId = "arrangeCardId";
     public static final int
             ACTION_BASE = 0,
             ACTION_USER_READY = ACTION_BASE + 1,
@@ -123,6 +123,42 @@ public interface client_const {
         //        int 
     }
     
+    //    kActionUseHandCard = 100,                       // 使用卡牌
+    //    kActionUseHeroSkill = 101,                      // 使用英雄技能
+    //    kActionCancel = 102,                            // 取消
+    //    kActionDiscard = 103,                           // 确定弃牌
+    //    
+    //    kActionChooseHeroId = 200,                      // 选择英雄
+    //    kActionChooseCard = 201,                        // 选择卡牌Id/Idx
+    //    kActionChooseColor = 202,                       // 选择卡牌颜色
+    //    kActionChooseSuits = 203,                       // 选择卡牌花色
+    //    kActionArrangeCardId = 204,                     // 重新排列卡牌(如能量转移)
+    
+    // 1000 开始是server的 action
+    public int
+            kActionUpdateDeckHero = 1000, // 更新桌面: 待选英雄
+            kActionUpdateDeckUsedCard = 1001, // 更新桌面: 用掉/弃掉的牌
+            kActionUpdateDeckHandCard = 1002, // 更新桌面: 目标手牌/装备
+            kActionUpdateDeckPlayingCard = 1003, // 更新桌面: 牌堆顶的牌
+            action_update_table_player_list = 1004, // 更新桌面: 玩家列表
+            
+            kActionInitPlayerHero = 2000, // 初始化玩家: 选中的英雄
+            kActionInitPlayerCard = 2001, // 初始化玩家: 发初始手牌
+            kActionUpdatePlayerHero = 2002, // 更新玩家: 英雄的血量/怒气等信息
+            kActionUpdatePlayerHand = 2003, // 更新玩家: 手牌
+            kActionUpdatePlayerHandExtracted = 2004, // 更新玩家: 手牌被抽取
+            kActionUpdatePlayerEquipment = 2005, // 更新玩家: 装备区的牌
+            kActionUpdatePlayerEquipmentExtracted = 2006, // 更新玩家: 装备去的牌被抽取
+            
+            kActionPlayingCard = 3000, // 出牌阶段
+            kActionChooseCardToUse = 3001, // 选择卡牌: 使用
+            kActionChooseCardToCompare = 3002, // 选择卡牌: 拼点
+            kActionChooseCardToExtract = 3003, // 选择目标卡牌: 抽取
+            kActionChooseCardToGive = 3004, // 选择卡牌: 交给其他玩家
+            kActionChooseCardToDiscard = 3005, // 选择卡牌: 弃置
+            kActionChoosingColor = 3006, // 选择颜色阶段
+            kActionChoosingSuits = 3007; // 选择花色阶段
+            
     //    typedef NS_ENUM(NSInteger, BGCardColor) {
     //        kCardColorInvalid = 0,
     //        kCardColorRed = 1,                  // 红色

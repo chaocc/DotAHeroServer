@@ -1,26 +1,23 @@
 package com.wolf.dotah.server.layer.data;
 
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import net.sf.plist.NSArray;
 import net.sf.plist.NSDictionary;
 import net.sf.plist.NSInteger;
 import net.sf.plist.NSObject;
 import net.sf.plist.io.PropertyListParser;
-
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.HeroSkill;
 import com.wolf.dotah.server.cmpnt.player.HeroSkills;
-
+import com.wolf.dotah.server.layer.translator.MessageDispatcher;
 
 public class HeroParser {
     
     private final String path = "doc/HeroCardArray.plist";
     private static HeroParser parser;
-    
+    private final String tag = "===>> HeroParser ";
     
     public static HeroParser getParser() {
         
@@ -29,7 +26,6 @@ public class HeroParser {
         }
         return parser;
     }
-    
     
     public List<HeroInfo> getHeroInfoList() {
         
@@ -44,14 +40,12 @@ public class HeroParser {
         return heroInfoList;
     }
     
-    
     public HeroInfo getHeroInfoById(int id) {
         
         NSDictionary hero = (NSDictionary) getNSHeroArray()[id];
         HeroInfo heroInfo = genHeroInfoFromNSDictWithId(hero, id);
         return heroInfo;
     }
-    
     
     public List<Integer> getHeroIdList() {
         
@@ -63,23 +57,21 @@ public class HeroParser {
         return heroIdList;
     }
     
-    
     private NSObject[] getNSHeroArray() {
         
         try {
             File file = new File(path);
-            System.out.println(file.exists());
-            System.out.println(file.getAbsolutePath());
+//            MessageDispatcher.getDispatcher(null).debug(tag, file.exists()+"");
+//            MessageDispatcher.getDispatcher(null).debug(tag, file.getAbsolutePath());
             NSArray heroArray = (NSArray) PropertyListParser.parse(file);
             NSObject[] heros = heroArray.array();
             return heros;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        } 
-//        return null;
+        }
+        //        return null;
     }
-    
     
     private HeroInfo genHeroInfoFromNSDictWithId(NSDictionary hero, int id) {
         
@@ -101,11 +93,9 @@ public class HeroParser {
         return heroInfo.genInfo();
     }
     
-    
     private HeroParser() {
         
     }
-    
     
     public static void main(String... args) {
         

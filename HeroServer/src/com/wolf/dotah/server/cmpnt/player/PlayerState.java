@@ -1,13 +1,11 @@
 package com.wolf.dotah.server.cmpnt.player;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import com.wolf.dotah.server.cmpnt.Data;
+import com.wolf.dotah.server.layer.translator.MessageDispatcher;
 import com.wolf.dotah.server.util.u;
-
 
 /**
  * 每个Player 里都有一个 state, 来表示当前处于的play状态,
@@ -38,8 +36,9 @@ public class PlayerState implements player_const {
     }
     
     public void updateDetail(Data detail) {
-        System.out.println(tag + "update player state to detail: \n" + detail.toString());
-        Integer[] choosingCards = u.integerArrayMapping(detail.getIntegerArray(playercon.state.param_key.general.choosing_card, new int[] {}));
+        //        MessageDispatcher.getDispatcher(null).debug(tag, "update player state to detail: \n" + detail.toString());
+        Integer[] choosingCards = u.integerArrayMapping(detail.getIntegerArray(playercon.state.param_key.general.id_list, new int[] {}));
+        //        MessageDispatcher.getDispatcher(null).debug(tag, "adding choosing id list to context: " + u.printArray(choosingCards));
         choosingCardContext.addAll(Arrays.asList(choosingCards));
         
     }
@@ -51,7 +50,8 @@ public class PlayerState implements player_const {
         Data data = new Data();
         if (stateDesp.equals(playercon.state.desp.choosing.choosing_hero)) {
             int[] heroCandidates = u.intArrayMapping(choosingCardContext.toArray(new Integer[] {}));
-            data.setIntegerArray(playercon.state.param_key.detail.hero_candidates, heroCandidates);
+            //            MessageDispatcher.getDispatcher(null).debug(tag, "fetching choosing id list from context: " + u.printArray(heroCandidates));
+            data.setIntegerArray(playercon.state.param_key.general.id_list, heroCandidates);
             
         }
         return data;
@@ -61,59 +61,49 @@ public class PlayerState implements player_const {
         return stateDesp;
     }
     
-    
     public PlayerState setStateDesp(String stateDesp) {
         this.stateDesp = stateDesp;
         return this;
     }
-    
     
     public boolean isCurrentPlayer() {
         
         return currentPlayer;
     }
     
-    
     public List<Integer> getUsableCardContext() {
         
         return usableCardContext;
     }
-    
     
     public List<Integer> getHeroSkillContext() {
         
         return heroSkillContext;
     }
     
-    
     public List<Integer> getEquipmentContext() {
         
         return equipmentContext;
     }
-    
     
     public void setCurrentPlayer(boolean currentPlayer) {
         
         this.currentPlayer = currentPlayer;
     }
     
-    
     public void setUsableCardContext(List<Integer> usableCardContext) {
         
         this.usableCardContext = usableCardContext;
     }
-    
     
     public void setHeroSkillContext(List<Integer> heroSkillContext) {
         
         this.heroSkillContext = heroSkillContext;
     }
     
-    
     public void setEquipmentContext(List<Integer> equipmentContext) {
         
         this.equipmentContext = equipmentContext;
     }
-    
     
 }

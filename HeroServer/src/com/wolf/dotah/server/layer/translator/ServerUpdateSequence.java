@@ -39,15 +39,20 @@ public class ServerUpdateSequence {
     public void submitServerUpdate() {
         if (subjectPlayer != null && subjectPlayer.isAi()) {
             submitAi();
-        }
-        if (finalTarget.equals(c.server_action.choosing)) {
-            DecisionTranslator.getTranslator().translate(this);
+        } else if (finalTarget.equals(c.server_action.choosing)) {
+//            .translate(this);
         } else if (finalTarget.equals(c.server_action.update_player_info)) {
             System.out.println("submit as update player info, not implemented");
         } else if (finalTarget.equals(c.server_action.free_play)) {
             System.out.println("submit as update player to free play, not implemented");
         }
         
+    }
+    
+    public void submitServerUpdateByTable(TableModel table) {
+        if (finalTarget.equals(c.server_action.choosing)) {
+            table.getTranslator().getDecisionTranslator().translate(this);
+        }
     }
     
     private void submitAi() {
@@ -125,4 +130,5 @@ public class ServerUpdateSequence {
         }
         
     }
+    
 }

@@ -1,33 +1,33 @@
 package com.wolf.dotah.server.layer.translator;
 
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
+import com.wolf.dotah.server.GamePlugin;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
-import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
-import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.util.c;
 
 public class DecisionTranslator {
     
-    private static DecisionTranslator translator;
+    //    private static DecisionTranslator translator;
+    //    
+    //    public static DecisionTranslator getTranslator() {
+    //        
+    //        if (translator == null) {
+    //            translator = new DecisionTranslator();
+    //        }
+    //        return translator;
+    //    }
+    private MessageDispatcher msgDispatcher;
     
-    public static DecisionTranslator getTranslator() {
-    
-        if (translator == null) {
-            translator = new DecisionTranslator();
-        }
-        return translator;
-    }
-    
-    private DecisionTranslator() {
-    
+    public DecisionTranslator(MessageDispatcher dispatcher) {
+        this.msgDispatcher = dispatcher;
     }
     
     /*
      * ==========  translations from server
      */
     private void translateSingleStepAction(ServerUpdateSequence sequence, final Data obj) {
-    
+        
         String serverAction = sequence.get(0).getStepDesp();
         
         //add action
@@ -38,7 +38,7 @@ public class DecisionTranslator {
     }
     
     public void translate(ServerUpdateSequence sequence) {
-    
+        
         Data obj = new Data();
         if (sequence.isSingleStepSequence()) {
             translateSingleStepAction(sequence, obj);
@@ -48,26 +48,25 @@ public class DecisionTranslator {
         // TODO 每个translate 方法做更多的事情, 
         // 比如把 table 的状态和各个player的属性和状态, 该加的都加进来!
         // TODO 比如 which property updated, 是个例子
-        MessageDispatcher.getDispatcher(null).sendMessageToSingleUser(sequence.getSubjectPlayer().getUserName(), obj);
+        // TODO 加上了table上有哪几个player, 应该要移到
+        msgDispatcher.sendMessageToSingleUser(sequence.getSubjectPlayer().getUserName(), obj);
     }
     
     private void translateMultiStepAction(ServerUpdateSequence sequence, final Data obj) {
-    
+        
         //TODO 比如又掉血啦, 又涨怒气啦什么的, 
         // 就要一步一步的sequence step 都加到esobject里
         
     }
     
-    
-    
     /*
      * =============  translations from client
      */
     
-    public void translateChose(String user, EsObject msg) {
-    
+    public void translateChose(Player decisionMaker, EsObject msg) {
+        
         //TODO 不是根据action, 而是根据player 状态来判断choose了什么
-        Player decisionMaker = PlayerList.getModel().getPlayerByUserName(user);
+        //        Player decisionMaker = players.getPlayerByUserName(user);
         int[] pickResult = msg.getIntegerArray(c.param_key.pick_result, new int[] {});
         decisionMaker.getResult(pickResult);
     }

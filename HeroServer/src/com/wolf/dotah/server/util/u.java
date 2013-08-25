@@ -1,5 +1,6 @@
 package com.wolf.dotah.server.util;
 
+import java.util.Arrays;
 import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 import com.wolf.tool.client_const;
 
@@ -25,7 +26,9 @@ public class u {
     public static int actionMapping(String action) {
         int result = -1;
         if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
-            result = client_const.action_code_choosing_hero;
+            result = client_const.kActionUpdateDeckHero;
+        } else if (action.equals(c.server_action.update_table_info)) {
+            result = client_const.action_update_table_player_list;
         }
         
         return result;
@@ -42,4 +45,18 @@ public class u {
         }
         return result;
     }
+    
+    public static String printArray(Integer[] choosingCards) {
+        String result = Arrays.toString(choosingCards);
+        //        MessageDispatcher.getDispatcher(null).debug(tag, "printArray: " + result);
+        return result;
+    }
+    
+    public static String printArray(int[] choosingCards) {
+        String result = Arrays.toString(choosingCards);
+        //        MessageDispatcher.getDispatcher(null).debug(tag, "printArray: " + result);
+        return result;
+    }
+    
+    final static String tag = "util: ";
 }

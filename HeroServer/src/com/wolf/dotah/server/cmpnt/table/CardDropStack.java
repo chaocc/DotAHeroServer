@@ -8,19 +8,19 @@ import java.util.List;
 public class CardDropStack {
     
     List<Integer> dropStack;
-    private static CardDropStack dropStackModel;
+//    private static CardDropStack dropStackModel;
     
     
-    public static CardDropStack getDropStackModel() {
+//    public static CardDropStack getDropStackModel() {
+//    
+//        if (dropStackModel == null) {
+//            dropStackModel = new CardDropStack();
+//        }
+//        return dropStackModel;
+//    }
     
-        if (dropStackModel == null) {
-            dropStackModel = new CardDropStack();
-        }
-        return dropStackModel;
-    }
     
-    
-    private CardDropStack() {
+    public CardDropStack() {
     
         dropStack = new ArrayList<Integer>();
     }

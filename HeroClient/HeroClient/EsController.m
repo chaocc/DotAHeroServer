@@ -77,8 +77,7 @@
 
 - (void)sendStartGameRequest{
     EsObject *obj = [[EsObject alloc] init];
-    //    [obj setInt:kActionReadyStartGame forKey:kAction];
-    [obj setString:@"startGame" forKey:Action];
+    [obj setInt:2 forKey:Action];
     [self sendPluginRequestWithObject:obj];
     
 }
@@ -98,7 +97,7 @@
     EsObject *obj = e.parameters;
 //    NSString* action = [obj stringWithKey:Action];
     int action = [obj intWithKey:Action];
-    NSLog(@"Receive plugin message event with action(%i)", action);
+    NSLog(@"Receive plugin message with action(%i)", action);
     
     if (action == 3) {
         NSArray* choosingCandidates = [obj intArrayWithKey:@"hero_candidates"];

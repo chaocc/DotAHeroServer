@@ -1,14 +1,13 @@
 package com.wolf.dotah.server.cmpnt;
 
-
 import java.util.List;
-
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.CardDropStack;
 import com.wolf.dotah.server.cmpnt.table.CardRemainStack;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
 import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
+import com.wolf.dotah.server.cmpnt.table.PlayerList.PlayerListListener;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.Ticker;
 import com.wolf.dotah.server.cmpnt.table.table_const;
@@ -17,7 +16,6 @@ import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
 import com.wolf.dotah.server.layer.translator.TableTranslator;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.u;
-
 
 /**
  * 
@@ -31,7 +29,7 @@ import com.wolf.dotah.server.util.u;
  * @author Solomon
  *
  */
-public class TableModel implements table_const, player_const {
+public class TableModel implements table_const, player_const, PlayerListListener {
     
     /**
      * 牌桌行为主要有:
@@ -45,13 +43,11 @@ public class TableModel implements table_const, player_const {
      * 
      */
     
-    
     /*
      * TODO wait 有几种,  所有人等待特定的人, 所有人等待未知的人, 一个人等待特定的一个人, 一个列表的人等待特定的人
      * TODO 发message有几种: 发给一个人, 发给几个人, 发给所有人, 还要区分是否只有自己可见的(好像不发给所有人的都是只有自己可见)
      * TODO decision 有几种
      */
-    
     
     TableState state; //TODO define states
     PlayerList players;
@@ -59,50 +55,47 @@ public class TableModel implements table_const, player_const {
     CardDropStack dropStack;
     Ticker ticker;
     
-    
     TableTranslator translator;
-    
+    MessageDispatcher msgDispatcher;
     
     final String tag = "====>> TableModel: ";
     
-    public TableModel() {
-        players = PlayerList.getModel();
+    public TableModel(PlayerList playerList) {
+        players = playerList;
+        dropStack = new CardDropStack();
         initCardModels();
         //TODO init player basic info, from plugin api
         //TODO design ticker
         // 21, 12, 2, 3, 28, 17
         
         // each give 3
-        
-        System.out.println(tag + " table model inited. ");
-        System.out.println(tag + "TableModel: " + this.toString());
     }
     
     /**
      * init完后的第一件事就是发待选英雄
      */
     public void dispatchHeroCandidates() {
-        HeroCandidateModel heroModel = HeroCandidateModel.getCandidateModel();
+        HeroCandidateModel heroModel = new HeroCandidateModel();
         List<Integer[]> heroCandidateList = heroModel.getCandidateForAll(players.getCount());
-        System.out.println(tag + "hero candidates inited. \n" + heroCandidateList);
+//        MessageDispatcher.getDispatcher(null).debug(tag, "hero candidates inited. \n" + heroCandidateList);
         
         for (int i = 0; i < players.getCount(); i++) {
             Integer[] candidatesForSingle = heroCandidateList.get(i);
-            Player single = PlayerList.getModel().getPlayerByIndex(i);
+            Player single = players.getPlayerByIndex(i);
             /**
              * 所以从一开始消息dispatch 进来的时候,  就知道是要choosing了!
              * 中间一系列过程只是为了责任分离, 让代码更易理解, 更易维护!
              */
-            
             ServerUpdateSequence updateSequence = new ServerUpdateSequence(c.server_action.choosing, single);
             
-            Data stateDetail = new Data().addIntegerArray(playercon.state.param_key.general.choosing_card, u.intArrayMapping(candidatesForSingle));
+            Data stateDetail = new Data().addIntegerArray(playercon.state.param_key.general.id_list, u.intArrayMapping(candidatesForSingle));
             single.updateState(playercon.state.desp.choosing.choosing_hero, stateDetail, updateSequence);
             
-            updateSequence.submitServerUpdate();
+            updateSequence.submitServerUpdateByTable(this);
         }
         //TODO waiting for everybody to choose
-        MessageDispatcher.getDispatcher(null).waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing);
+        //TODO 从translator来做
+//        MessageDispatcher.getDispatcher(null).waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing);
     }
     
     private void initCardModels() {
@@ -110,10 +103,9 @@ public class TableModel implements table_const, player_const {
         DeckModel deck = DeckModel.getDeckModel();
         //remain stack should have the behavior of dispatching handcards
         CardRemainStack.getRemainStackModel().initWithCardList(deck.getSimpleDeck());
-        CardDropStack.getDropStackModel().syncWithRemainStack();
+        dropStack.syncWithRemainStack();
         
     }
-    
     
     public void setTranslator(TableTranslator tableTranslator) {
         
@@ -121,7 +113,31 @@ public class TableModel implements table_const, player_const {
         
     }
     
-    //TODO 等选完hero了, 把player list 里的每个player更新好
+    @Override
+    public void didInitPlayerList() {
+        this.broadcastPlayerList();
+    }
     
+    private void broadcastPlayerList() {
+        Data data = new Data();
+        data.setAction(c.server_action.update_table_info);
+        data.addStringArray("player_list", players.getNameList());
+        //TODO 从translator broadcast
+//        MessageDispatcher.getDispatcher(null).boradcastMessage(data);
+    }
+    
+    public PlayerList getPlayers() {
+        return players;
+    }
+    
+    public void setPlayers(PlayerList players) {
+        this.players = players;
+    }
+    
+    public TableTranslator getTranslator() {
+        return translator;
+    }
+    
+    //TODO 等选完hero了, 把player list 里的每个player更新好
     
 }

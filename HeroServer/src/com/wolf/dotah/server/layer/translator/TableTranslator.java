@@ -1,58 +1,63 @@
 package com.wolf.dotah.server.layer.translator;
 
-
+import java.util.Collection;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.GamePlugin;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.util.c;
 
-
 public class TableTranslator {
     
-    private static TableTranslator translator;
     private TableModel table;
+    private DecisionTranslator decisionTranslator;
+    final String tag = "====>> TableTranslator: ";
+    private MessageDispatcher msgDispatcher;
     
-    final String tag = "====>> TableTranslator:";
-    
-    
-    public static TableTranslator getTranslator() {
-        
-        if (translator == null) {
-            translator = new TableTranslator();
-        }
-        return translator;
+    public TableTranslator(MessageDispatcher dispatcher) {
+        this.msgDispatcher = dispatcher;
     }
-    
-    
-    private TableTranslator() {
-        
-    }
-    
     
     public void translate(EsObject msg) {
         
-        
     }
-    
     
     public void translateGameStartFromClient(GamePlugin gamePlugin, EsObject currentMessageObject) {
+        msgDispatcher.debug(tag, "translateGameStartFromClient");
         if (table == null) {
             int playerCount = currentMessageObject.getInteger(c.param_key.player_count, -1);
-            //TODO start game不要携带player count,  而是player name列表, 使用player name来新建player
             int zone = gamePlugin.getApi().getZoneId();
             int room = gamePlugin.getApi().getRoomId();
+            PlayerList playerList = new PlayerList();
+            Collection<String> users = gamePlugin.getApi().getUsers();
+            msgDispatcher.debug(tag, " get users : " + users.toString());
             if (playerCount != -1) {
-                PlayerList.getModel().initWithUserCollectionAndPlayerCount(gamePlugin.getApi().getUsersInRoom(zone, room), playerCount);
+                playerList.initWithUserCollectionAndPlayerCount(users, playerCount);
             } else {
-                PlayerList.getModel().initWithUserCollection(gamePlugin.getApi().getUsersInRoom(zone, room));
+                playerList.initWithUserCollection(users);
             }
-            table = new TableModel();
+            table = new TableModel(playerList);
             table.setTranslator(this);
-            System.out.println(tag + " table translator inited");
-            table.dispatchHeroCandidates();
+            msgDispatcher.debug(tag, " table translator inited");
         }
+        table.dispatchHeroCandidates();
     }
     
+    public void destroyTable() {
+        table = null;
+        //        PlayerList.getModel().clearModel();
+    }
+    
+    public PlayerList getPlayerList() {
+        return table.getPlayers();
+    }
+    
+    public DecisionTranslator getDecisionTranslator() {
+        return decisionTranslator;
+    }
+    
+    public void setDecisionTranslator(DecisionTranslator decisionTranslator) {
+        this.decisionTranslator = decisionTranslator;
+    }
     
 }

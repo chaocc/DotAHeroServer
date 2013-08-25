@@ -5,7 +5,7 @@ public interface c {
     public String action = "action";
     public String action_description = "action_description";
     public String action_category = "action_category";
-    int default_player_count = 6;
+    public int default_player_count = 2;
     
     public interface server_action {
         
@@ -25,15 +25,23 @@ public interface c {
     }
     
     public interface param_key {
+        
         public String left = "left";
         String player_count = "player_count";
         String pick_result = "pick_result";
+        String id_list = "id_list";
     }
     
     public interface game_state {
         
         public String none = "";
         public String waiting = "waiting";
+        
+        interface waiting_type {
+            int none = -1;
+            int everybody = 10;
+            int single = 20;
+        }
     }
     
 }
