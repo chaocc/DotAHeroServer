@@ -7,7 +7,6 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.wolf.dotah.server.cmpnt.card.Card;
-import com.wolf.dotah.server.layer.translator.MessageDispatcher;
 
 public class CardParser {
     

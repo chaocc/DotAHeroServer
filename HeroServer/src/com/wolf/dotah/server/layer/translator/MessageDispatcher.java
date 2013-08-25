@@ -4,7 +4,6 @@ import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.GamePlugin;
 import com.wolf.dotah.server.cmpnt.Data;
-import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.util.c;
 import com.wolf.tool.client_const;
 
@@ -121,7 +120,7 @@ public class MessageDispatcher {
         
         this.plugin = gamePlugin;
         tableTranslator = new TableTranslator(this);
-        playerTranslator = PlayerTranslator.getTranslator();
+        playerTranslator = new PlayerTranslator(this);
         decisionTranslator = new DecisionTranslator(this);
         tableTranslator.setDecisionTranslator(decisionTranslator);
         playerTranslator.setDecisionTranslator(decisionTranslator);

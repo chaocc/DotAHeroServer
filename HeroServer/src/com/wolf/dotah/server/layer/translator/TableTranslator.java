@@ -2,6 +2,7 @@ package com.wolf.dotah.server.layer.translator;
 
 import java.util.Collection;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
+import com.electrotank.electroserver5.extensions.api.value.UserValue;
 import com.wolf.dotah.server.GamePlugin;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
@@ -29,7 +30,7 @@ public class TableTranslator {
             int zone = gamePlugin.getApi().getZoneId();
             int room = gamePlugin.getApi().getRoomId();
             PlayerList playerList = new PlayerList();
-            Collection<String> users = gamePlugin.getApi().getUsers();
+            Collection<UserValue> users = gamePlugin.getApi().getUsersInRoom(zone, room);
             msgDispatcher.debug(tag, " get users : " + users.toString());
             if (playerCount != -1) {
                 playerList.initWithUserCollectionAndPlayerCount(users, playerCount);
@@ -38,6 +39,7 @@ public class TableTranslator {
             }
             table = new TableModel(playerList);
             table.setTranslator(this);
+            playerList.setTable(table);
             msgDispatcher.debug(tag, " table translator inited");
         }
         table.dispatchHeroCandidates();
@@ -45,7 +47,6 @@ public class TableTranslator {
     
     public void destroyTable() {
         table = null;
-        //        PlayerList.getModel().clearModel();
     }
     
     public PlayerList getPlayerList() {
@@ -56,8 +57,24 @@ public class TableTranslator {
         return decisionTranslator;
     }
     
-    public void setDecisionTranslator(DecisionTranslator decisionTranslator) {
-        this.decisionTranslator = decisionTranslator;
+    public void setDecisionTranslator(DecisionTranslator input) {
+        this.decisionTranslator = input;
+    }
+    
+    public TableModel getTable() {
+        return table;
+    }
+    
+    public void setTable(TableModel input) {
+        this.table = input;
+    }
+    
+    public MessageDispatcher getDispatcher() {
+        return msgDispatcher;
+    }
+    
+    public void setDispatcher(MessageDispatcher input) {
+        this.msgDispatcher = input;
     }
     
 }

@@ -1,8 +1,6 @@
 package com.wolf.dotah.server.cmpnt.player;
 
 import java.util.Random;
-import com.wolf.dotah.server.layer.translator.MessageDispatcher;
-import com.wolf.dotah.server.util.u;
 
 public class Ai {
     final boolean isAi = true;

@@ -11,7 +11,6 @@ import com.wolf.dotah.server.cmpnt.table.PlayerList.PlayerListListener;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.Ticker;
 import com.wolf.dotah.server.cmpnt.table.table_const;
-import com.wolf.dotah.server.layer.translator.MessageDispatcher;
 import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
 import com.wolf.dotah.server.layer.translator.TableTranslator;
 import com.wolf.dotah.server.util.c;
@@ -56,7 +55,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     Ticker ticker;
     
     TableTranslator translator;
-    MessageDispatcher msgDispatcher;
+//    MessageDispatcher msgDispatcher;
     
     final String tag = "====>> TableModel: ";
     

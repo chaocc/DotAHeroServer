@@ -1,22 +1,12 @@
 package com.wolf.dotah.server.layer.translator;
 
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
-import com.wolf.dotah.server.GamePlugin;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.util.c;
 
 public class DecisionTranslator {
     
-    //    private static DecisionTranslator translator;
-    //    
-    //    public static DecisionTranslator getTranslator() {
-    //        
-    //        if (translator == null) {
-    //            translator = new DecisionTranslator();
-    //        }
-    //        return translator;
-    //    }
     private MessageDispatcher msgDispatcher;
     
     public DecisionTranslator(MessageDispatcher dispatcher) {

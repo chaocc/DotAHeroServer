@@ -5,24 +5,25 @@ import java.util.Collection;
 import java.util.List;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
 import com.wolf.dotah.server.cmpnt.Player;
+import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.player_const;
-import com.wolf.dotah.server.layer.translator.MessageDispatcher;
 
 public class PlayerList implements player_const {
     
-    List<Player> playerList;
-    List<String> userList;
-    List<PlayerListListener> listeners = new ArrayList<PlayerListListener>();
+    private List<Player> playerList;
+    private List<String> userList;
+    private List<PlayerListListener> listeners = new ArrayList<PlayerListListener>();
     final String tag = "====>> PlayerList: ";
+    private TableModel table;
     
-    public void initWithUserCollection(Collection<String> input) {
+    public void initWithUserCollection(Collection<UserValue> input) {
         
-        //        MessageDispatcher.getDispatcher(null).debug(tag, "initWithUserCollection");
+        table.getTranslator().getDispatcher().debug(tag, "initWithUserCollection");
         initWithUserCollectionAndPlayerCount(input, defaultPlayerCount);
     }
     
-    public void initWithUserCollectionAndPlayerCount(Collection<String> usersInRoom, int playerCount) {
+    public void initWithUserCollectionAndPlayerCount(Collection<UserValue> usersInRoom, int playerCount) {
         
         /**
          * 保证多次调用init 方法是不管用的
@@ -32,8 +33,8 @@ public class PlayerList implements player_const {
             
             List<String> users = new ArrayList<String>();
             //            MessageDispatcher.getDispatcher(null).debug(tag, "initWithUserCollectionAndPlayerCount, usersInRoom:" + usersInRoom.toString());
-            for (String userv : usersInRoom) {
-                users.add(userv);
+            for (UserValue userv : usersInRoom) {
+                users.add(userv.getUserName());
                 //                MessageDispatcher.getDispatcher(null).debug(tag, "initWithUserCollectionAndPlayerCount, users.add():" + userv);
                 
             }
@@ -82,18 +83,7 @@ public class PlayerList implements player_const {
         return playerList.size();
     }
     
-    //    public static PlayerList getModel() {
-    //        
-    //        if (model == null) {
-    //            model = new PlayerList();
-    //        }
-    //        return model;
-    //    }
-    //    
-    //    private static PlayerList model;
-    
     public PlayerList() {
-        
         playerList = new ArrayList<Player>();
     }
     
@@ -116,10 +106,12 @@ public class PlayerList implements player_const {
         return names;
     }
     
-    //    public void clearModel() {
-    //        if (model != null) {
-    //            model = null;
-    //        }
-    //    }
+    public TableModel getTable() {
+        return table;
+    }
+    
+    public void setTable(TableModel table) {
+        this.table = table;
+    }
     
 }

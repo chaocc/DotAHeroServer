@@ -1,28 +1,13 @@
 package com.wolf.dotah.server.layer.translator;
 
-
-
-
 public class PlayerTranslator {
     
-    private static PlayerTranslator translator;
     private DecisionTranslator decisionTranslator;
+    private MessageDispatcher dispatcher;
     
-    
-    public static PlayerTranslator getTranslator() {
-        
-        if (translator == null) {
-            translator = new PlayerTranslator();
-        }
-        
-        return translator;
+    public PlayerTranslator(MessageDispatcher input) {
+        this.dispatcher = input;
     }
-    
-    
-    private PlayerTranslator() {
-        
-    }
-    
     
     public void setDecisionTranslator(DecisionTranslator decisionTranslator) {
         
