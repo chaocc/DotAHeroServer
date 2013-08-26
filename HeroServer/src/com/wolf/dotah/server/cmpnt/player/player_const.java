@@ -35,6 +35,10 @@ public interface player_const {
                     String choosing = "choosing";
                     String choosing_hero = "choosing_hero";
                 }
+                
+                interface confirmed {
+                    String hero = "hero_confirmed";
+                }
             }
             
             interface param_key {

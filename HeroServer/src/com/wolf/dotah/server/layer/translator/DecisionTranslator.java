@@ -55,10 +55,7 @@ public class DecisionTranslator {
     
     public void translateChose(Player decisionMaker, EsObject msg) {
         
-        //TODO 不是根据action, 而是根据player 状态来判断choose了什么
-        //        Player decisionMaker = players.getPlayerByUserName(user);
-        int[] pickResult = msg.getIntegerArray(c.param_key.pick_result, new int[] {});
-        decisionMaker.getResult(pickResult);
+
     }
     
 }

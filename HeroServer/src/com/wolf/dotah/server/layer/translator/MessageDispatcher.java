@@ -4,6 +4,9 @@ import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.GamePlugin;
 import com.wolf.dotah.server.cmpnt.Data;
+import com.wolf.dotah.server.cmpnt.Player;
+import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
+import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 import com.wolf.dotah.server.util.c;
 import com.wolf.tool.client_const;
 
@@ -21,13 +24,14 @@ public class MessageDispatcher {
     
     public void sendMessageToAll(EsObject msg) {
         this.debug(tag, "sendMessageToAll: " + msg.toString());
+        plugin.getApi().sendPluginMessageToRoom(plugin.getApi().getZoneId(), plugin.getApi().getRoomId(), msg);
     }
     
     public void sendMessageToAllWithoutSpecificUser(EsObject msg, String exceptionUser) {
         this.debug(tag, "sendMessageToAllWithoutSpecificUser: exceptionUser: " + exceptionUser + ",  msg: " + msg.toString());
     }
     
-    public void boradcastMessage(Data data) {
+    public void broadcastMessage(Data data) {
         sendMessageToAll(data);
     }
     
@@ -36,7 +40,7 @@ public class MessageDispatcher {
     
     //TODO 想想能不能抽出来waiter之类的 组件
     public MessageDispatcher waitingForEverybody() {
-        tickCounter = 10;
+        tickCounter = tablevar.wait_time;
         waitingType = c.game_state.waiting_type.everybody;
         schedule_waiting_for_everybody_id = plugin.getApi().scheduleExecution(1000, -1, new WaitingForEverybody());
         return this;
@@ -55,34 +59,56 @@ public class MessageDispatcher {
         }
         
         private void checkWaitingState() {
-            // TODO Auto-generated method stub
-            
+            int result = 0;
+            int confirmed = 0;
+            for (Player player : tableTranslator.getTable().getPlayers().getPlayerList()) {
+                String state = player.getState().getStateDesp();
+                if (state.equals(playercon.state.desp.choosing.choosing_hero)) {
+                    result += 1;
+                } else if (state.equals(playercon.state.desp.confirmed.hero)) {
+                    confirmed += 1;
+                }
+            }
+            if (result < 1) {
+                waitingType = c.game_state.waiting_type.none;
+            }
+            if (confirmed >= tableTranslator.getTable().getPlayers().getCount()) {
+                tableTranslator.getTable().broadcastHeroInited();
+            }
         }
         
         public void tick() {
             
-            //            if (gameState != GameState.Waiting) { return; }
             if (waitingType == c.game_state.waiting_type.none) {
                 plugin.getApi().cancelScheduledExecution(schedule_waiting_for_everybody_id);
             } else if (tickCounter < 1) {
                 //TODO 自动发给每个人牌, 然后cancel tick
                 autoDeside();
+                tableTranslator.getTable().broadcastHeroInited();
                 plugin.getApi().cancelScheduledExecution(schedule_waiting_for_everybody_id);
             } else {
-                sendCountDownSecondsLeftMessage();
+                //                sendCountDownSecondsLeftMessage();
+                MessageDispatcher.this.debug(tag, "tick counter = " + tickCounter);
+                tickCounter--;
             }
         }
         
+        /**
+         * 
+         */
         private void autoDeside() {
             tickCounter = -1;
-            
+            for (Player player : tableTranslator.getTable().getPlayers().getPlayerList()) {
+                player.performSimplestChoice();
+            }
         }
         
         private void sendCountDownSecondsLeftMessage() {
             
-            EsObject message = new EsObject();
-            message.setInteger(c.action, client_const.action.count_down);
+            Data message = new Data();
+            message.setAction(c.server_action.count_down);
             message.setInteger(c.param_key.left, tickCounter);
+            MessageDispatcher.this.broadcastMessage(message);
             //            sendAndLog("GoFishGame.sendCountDownSecondsLeftMessage", message);
             tickCounter--;
         }
@@ -105,6 +131,8 @@ public class MessageDispatcher {
             tableTranslator.translateGameStartFromClient(plugin, msg);
         } else if (client_const.ACTION_code_CHOSE_hero == client_message) {
             decisionTranslator.translateChose(tableTranslator.getPlayerList().getPlayerByUserName(user), msg);
+        } else if (client_const.kActionChooseHeroId == client_message) {
+            playerTranslator.translateUpdate(tableTranslator.getPlayerList().getPlayerByUserName(user), msg);
         }
         //TODO 这个chose hero id的action, 就该交给decision translator?
         //        else if (c.client_constants.kActionChooseHeroId.equals(client_message)) {
@@ -141,6 +169,18 @@ public class MessageDispatcher {
     
     public void setPlugin(GamePlugin plugin) {
         this.plugin = plugin;
+    }
+    
+    public TableTranslator getTableTranslator() {
+        return tableTranslator;
+    }
+    
+    public PlayerTranslator getPlayerTranslator() {
+        return playerTranslator;
+    }
+    
+    public DecisionTranslator getDecisionTranslator() {
+        return decisionTranslator;
     }
     
 }

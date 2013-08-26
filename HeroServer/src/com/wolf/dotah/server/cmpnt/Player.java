@@ -5,7 +5,10 @@ import com.wolf.dotah.server.cmpnt.player.PlayerAvailableTargetModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
 import com.wolf.dotah.server.cmpnt.player.PlayerState;
 import com.wolf.dotah.server.cmpnt.player.player_const;
+import com.wolf.dotah.server.layer.translator.MessageDispatcher;
+import com.wolf.dotah.server.layer.translator.PlayerTranslator;
 import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
+import com.wolf.dotah.server.layer.translator.TableTranslator;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.testframework.ClientRequest;
 
@@ -18,6 +21,7 @@ public class Player implements player_const {
     private PlayerProperty property;//player 属性的状态
     
     private PlayerAvailableTargetModel targets;
+    private TableModel table;
     
     public void act(ClientRequest request) {
         
@@ -62,8 +66,8 @@ public class Player implements player_const {
         //TODO 是否要加username 和ai?
     }
     
-    public Player(String name) {
-        
+    public Player(String name, TableModel inputTable) {
+        this.table = inputTable;
         this.userName = name;
         state = new PlayerState();
     }
@@ -132,6 +136,15 @@ public class Player implements player_const {
         }
     }
     
+    public void performSimplestChoice() {
+        int[] idList = state.toData().getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
+        if (idList.length > 0) {
+            if (state.getStateDesp().equals(playercon.state.desp.choosing.choosing_hero)) {
+                this.initPropertyWithHeroId(idList[0]);
+            }
+        }
+    }
+    
     public void getResult(int[] pickResult) {
         
         if (this.getState().getStateDesp().equals(playercon.state.desp.choosing.choosing_hero)) {
@@ -145,6 +158,15 @@ public class Player implements player_const {
         
         property = new PlayerProperty(heroId);
         //TODO 不是在这里, 而是在全都收到选择了英雄后broadcast chose property
+        state.setStateDesp(playercon.state.desp.confirmed.hero);
+        if (this.getAi() == null || !this.getAi().isAi()) {
+            String[] keys = { "heroId" };
+            int[] values = { heroId };
+            TableTranslator trans = table.getTranslator();
+            MessageDispatcher disp = trans.getDispatcher();
+            PlayerTranslator playerTrans = disp.getPlayerTranslator();
+            String userName = this.getUserName();
+            playerTrans.updatePlayerInfo(userName, keys, values);
+        }
     }
-    
 }

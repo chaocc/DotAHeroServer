@@ -1,38 +1,26 @@
 package com.wolf.dotah.server.cmpnt.table;
 
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class CardDropStack {
     
     List<Integer> dropStack;
-//    private static CardDropStack dropStackModel;
+    private DeckModel deck;
     
-    
-//    public static CardDropStack getDropStackModel() {
-//    
-//        if (dropStackModel == null) {
-//            dropStackModel = new CardDropStack();
-//        }
-//        return dropStackModel;
-//    }
-    
-    
-    public CardDropStack() {
-    
+    public CardDropStack(DeckModel deckModel) {
+        this.deck = deckModel;
+        deck.setDropStack(this);
         dropStack = new ArrayList<Integer>();
     }
     
-    
     public int syncWithRemainStack() {
-    
+        
         int synced = 0;
         
-        List<Integer> deck = DeckModel.getDeckModel().getSimpleDeck();
-        List<Integer> remainStack = CardRemainStack.getRemainStackModel().getRemainStack();
-        for (Integer card : deck) {
+        List<Integer> deckCardList = deck.getSimpleDeck();
+        List<Integer> remainStack = deck.getRemainStack().getRemainStack();
+        for (Integer card : deckCardList) {
             if (!remainStack.contains(card)) {
                 dropStack.add(card);
                 synced++;
@@ -41,17 +29,14 @@ public class CardDropStack {
         return synced;
     }
     
-    
     public List<Integer> getDropStack() {
-    
+        
         return dropStack;
     }
     
-    
     public void setDropStack(List<Integer> dropStack) {
-    
+        
         this.dropStack = dropStack;
     }
-    
     
 }

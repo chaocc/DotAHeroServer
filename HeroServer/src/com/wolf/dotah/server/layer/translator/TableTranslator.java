@@ -32,14 +32,15 @@ public class TableTranslator {
             PlayerList playerList = new PlayerList();
             Collection<UserValue> users = gamePlugin.getApi().getUsersInRoom(zone, room);
             msgDispatcher.debug(tag, " get users : " + users.toString());
+            table = new TableModel(playerList);
+            table.setTranslator(this);
+            playerList.setTable(table);
             if (playerCount != -1) {
                 playerList.initWithUserCollectionAndPlayerCount(users, playerCount);
             } else {
                 playerList.initWithUserCollection(users);
             }
-            table = new TableModel(playerList);
-            table.setTranslator(this);
-            playerList.setTable(table);
+            
             msgDispatcher.debug(tag, " table translator inited");
         }
         table.dispatchHeroCandidates();

@@ -55,13 +55,13 @@ public class TableModel implements table_const, player_const, PlayerListListener
     Ticker ticker;
     
     TableTranslator translator;
-//    MessageDispatcher msgDispatcher;
+    //    MessageDispatcher msgDispatcher;
     
     final String tag = "====>> TableModel: ";
     
     public TableModel(PlayerList playerList) {
         players = playerList;
-        dropStack = new CardDropStack();
+        players.registerPlayerListListener(this);
         initCardModels();
         //TODO init player basic info, from plugin api
         //TODO design ticker
@@ -76,7 +76,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     public void dispatchHeroCandidates() {
         HeroCandidateModel heroModel = new HeroCandidateModel();
         List<Integer[]> heroCandidateList = heroModel.getCandidateForAll(players.getCount());
-//        MessageDispatcher.getDispatcher(null).debug(tag, "hero candidates inited. \n" + heroCandidateList);
+        //        MessageDispatcher.getDispatcher(null).debug(tag, "hero candidates inited. \n" + heroCandidateList);
         
         for (int i = 0; i < players.getCount(); i++) {
             Integer[] candidatesForSingle = heroCandidateList.get(i);
@@ -94,35 +94,35 @@ public class TableModel implements table_const, player_const, PlayerListListener
         }
         //TODO waiting for everybody to choose
         //TODO 从translator来做
-//        MessageDispatcher.getDispatcher(null).waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing);
+        translator.getDispatcher().waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing);
     }
     
     private void initCardModels() {
         
-        DeckModel deck = DeckModel.getDeckModel();
+        DeckModel deck = new DeckModel(this);
         //remain stack should have the behavior of dispatching handcards
-        CardRemainStack.getRemainStackModel().initWithCardList(deck.getSimpleDeck());
+        remainStack = new CardRemainStack(deck).initWithCardList(deck.getSimpleDeck());
+        dropStack = new CardDropStack(deck);
         dropStack.syncWithRemainStack();
         
     }
     
     public void setTranslator(TableTranslator tableTranslator) {
-        
         this.translator = tableTranslator;
         
     }
     
     @Override
     public void didInitPlayerList() {
-        this.broadcastPlayerList();
+        this.broadcastGameStarted();
     }
     
-    private void broadcastPlayerList() {
+    private void broadcastGameStarted() {
         Data data = new Data();
-        data.setAction(c.server_action.update_table_info);
+        data.setAction(c.server_action.start_game);
         data.addStringArray("player_list", players.getNameList());
         //TODO 从translator broadcast
-//        MessageDispatcher.getDispatcher(null).boradcastMessage(data);
+        this.getTranslator().getDispatcher().broadcastMessage(data);
     }
     
     public PlayerList getPlayers() {
@@ -138,5 +138,15 @@ public class TableModel implements table_const, player_const, PlayerListListener
     }
     
     //TODO 等选完hero了, 把player list 里的每个player更新好
+    public interface tablevar {
+        public int wait_time = c.default_wait_time;
+    }
     
+    public void broadcastHeroInited() {
+        Data data = new Data();
+        data.setAction(c.server_action.update_player_list_info);//kActionInitPlayerHero = 1004
+        //TODO先只加hero, 以后再改;
+        data.addAll(this.getPlayers().toSubtleData());
+        this.getTranslator().getDispatcher().broadcastMessage(data);
+    }
 }

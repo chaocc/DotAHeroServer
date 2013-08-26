@@ -28,7 +28,15 @@ public class u {
         if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
             result = client_const.kActionUpdateDeckHero;
         } else if (action.equals(c.server_action.update_table_info)) {
-            result = client_const.action_update_table_player_list;
+            //                        result = client_const.action_update_table_player_list;
+        } else if (action.equals(c.server_action.count_down)) {
+            result = client_const.action.count_down;
+        } else if (action.equals(c.server_action.update_player_list_info)) {
+            result = client_const.action_update_table_confirmed_heros;
+        } else if (action.equals(c.server_action.start_game)) {
+            result = client_const.ACTION_START_GAME;
+        } else if (action.equals(c.server_action.chose_hero)) {
+            result = client_const.kActionInitPlayerHero;
         }
         
         return result;

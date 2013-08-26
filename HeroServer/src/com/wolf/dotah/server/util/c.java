@@ -6,13 +6,18 @@ public interface c {
     public String action_description = "action_description";
     public String action_category = "action_category";
     public int default_player_count = 2;
+    public int default_wait_time = 10;
     
     public interface server_action {
-        
+        //TODO 分成很少的几个action, 比如choosing之类的, chose, 至于是chose hero, hero就用参数
+        public String start_game = "start_game";
         public String free_play = "free_play";
         public String update_table_info = "update_table_info";
         public String update_player_info = "update_player_info";
         public String choosing = "choosing";
+        public String count_down = "counting_down";
+        public String update_player_list_info = "update_player_list_info";
+        public String chose_hero = "chose_hero";
         
     }
     
@@ -28,7 +33,6 @@ public interface c {
         
         public String left = "left";
         String player_count = "player_count";
-        String pick_result = "pick_result";
         String id_list = "id_list";
     }
     

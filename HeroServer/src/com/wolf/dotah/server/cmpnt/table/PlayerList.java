@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
+import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.player_const;
+import com.wolf.dotah.server.util.c;
 
 public class PlayerList implements player_const {
     
@@ -19,7 +21,7 @@ public class PlayerList implements player_const {
     
     public void initWithUserCollection(Collection<UserValue> input) {
         
-        table.getTranslator().getDispatcher().debug(tag, "initWithUserCollection");
+        //        table.getTranslator().getDispatcher().debug(tag, "initWithUserCollection");
         initWithUserCollectionAndPlayerCount(input, defaultPlayerCount);
     }
     
@@ -46,7 +48,7 @@ public class PlayerList implements player_const {
     private void initPlayerList(int playerCount) {
         
         for (String userName : userList) {
-            Player player = new Player(userName);
+            Player player = new Player(userName, table);
             //            MessageDispatcher.getDispatcher(null).debug(tag, "adding player " + userName);
             playerList.add(player);
         }
@@ -54,7 +56,7 @@ public class PlayerList implements player_const {
             int aiCount = playerCount - userList.size();
             for (int i = 0; i < aiCount; i++) {
                 
-                Player player = new Player(aiName + i);
+                Player player = new Player(aiName + i, table);
                 player.setAi(new Ai());
                 //                MessageDispatcher.getDispatcher(null).debug(tag, "adding ai " + aiName + i);
                 playerList.add(player);
@@ -112,6 +114,25 @@ public class PlayerList implements player_const {
     
     public void setTable(TableModel table) {
         this.table = table;
+    }
+    
+    public List<Player> getPlayerList() {
+        return playerList;
+    }
+    
+    public List<String> getUserList() {
+        return userList;
+    }
+    
+    public Data toSubtleData() {
+        Data data = new Data();
+        int[] idList = new int[playerList.size()];
+        for (int i = 0; i < idList.length; i++) {
+            Player p = playerList.get(i);
+            idList[i] = p.getProperty().getHero().getId();
+        }
+        data.setIntegerArray(c.param_key.id_list, idList);
+        return data;
     }
     
 }
