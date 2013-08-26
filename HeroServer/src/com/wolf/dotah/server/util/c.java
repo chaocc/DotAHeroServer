@@ -7,9 +7,11 @@ public interface c {
     public String action_category = "action_category";
     public int default_player_count = 2;
     public int default_wait_time = 10;
+    public int default_draw_count = 5;
     
     public interface server_action {
         //TODO 分成很少的几个action, 比如choosing之类的, chose, 至于是chose hero, hero就用参数
+        public String none = "";
         public String start_game = "start_game";
         public String free_play = "free_play";
         public String update_table_info = "update_table_info";
@@ -17,8 +19,15 @@ public interface c {
         public String choosing = "choosing";
         public String count_down = "counting_down";
         public String update_player_list_info = "update_player_list_info";
+        
         public String chose_hero = "chose_hero";
         
+    }
+    
+    public interface ac {
+        public String init_hand_cards = "update_player_info_hand_cards";
+        public String update_hand_cards = "update_player_info_hand_cards";
+        public String choosing_from_hand = "choosing_from_hand";
     }
     
     public interface player_action {
@@ -34,6 +43,9 @@ public interface c {
         public String left = "left";
         String player_count = "player_count";
         String id_list = "id_list";
+        public String how_many = "how_many";
+        public String hand_card = "hand_cards";
+        public String hero_candidates = "hero_candidates";
     }
     
     public interface game_state {

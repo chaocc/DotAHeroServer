@@ -58,7 +58,7 @@ public class ServerUpdateSequence {
     }
     
     private void submitAi() {
-        subjectPlayer.performAiAction(finalTarget);
+        subjectPlayer.performAiAction(finalTarget, c.param_key.hero_candidates);
         
     }
     

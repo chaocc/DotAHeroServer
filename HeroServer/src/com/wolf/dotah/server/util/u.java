@@ -1,6 +1,8 @@
 package com.wolf.dotah.server.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 import com.wolf.tool.client_const;
 
@@ -37,6 +39,10 @@ public class u {
             result = client_const.ACTION_START_GAME;
         } else if (action.equals(c.server_action.chose_hero)) {
             result = client_const.kActionInitPlayerHero;
+        } else if (action.equals(c.ac.init_hand_cards)) {
+            result = client_const.kActionInitPlayerCard;
+        } else if (action.equals(c.ac.choosing_from_hand)) {
+            result = client_const.kActionChooseCardToCompare;
         }
         
         return result;
@@ -67,4 +73,12 @@ public class u {
     }
     
     final static String tag = "util: ";
+    
+    public static List<Integer> getList(int[] fake_data_hero_ids) {
+        List<Integer> result = new ArrayList<Integer>();
+        for (int i = 0; i < fake_data_hero_ids.length; i++) {
+            result.add(fake_data_hero_ids[i]);
+        }
+        return result;
+    }
 }

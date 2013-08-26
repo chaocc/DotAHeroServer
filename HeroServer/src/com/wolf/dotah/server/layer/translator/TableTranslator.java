@@ -1,11 +1,14 @@
 package com.wolf.dotah.server.layer.translator;
 
 import java.util.Collection;
+import java.util.List;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
 import com.wolf.dotah.server.GamePlugin;
+import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
+import com.wolf.dotah.server.util.Cards;
 import com.wolf.dotah.server.util.c;
 
 public class TableTranslator {
@@ -44,6 +47,11 @@ public class TableTranslator {
             msgDispatcher.debug(tag, " table translator inited");
         }
         table.dispatchHeroCandidates();
+    }
+    
+    public void dspatchHandcards() {
+        table.dispatchHandcards();
+        table.updatePlayersToCutting();
     }
     
     public void destroyTable() {

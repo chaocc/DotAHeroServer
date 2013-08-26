@@ -160,6 +160,28 @@ public interface client_const {
             kActionChoosingColor = 3006, // 选择颜色阶段
             kActionChoosingSuits = 3007; // 选择花色阶段
             
+    interface param_key {
+        final String
+                kParamUserList = "player_list",// 所有玩家列表
+                kParamRemainingCardCount = "remaining_count",// 牌堆剩余牌数
+                kParamSourcePlayerName = "player_name",// 回合开始/伤害来源/出牌的玩家
+                kParamTargetPlayerList = "target_player_list",// 目标玩家列表
+                kParamCardIdList = "id_list",// 卡牌列表(英雄牌/摸的牌/获得的牌/使用的牌/弃置的牌)
+                kParamCardIndexList = "index_list",// 选中的哪几张牌
+                kParamHandCardCount = "hand_card_count",// 玩家手牌数量
+                kParamSelectableCardCount = "selectable_count",// 可选择的卡牌数量
+//                selectable_ids = "selectable_ids",
+                kParamExtractedCardCount = "extracted_count",// 可抽取目标的卡牌数量
+                kParamSelectedHeroId = "id",// 选中的英雄
+                kParamSelectedSkillId = "selected_skill_id",// 选中的英雄技能
+                kParamSelectedColor = "selected_color",// 选中的颜色
+                kParamSelectedSuits = "selected_suits",// 选中的花色
+                kParamIsStrengthened = "is_strengthened",// 是否被强化
+                kParamHeroBloodPoint = "hp",// 血量值
+                kParamHeroAngerPoint = "sp" // 怒气值
+                
+                ;
+    }
     //    typedef NS_ENUM(NSInteger, BGCardColor) {
     //        kCardColorInvalid = 0,
     //        kCardColorRed = 1,                  // 红色

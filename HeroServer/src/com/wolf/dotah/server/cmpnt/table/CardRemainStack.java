@@ -40,4 +40,14 @@ public class CardRemainStack {
         remainStack = new ArrayList<Integer>();
     }
     
+    public List<Integer> fetchCards(int count) {
+        List<Integer> cards = new ArrayList<Integer>();
+        for (int i = 0; i < count; i++) {
+            int card = remainStack.get(0);
+            cards.add(card);
+            remainStack.remove(0);
+        }
+        return cards;
+    }
+    
 }

@@ -1,6 +1,9 @@
 package com.wolf.dotah.server.cmpnt;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import com.wolf.dotah.server.cmpnt.player.PlayerState;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.CardDropStack;
 import com.wolf.dotah.server.cmpnt.table.CardRemainStack;
@@ -53,6 +56,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     CardRemainStack remainStack;
     CardDropStack dropStack;
     Ticker ticker;
+    Map<String, Integer> cutCards;
     
     TableTranslator translator;
     //    MessageDispatcher msgDispatcher;
@@ -62,12 +66,17 @@ public class TableModel implements table_const, player_const, PlayerListListener
     public TableModel(PlayerList playerList) {
         players = playerList;
         players.registerPlayerListListener(this);
+        initCutCardMap();
         initCardModels();
         //TODO init player basic info, from plugin api
         //TODO design ticker
         // 21, 12, 2, 3, 28, 17
         
         // each give 3
+    }
+    
+    private void initCutCardMap() {
+        cutCards = new HashMap<String, Integer>();
     }
     
     /**
@@ -94,7 +103,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
         }
         //TODO waiting for everybody to choose
         //TODO 从translator来做
-        translator.getDispatcher().waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing);
+        translator.getDispatcher().waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing_hero);
     }
     
     private void initCardModels() {
@@ -148,5 +157,38 @@ public class TableModel implements table_const, player_const, PlayerListListener
         //TODO先只加hero, 以后再改;
         data.addAll(this.getPlayers().toSubtleData());
         this.getTranslator().getDispatcher().broadcastMessage(data);
+    }
+    
+    public void startTurn(Player playerByIndex) {
+        // TODO 所有人都更新完手牌后, start turn
+        
+    }
+    
+    public List<Integer> getCardsFromRemainStack(int count) {
+        List<Integer> cards = remainStack.fetchCards(count);
+        
+        return cards;
+    }
+    
+    public void dispatchHandcards() {
+        // TODO 给每个人发手牌, 每发1个, 就发2个plugin message
+        for (Player p : this.getPlayers().getPlayerList()) {
+            //            ServerUpdateSequence updateSequence = new ServerUpdateSequence(c.server_action.update_player_info, p);
+            List<Integer> cards = this.getCardsFromRemainStack(c.default_draw_count);
+            translator.getDispatcher().getPlayerTranslator().dispatchHandcards(p, cards);
+            
+            //            updateSequence.submitServerUpdateByTable(this);
+            
+        }
+        this.startTurn(this.getPlayers().getPlayerByIndex(0));
+    }
+    
+    public void updatePlayersToCutting() {
+        for (Player p : this.getPlayers().getPlayerList()) {
+            p.cutting();
+
+        }
+        
+        this.getTranslator().getDispatcher().waitingForEverybody().becauseOf(c.server_action.choosing);
     }
 }

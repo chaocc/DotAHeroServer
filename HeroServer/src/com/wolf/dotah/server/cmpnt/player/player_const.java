@@ -38,6 +38,7 @@ public interface player_const {
                 
                 interface confirmed {
                     String hero = "hero_confirmed";
+                    String id = "id";
                 }
             }
             

@@ -1,5 +1,6 @@
 package com.wolf.dotah.server.cmpnt;
 
+import java.util.List;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.PlayerAvailableTargetModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
@@ -10,6 +11,7 @@ import com.wolf.dotah.server.layer.translator.PlayerTranslator;
 import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
 import com.wolf.dotah.server.layer.translator.TableTranslator;
 import com.wolf.dotah.server.util.c;
+import com.wolf.dotah.server.util.u;
 import com.wolf.dotah.testframework.ClientRequest;
 
 public class Player implements player_const {
@@ -22,6 +24,7 @@ public class Player implements player_const {
     
     private PlayerAvailableTargetModel targets;
     private TableModel table;
+    private PlayerTranslator translator;
     
     public void act(ClientRequest request) {
         
@@ -69,6 +72,7 @@ public class Player implements player_const {
     public Player(String name, TableModel inputTable) {
         this.table = inputTable;
         this.userName = name;
+        this.translator = table.getTranslator().getDispatcher().getPlayerTranslator();
         state = new PlayerState();
     }
     
@@ -124,7 +128,7 @@ public class Player implements player_const {
      * 相当于客户端拿来了新消息, 在做判断
      * @param action
      */
-    public void performAiAction(String action) {
+    public void performAiAction(String action, String from) {
         
         if (action.equals(c.server_action.free_play)) {
         } else {// choosing
@@ -132,6 +136,10 @@ public class Player implements player_const {
                 int[] pickResult = state.toData().getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
                 int heroId = ai.chooseSingle(pickResult);
                 this.initPropertyWithHeroId(heroId);
+            } else if (from.equals(c.param_key.hand_card)) {
+                Integer[] pickResult = property.getHandCards().getCards().toArray(new Integer[] {});
+                int resultId = ai.chooseSingle(u.intArrayMapping(pickResult));
+                //   TODO 把选完的放在桌面上     table.get
             }
         }
     }
@@ -168,5 +176,27 @@ public class Player implements player_const {
             String userName = this.getUserName();
             playerTrans.updatePlayerInfo(userName, keys, values);
         }
+    }
+    
+    public void getHandcards(List<Integer> cards) {
+        // TODO 先给player发这些个卡, 
+        this.property.addHandcards(cards);
+        if (this.ai == null || !this.ai.isAi()) {
+            translator.sendPrivateMessage(c.ac.init_hand_cards, this);
+        }
+        translator.sendPublicMessage(c.ac.init_hand_cards, this);
+        // TODO 然后再调用 player translator的send plugin message之类的方法
+        
+    }
+    
+    public void cutting() {
+        state.setStateDesp(c.server_action.choosing);
+        state.setUsableCardContext(property.getHandCards().getCards());
+        if (ai != null && ai.isAi()) {
+            performAiAction(c.server_action.choosing, c.param_key.hand_card);
+        } else {
+            translator.sendPrivateMessage(c.ac.choosing_from_hand, this);
+        }
+        //TODO 如果是普通的ai, 就让它选好, 如果是一般的player, 就发update state
     }
 }

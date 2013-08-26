@@ -1,18 +1,27 @@
 package com.wolf.dotah.server.cmpnt.player;
 
-
+import java.util.ArrayList;
 import java.util.List;
-
-import com.wolf.dotah.server.cmpnt.card.Card;
-
 
 public class PlayerHandCardsModel {
     
     public PlayerHandCardsModel(int handcardLimit) {
-    
-        // TODO Auto-generated constructor stub
+        this.limit = handcardLimit;
     }
+    
     int limit;
-    List<Card> cards;
+    List<Integer> cards = new ArrayList<Integer>();
+    
+    public void add(List<Integer> input) {
+        cards.addAll(input);
+    }
+    
+    public List<Integer> getCards() {
+        return cards;
+    }
+    
+    public void setCards(List<Integer> cards) {
+        this.cards = cards;
+    }
     
 }

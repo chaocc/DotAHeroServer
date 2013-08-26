@@ -2,6 +2,7 @@ package com.wolf.dotah.server.layer.data;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import net.sf.plist.NSArray;
 import net.sf.plist.NSDictionary;
@@ -12,12 +13,14 @@ import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.HeroSkill;
 import com.wolf.dotah.server.cmpnt.player.HeroSkills;
 import com.wolf.dotah.server.layer.translator.MessageDispatcher;
+import com.wolf.dotah.server.util.u;
 
 public class HeroParser {
     
     private final String path = "doc/HeroCardArray.plist";
     private static HeroParser parser;
     private final String tag = "===>> HeroParser ";
+    private int[] fake_data_hero_ids = { 2, 17, 21, 3, 12, 28 };
     
     public static HeroParser getParser() {
         
@@ -27,18 +30,18 @@ public class HeroParser {
         return parser;
     }
     
-    public List<HeroInfo> getHeroInfoList() {
-        
-        List<HeroInfo> heroInfoList = new ArrayList<HeroInfo>();
-        NSObject[] heros = getNSHeroArray();
-        for (int i = 0; i < heros.length; i++) {
-            NSDictionary hero = (NSDictionary) heros[i];
-            HeroInfo heroInfo = genHeroInfoFromNSDictWithId(hero, i);
-            heroInfoList.add(heroInfo);
-        }
-        
-        return heroInfoList;
-    }
+//    public List<HeroInfo> getHeroInfoList() {
+//        
+//        List<HeroInfo> heroInfoList = new ArrayList<HeroInfo>();
+//        NSObject[] heros = getNSHeroArray();
+//        for (int i = 0; i < heros.length; i++) {
+//            NSDictionary hero = (NSDictionary) heros[i];
+//            HeroInfo heroInfo = genHeroInfoFromNSDictWithId(hero, i);
+//            heroInfoList.add(heroInfo);
+//        }
+//        
+//        return heroInfoList;
+//    }
     
     public HeroInfo getHeroInfoById(int id) {
         
@@ -54,15 +57,14 @@ public class HeroParser {
         for (int i = 0; i < size; i++) {
             heroIdList.add(i);
         }
-        return heroIdList;
+        //        return heroIdList;
+        return u.getList(fake_data_hero_ids);
     }
     
     private NSObject[] getNSHeroArray() {
         
         try {
             File file = new File(path);
-//            MessageDispatcher.getDispatcher(null).debug(tag, file.exists()+"");
-//            MessageDispatcher.getDispatcher(null).debug(tag, file.getAbsolutePath());
             NSArray heroArray = (NSArray) PropertyListParser.parse(file);
             NSObject[] heros = heroArray.array();
             return heros;
@@ -92,15 +94,15 @@ public class HeroParser {
         HeroInfo heroInfo = new HeroInfo(id, heroName, hpLimit, spLimit, handCardLimit, heroType, heroSkills);
         return heroInfo.genInfo();
     }
-    
-    private HeroParser() {
-        
-    }
-    
-    public static void main(String... args) {
-        
-        for (HeroInfo hero : HeroParser.getParser().getHeroInfoList()) {
-            System.out.println(hero);
-        }
-    }
+//    
+//    private HeroParser() {
+//        
+//    }
+//    
+//    public static void main(String... args) {
+//        
+//        for (HeroInfo hero : HeroParser.getParser().getHeroInfoList()) {
+//            System.out.println(hero);
+//        }
+//    }
 }

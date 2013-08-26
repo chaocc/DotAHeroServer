@@ -1,9 +1,14 @@
 package com.wolf.dotah.server.layer.translator;
 
+import java.util.List;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
+import com.wolf.dotah.server.cmpnt.card.Card;
 import com.wolf.dotah.server.util.c;
+import com.wolf.dotah.server.util.c.server_action;
+import com.wolf.dotah.server.util.u;
+import com.wolf.tool.client_const;
 
 public class PlayerTranslator {
     
@@ -42,4 +47,43 @@ public class PlayerTranslator {
         dispatcher.sendMessageToSingleUser(subject, msg);
         
     }
+    
+    public void dispatchHandcards(Player p, List<Integer> cards) {
+        // TODO Auto-generated method stub
+        p.getHandcards(cards);
+    }
+    
+    public void sendPrivateMessage(String string_action, Player player) {
+        Data data = new Data();
+        data.setAction(string_action);
+        addPrivateData(data, string_action, player);
+        dispatcher.sendMessageToSingleUser(player.getUserName(), data);
+    }
+    
+    private void addPrivateData(Data data, String string_action, Player player) {
+        if (c.ac.init_hand_cards.equals(string_action)) {
+            Integer[] cardArray = player.getProperty().getHandCards().getCards().toArray(new Integer[] {});
+            data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cardArray));
+        } else if (c.ac.choosing_from_hand.equals(string_action)) {
+            List<Integer> cardList = player.getProperty().getHandCards().getCards();
+            int[] cardArray = u.intArrayMapping(cardList.toArray(new Integer[] {}));
+            data.setIntegerArray(client_const.param_key.kParamCardIdList, cardArray);
+            data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);
+        }
+    }
+    
+    public void sendPublicMessage(String string_action, Player player) {
+        Data data = new Data();
+        data.setAction(string_action);
+        addPublicData(data, string_action, player);
+        dispatcher.sendMessageToAllWithoutSpecificUser(data, player.getUserName());
+    }
+    
+    private void addPublicData(Data data, String string_action, Player player) {
+        if (c.ac.init_hand_cards.equals(string_action)) {
+            data.setInteger(client_const.param_key.kParamHandCardCount, player.getProperty().getHandCards().getCards().size());
+        }
+        
+    }
+    
 }

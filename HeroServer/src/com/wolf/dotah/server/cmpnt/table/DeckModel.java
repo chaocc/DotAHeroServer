@@ -1,6 +1,7 @@
 package com.wolf.dotah.server.cmpnt.table;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.card.Card;
@@ -16,6 +17,7 @@ public class DeckModel {
     public DeckModel(TableModel tableModel) {
         this.table = tableModel;
         deck = CardParser.getParser().getCardList();
+        Collections.shuffle(deck);
     }
     
     public List<Card> getDeck() {
