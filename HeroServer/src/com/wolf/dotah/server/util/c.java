@@ -25,7 +25,7 @@ public interface c {
     }
     
     public interface ac {
-        public String init_hand_cards = "update_player_info_hand_cards";
+        public String init_hand_cards = "init_player_info_hand_cards";
         public String update_hand_cards = "update_player_info_hand_cards";
         public String choosing_from_hand = "choosing_from_hand";
     }

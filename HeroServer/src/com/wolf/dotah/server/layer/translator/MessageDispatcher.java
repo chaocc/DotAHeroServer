@@ -58,15 +58,32 @@ public class MessageDispatcher {
         
         @Override
         public void scheduledCallback() {
-            checkWaitingState();
-            tick();
-            
+            boolean allConfirmed = checkWaitingState();
+            boolean autoDesided = tick();
+            if (allConfirmed || autoDesided) {
+                goon();
+            }
             //TODO 2种条件cancel count down, 
             //一种是所有人都选完, 
             //另一种是时间到
         }
         
-        private void checkWaitingState() {
+        private void goon() {
+            waitingType = c.game_state.waiting_type.none;
+            if (waitReason.equals(playercon.state.desp.choosing.choosing_hero)) {
+                
+                tableTranslator.getTable().broadcastHeroInited();
+                tableTranslator.dspatchHandcards();
+            } else if (waitReason.equals(c.server_action.choosing)) {
+                
+                // TODO 这时候要判断是哪种action, 切牌, 还是干什么别的, 然后去干, 
+                // 或者直接execute一个action接口,  这个action里能拿到该做什么, 然后去做
+            }
+            waitReason = c.server_action.none;
+            plugin.getApi().cancelScheduledExecution(schedule_waiting_for_everybody_id);
+        }
+        
+        private boolean checkWaitingState() {
             int waiting = 0;
             int confirmed = 0;
             if (waitReason.equals(playercon.state.desp.choosing.choosing_hero)) {
@@ -75,15 +92,18 @@ public class MessageDispatcher {
                     if (state.equals(playercon.state.desp.choosing.choosing_hero)) {
                         waiting += 1;
                     } else if (state.equals(playercon.state.desp.confirmed.hero)) {
+                        MessageDispatcher.this.debug(tag, "player: " + player.getUserName() + " confirmed");
                         confirmed += 1;
                     }
                 }
-                if (waiting < 1) {
-                    waitingType = c.game_state.waiting_type.none;
-                }
+                //                if (waiting < 1) {
+                //                    waitingType = c.game_state.waiting_type.none;
+                //                }
+                MessageDispatcher.this.debug(tag, "confirmed: " + confirmed + " / " + tableTranslator.getTable().getPlayers().getCount());
                 if (confirmed >= tableTranslator.getTable().getPlayers().getCount()) {
-                    tableTranslator.getTable().broadcastHeroInited();
-                    tableTranslator.dspatchHandcards();
+                    return true;
+                } else {
+                    return false;
                 }
             } else if (waitReason.equals(c.server_action.choosing)) {
                 for (Player player : tableTranslator.getTable().getPlayers().getPlayerList()) {
@@ -94,34 +114,42 @@ public class MessageDispatcher {
                         confirmed += 1;
                     }
                 }
-                if (waiting < 1) {
-                    waitingType = c.game_state.waiting_type.none;
-                }
+                //                if (waiting < 1) {
+                //                    waitingType = c.game_state.waiting_type.none;
+                //                }
                 if (confirmed >= tableTranslator.getTable().getPlayers().getCount()) {
+                    return true;
                     
-                    //TODO 这时候要判断是哪种action, 切牌, 还是干什么别的, 然后去干, 
-                    // 或者直接execute一个action接口,  这个action里能拿到该做什么, 然后去做
-                    
+                } else {
+                    return false;
                 }
             }
+            plugin.dlog(tag, "check waiting state fail");
+            return false;
         }
         
-        public void tick() {
+        public boolean tick() {
             
             if (waitingType == c.game_state.waiting_type.none) {
+                MessageDispatcher.this.debug(tag, "not waiting");
                 plugin.getApi().cancelScheduledExecution(schedule_waiting_for_everybody_id);
             } else if (tickCounter < 1) {
-                if (waitReason.equals(playercon.state.desp.choosing.choosing)) {
+                boolean autoDesided = false;
+                if (waitReason.equals(playercon.state.desp.choosing.choosing_hero)) {
                     autoDeside();
-                    tableTranslator.getTable().broadcastHeroInited();
-                    plugin.getApi().cancelScheduledExecution(schedule_waiting_for_everybody_id);
-                    waitReason = c.server_action.none;
+                    autoDesided = true;
+                    //                    tableTranslator.getTable().broadcastHeroInited();
+                } else if (waitReason.equals(playercon.state.desp.choosing.choosing)) {
+                    
                 }
+                plugin.getApi().cancelScheduledExecution(schedule_waiting_for_everybody_id);
+                return autoDesided;
             } else {
                 //                sendCountDownSecondsLeftMessage();
                 MessageDispatcher.this.debug(tag, "tick counter = " + tickCounter);
                 tickCounter--;
             }
+            return false;
         }
         
         /**
@@ -132,9 +160,9 @@ public class MessageDispatcher {
             for (Player player : tableTranslator.getTable().getPlayers().getPlayerList()) {
                 player.performSimplestChoice();
             }
-            if (waitReason.equals(playercon.state.desp.choosing.choosing_hero)) {
-                tableTranslator.dspatchHandcards();
-            }
+            //            if (waitReason.equals(playercon.state.desp.choosing.choosing_hero)) {
+            //                tableTranslator.dspatchHandcards();
+            //            }
         }
         //        
         //        private void sendCountDownSecondsLeftMessage() {

@@ -184,7 +184,7 @@ public class Player implements player_const {
         if (this.ai == null || !this.ai.isAi()) {
             translator.sendPrivateMessage(c.ac.init_hand_cards, this);
         }
-        translator.sendPublicMessage(c.ac.init_hand_cards, this);
+//        translator.sendPublicMessage(c.ac.init_hand_cards, this);
         // TODO 然后再调用 player translator的send plugin message之类的方法
         
     }
