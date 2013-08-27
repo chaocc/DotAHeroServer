@@ -4,6 +4,8 @@ import java.util.List;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
+import com.wolf.dotah.server.cmpnt.TableModel;
+import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.u;
 import com.wolf.tool.client_const;
@@ -82,6 +84,23 @@ public class PlayerTranslator {
             data.setInteger(client_const.param_key.kParamHandCardCount, player.getProperty().getHandCards().getCards().size());
         }
         
+    }
+    
+    public MessageDispatcher getDispatcher() {
+        return dispatcher;
+    }
+    
+    public void translateChose(String user, EsObject msg) {
+        //TODO 改成不要在这里写, 在player里写
+        //TODO 简化player的state后, 使用player的state莱判断
+        //现在先用table的state来判断
+        TableModel table = dispatcher.getTableTranslator().getTable();
+        int[] id = msg.getIntegerArray(c.param_key.id_list, new int[] {});
+        dispatcher.debug(user, "table.getState().getState() :  " + table.getState().getState());
+        if (table.getState().getState() == tablecon.state.not_started.cutting) {
+            table.getCutCards().put(user, id[0]);
+            this.getDispatcher().debug(user, "translateChose: " + table.getCutCards().toString());
+        }
     }
     
 }

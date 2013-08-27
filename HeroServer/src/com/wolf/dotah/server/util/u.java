@@ -43,6 +43,8 @@ public class u {
             result = client_const.kActionInitPlayerCard;
         } else if (action.equals(c.ac.choosing_from_hand)) {
             result = client_const.kActionChooseCardToCompare;
+        } else if (action.equals(c.ac.cutted)) {
+            result = client_const.action_cutted;
         }
         
         return result;

@@ -1,7 +1,5 @@
 package com.wolf.dotah.server.cmpnt.table;
 
-import com.wolf.dotah.server.cmpnt.Player;
-
 
 /**
  * 
@@ -18,6 +16,21 @@ import com.wolf.dotah.server.cmpnt.Player;
 public class TableState implements table_const {
     
     int state;
-    Player firstPlayer;
-    Player currentPlayer;
+    String subject;
+    
+    //    Player currentPlayer;
+    
+    public int getState() {
+        return state;
+    }
+    
+    public void setState(int state) {
+        this.state = state;
+    }
+    
+    public void setSubject(String name) {
+        this.subject = name;
+        
+    }
+    
 }

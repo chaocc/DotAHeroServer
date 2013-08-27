@@ -1,6 +1,9 @@
 package com.wolf.dotah.server.layer.translator;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
@@ -9,7 +12,9 @@ import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
 import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
+import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.util.c;
+import com.wolf.dotah.server.util.u;
 import com.wolf.tool.client_const;
 
 public class MessageDispatcher {
@@ -75,17 +80,47 @@ public class MessageDispatcher {
                 tableTranslator.getTable().broadcastHeroInited();
                 tableTranslator.dspatchHandcards();
             } else if (waitReason.equals(c.server_action.choosing)) {
-                
-                // TODO 这时候要判断是哪种action, 切牌, 还是干什么别的, 然后去干, 
-                // 或者直接execute一个action接口,  这个action里能拿到该做什么, 然后去做
+                if (MessageDispatcher.this.getTableTranslator().getTable().getState().getState() == tablecon.state.not_started.cutting) {
+                    //TODO 给每个人手里都减少一张牌
+                    //TODO 发给client id list
+                    Map<String, Integer> cutCards = tableTranslator.getTable().getCutCards();
+                    List<Player> pl = tableTranslator.getPlayerList().getPlayerList();
+                    List<Integer> cards = new ArrayList<Integer>();
+                    MessageDispatcher.this.debug(tag, "goon, ");
+                    for (int i = 0; i < cutCards.size(); i++) {
+                        Player p = pl.get(i);
+                        int card = cutCards.get(p.getUserName());
+                        cards.add(card);
+                        List<Integer> handcards = p.getProperty().getHandCards().getCards();
+                        MessageDispatcher.this.debug(tag, "removing card " + card + ", from player " + p.getUserName() + "'s hand " + handcards);
+                        handcards.remove(handcards.indexOf(card));
+                    }
+                    Data data = new Data();
+                    data.setAction(c.ac.cutted);
+                    data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cards.toArray(new Integer[cards.size()])));
+                    data.setInteger(client_const.param_key.kParamHandCardCount, pl.get(0).getProperty().getHandCards().getCards().size());
+                    MessageDispatcher.this.sendMessageToAll(data);
+                    
+                    //TODO 先拼点, 
+                    String biggestPlayer = "";
+                    int biggest = 0;
+                    for (int i = 0; i < cards.size(); i++) {
+                        if (cards.get(i) > biggest) {
+                            biggest = cards.get(i);
+                            biggestPlayer = pl.get(i).getUserName();
+                        }
+                    }
+                    //TODO 告诉玩家可以开始玩牌了, 
+                }
             }
-            waitReason = c.server_action.none;
+            //            waitReason = c.server_action.none;
             plugin.getApi().cancelScheduledExecution(schedule_waiting_for_everybody_id);
         }
         
         private boolean checkWaitingState() {
             int waiting = 0;
             int confirmed = 0;
+            MessageDispatcher.this.debug(tag, "waitReason, " + waitReason);
             if (waitReason.equals(playercon.state.desp.choosing.choosing_hero)) {
                 for (Player player : tableTranslator.getTable().getPlayers().getPlayerList()) {
                     String state = player.getState().getStateDesp();
@@ -106,20 +141,9 @@ public class MessageDispatcher {
                     return false;
                 }
             } else if (waitReason.equals(c.server_action.choosing)) {
-                for (Player player : tableTranslator.getTable().getPlayers().getPlayerList()) {
-                    String state = player.getState().getStateDesp();
-                    if (state.equals(playercon.state.desp.choosing.choosing)) {
-                        waiting += 1;
-                    } else if (state.equals(playercon.state.desp.confirmed.id)) {
-                        confirmed += 1;
-                    }
-                }
-                //                if (waiting < 1) {
-                //                    waitingType = c.game_state.waiting_type.none;
-                //                }
-                if (confirmed >= tableTranslator.getTable().getPlayers().getCount()) {
+                MessageDispatcher.this.debug(tag, "cutted : " + tableTranslator.getTable().getCutCards().size() + " / " + tableTranslator.getTable().getPlayers().getCount());
+                if (tableTranslator.getTable().getCutCards().size() == tableTranslator.getTable().getPlayers().getCount()) {
                     return true;
-                    
                 } else {
                     return false;
                 }
@@ -136,11 +160,14 @@ public class MessageDispatcher {
             } else if (tickCounter < 1) {
                 boolean autoDesided = false;
                 if (waitReason.equals(playercon.state.desp.choosing.choosing_hero)) {
-                    autoDeside();
+                    autoDesideHero();
                     autoDesided = true;
                     //                    tableTranslator.getTable().broadcastHeroInited();
                 } else if (waitReason.equals(playercon.state.desp.choosing.choosing)) {
-                    
+                    if (tableTranslator.getTable().getState().getState() == tablecon.state.not_started.cutting) {
+                        autoDesideCutting();
+                        autoDesided = true;
+                    }
                 }
                 plugin.getApi().cancelScheduledExecution(schedule_waiting_for_everybody_id);
                 return autoDesided;
@@ -152,10 +179,19 @@ public class MessageDispatcher {
             return false;
         }
         
+        private void autoDesideCutting() {
+            MessageDispatcher.this.debug(tag, "autoDesideCutting");
+            for (Player p : tableTranslator.getTable().getPlayers().getPlayerList()) {
+                if (!tableTranslator.getTable().getCutCards().keySet().contains(p.getUserName())) {
+                    p.performSimplestChoice();
+                }
+            }
+        }
+        
         /**
          * 
          */
-        private void autoDeside() {
+        private void autoDesideHero() {
             tickCounter = -1;
             for (Player player : tableTranslator.getTable().getPlayers().getPlayerList()) {
                 player.performSimplestChoice();
@@ -195,6 +231,8 @@ public class MessageDispatcher {
             decisionTranslator.translateChose(tableTranslator.getPlayerList().getPlayerByUserName(user), msg);
         } else if (client_const.kActionChooseHeroId == client_message) {
             playerTranslator.translateUpdate(tableTranslator.getPlayerList().getPlayerByUserName(user), msg);
+        } else if (client_const.kActionChooseCard == client_message) {
+            playerTranslator.translateChose(user, msg);
         }
     }
     

@@ -3,7 +3,6 @@ package com.wolf.dotah.server.cmpnt;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.wolf.dotah.server.cmpnt.player.PlayerState;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.CardDropStack;
 import com.wolf.dotah.server.cmpnt.table.CardRemainStack;
@@ -56,7 +55,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     CardRemainStack remainStack;
     CardDropStack dropStack;
     Ticker ticker;
-    Map<String, Integer> cutCards;
+    private Map<String, Integer> cutCards;
     
     TableTranslator translator;
     //    MessageDispatcher msgDispatcher;
@@ -64,6 +63,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     final String tag = "====>> TableModel: ";
     
     public TableModel(PlayerList playerList) {
+        state = new TableState();
         players = playerList;
         players.registerPlayerListListener(this);
         initCutCardMap();
@@ -83,6 +83,8 @@ public class TableModel implements table_const, player_const, PlayerListListener
      * init完后的第一件事就是发待选英雄
      */
     public void dispatchHeroCandidates() {
+        this.state.setSubject(this.getClass().getSimpleName());
+        this.state.setState(tablecon.state.not_started.chooing_hero);
         HeroCandidateModel heroModel = new HeroCandidateModel();
         List<Integer[]> heroCandidateList = heroModel.getCandidateForAll(players.getCount());
         //        MessageDispatcher.getDispatcher(null).debug(tag, "hero candidates inited. \n" + heroCandidateList);
@@ -180,15 +182,28 @@ public class TableModel implements table_const, player_const, PlayerListListener
             //            updateSequence.submitServerUpdateByTable(this);
             
         }
-        this.startTurn(this.getPlayers().getPlayerByIndex(0));
+        //        this.startTurn(this.getPlayers().getPlayerByIndex(0));
     }
     
     public void updatePlayersToCutting() {
+        this.state.setState(tablecon.state.not_started.cutting);
         for (Player p : this.getPlayers().getPlayerList()) {
             p.cutting();
-
         }
         
         this.getTranslator().getDispatcher().waitingForEverybody().becauseOf(c.server_action.choosing);
     }
+    
+    public TableState getState() {
+        return state;
+    }
+    
+    public void setState(TableState state) {
+        this.state = state;
+    }
+    
+    public Map<String, Integer> getCutCards() {
+        return cutCards;
+    }
+    
 }

@@ -6,6 +6,7 @@ import com.wolf.dotah.server.cmpnt.player.PlayerAvailableTargetModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
 import com.wolf.dotah.server.cmpnt.player.PlayerState;
 import com.wolf.dotah.server.cmpnt.player.player_const;
+import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.layer.translator.MessageDispatcher;
 import com.wolf.dotah.server.layer.translator.PlayerTranslator;
 import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
@@ -18,8 +19,13 @@ public class Player implements player_const {
     
     //TODO attackable
     //TODO disarmable
-    
+    String tag = "Player: ";
+    /*
+     * TODO 考虑把state 弄简单点儿,  像table的state那样, 就是state和subject之类的.
+     * 倒也不是那么简单
+     */
     private PlayerState state;//hero 在干嘛, 可以干嘛
+    
     private PlayerProperty property;//player 属性的状态
     
     private PlayerAvailableTargetModel targets;
@@ -72,6 +78,7 @@ public class Player implements player_const {
     public Player(String name, TableModel inputTable) {
         this.table = inputTable;
         this.userName = name;
+        this.tag += name + ", ";
         this.translator = table.getTranslator().getDispatcher().getPlayerTranslator();
         state = new PlayerState();
     }
@@ -139,16 +146,23 @@ public class Player implements player_const {
             } else if (from.equals(c.param_key.hand_card)) {
                 Integer[] pickResult = property.getHandCards().getCards().toArray(new Integer[] {});
                 int resultId = ai.chooseSingle(u.intArrayMapping(pickResult));
-                //   TODO 把选完的放在桌面上     table.get
+                this.translator.getDispatcher().debug(tag, this.userName + " chose from handcard " + resultId);
+                this.table.getCutCards().put(this.getUserName(), resultId);
             }
         }
     }
     
     public void performSimplestChoice() {
-        int[] idList = state.toData().getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
-        if (idList.length > 0) {
-            if (state.getStateDesp().equals(playercon.state.desp.choosing.choosing_hero)) {
-                this.initPropertyWithHeroId(idList[0]);
+        if (table.getState().getState() == tablecon.state.not_started.cutting) {//cutting
+            int id = this.getProperty().getHandCards().getCards().get(0);
+            table.getCutCards().put(this.getUserName(), id);
+        } else {
+            //choosing hero
+            int[] idList = state.toData().getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
+            if (idList.length > 0) {
+                if (state.getStateDesp().equals(playercon.state.desp.choosing.choosing_hero)) {
+                    this.initPropertyWithHeroId(idList[0]);
+                }
             }
         }
     }
@@ -184,7 +198,7 @@ public class Player implements player_const {
         if (this.ai == null || !this.ai.isAi()) {
             translator.sendPrivateMessage(c.ac.init_hand_cards, this);
         }
-//        translator.sendPublicMessage(c.ac.init_hand_cards, this);
+        //        translator.sendPublicMessage(c.ac.init_hand_cards, this);
         // TODO 然后再调用 player translator的send plugin message之类的方法
         
     }

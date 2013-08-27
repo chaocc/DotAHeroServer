@@ -28,6 +28,7 @@ public interface c {
         public String init_hand_cards = "init_player_info_hand_cards";
         public String update_hand_cards = "update_player_info_hand_cards";
         public String choosing_from_hand = "choosing_from_hand";
+        public String cutted = "update_table_cutted";
     }
     
     public interface player_action {
