@@ -100,7 +100,7 @@ public class MessageDispatcher {
                     data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cards.toArray(new Integer[cards.size()])));
                     data.setInteger(client_const.param_key.kParamHandCardCount, pl.get(0).getProperty().getHandCards().getCards().size());
                     MessageDispatcher.this.sendMessageToAll(data);
-                    
+                    waitReason = c.server_action.none;
                     //TODO 先拼点, 
                     String biggestPlayer = "";
                     int biggest = 0;
@@ -110,6 +110,9 @@ public class MessageDispatcher {
                             biggestPlayer = pl.get(i).getUserName();
                         }
                     }
+//                    Data obj=new Data();
+//                    obj.setAction(serverAction);//kActionPlayingCard 出牌阶段
+//                    obj.
                     //TODO 告诉玩家可以开始玩牌了, 
                 }
             }
