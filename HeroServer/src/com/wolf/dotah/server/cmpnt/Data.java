@@ -4,7 +4,6 @@ import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.Number;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.u;
-import com.wolf.tool.client_const;
 
 public class Data extends EsObject {
     

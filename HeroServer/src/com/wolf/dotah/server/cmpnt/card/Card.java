@@ -1,7 +1,6 @@
 package com.wolf.dotah.server.cmpnt.card;
 
 
-import com.wolf.dotah.server.cmpnt.function.function_const;
 
 
 /**
@@ -16,7 +15,7 @@ import com.wolf.dotah.server.cmpnt.function.function_const;
  * 
  * @author Solomon
  */
-public class Card implements card_const, function_const {
+public class Card implements card_const {
     
     // basic fields
     int id;

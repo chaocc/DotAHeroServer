@@ -14,8 +14,8 @@ import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
 import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.util.c;
+import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.u;
-import com.wolf.tool.client_const;
 
 public class MessageDispatcher {
     

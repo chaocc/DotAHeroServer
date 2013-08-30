@@ -1,10 +1,9 @@
 package com.wolf.dotah.server.cmpnt.player;
 
 
-import com.wolf.dotah.server.cmpnt.function.function_const;
 
 
-public class HeroSkill implements function_const, hero_const {
+public class HeroSkill implements hero_const {
     
     
     int functionId;

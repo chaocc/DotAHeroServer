@@ -14,7 +14,6 @@ import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
 import com.wolf.dotah.server.layer.translator.TableTranslator;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.u;
-import com.wolf.dotah.testframework.ClientRequest;
 
 public class Player implements player_const {
     
@@ -33,12 +32,7 @@ public class Player implements player_const {
     private TableModel table;
     private PlayerTranslator translator;
     
-    public void act(ClientRequest request) {
-        
-        //TODO 这个还要吗? 不知道是否有用
-        //3, player处理action, 得到结果: 改变状态或要求客户端回应
-        //4, 把改变后的状态或者需要新信息的请求发给客户端
-    }
+
     
     /**
      * 每一个public的update方法, 都要把update的过程加入到update steps里, 供translate时候用

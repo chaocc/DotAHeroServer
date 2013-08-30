@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
-import com.wolf.tool.client_const;
 
 public class u {
     public static int[] intArrayMapping(Integer[] integerArray) {

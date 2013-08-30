@@ -5,7 +5,7 @@ import java.util.List;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.util.c;
-import com.wolf.tool.client_const;
+import com.wolf.dotah.server.util.client_const;
 
 public class PlayerHandCardsModel {
     

@@ -16,8 +16,8 @@ import com.wolf.dotah.server.cmpnt.table.table_const;
 import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
 import com.wolf.dotah.server.layer.translator.TableTranslator;
 import com.wolf.dotah.server.util.c;
+import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.u;
-import com.wolf.tool.client_const;
 
 /**
  * 
