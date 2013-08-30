@@ -2,13 +2,19 @@ package com.wolf.dotah.server.cmpnt.player;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.wolf.dotah.server.cmpnt.Data;
+import com.wolf.dotah.server.cmpnt.Player;
+import com.wolf.dotah.server.util.c;
+import com.wolf.tool.client_const;
 
 public class PlayerHandCardsModel {
     
-    public PlayerHandCardsModel(int handcardLimit) {
+    public PlayerHandCardsModel(Player p, int handcardLimit) {
         this.limit = handcardLimit;
+        this.player = p;
     }
     
+    private Player player;
     int limit;
     List<Integer> cards = new ArrayList<Integer>();
     
@@ -20,8 +26,28 @@ public class PlayerHandCardsModel {
         return cards;
     }
     
+    public Integer[] getCardArray() {
+        return cards.toArray(new Integer[] {});
+    }
+    
     public void setCards(List<Integer> cards) {
         this.cards = cards;
     }
     
+    public void remove(int card, boolean sendPrivateMessage) {
+        this.getCards().remove(this.getCards().indexOf(card));
+        Data data = new Data();
+        if (sendPrivateMessage) {
+            // send update player handcards to self
+            data.setAction(c.ac.update_hand_cards);
+            data.setIntegerArray(c.param_key.id_list, new int[] { card });
+            player.getTranslator().getDispatcher().sendMessageToSingleUser(this.player.getUserName(), data);
+        }
+        //send update player handcard count to other players
+        data = new Data();
+        data.setAction(c.ac.update_hand_cards);
+        data.setInteger(client_const.param_key.hand_card_count, cards.size());
+        data.setString(c.param_key.who, player.getUserName());
+        player.getTranslator().getDispatcher().sendMessageToAllWithoutSpecificUser(data, player.getUserName());
+    }
 }

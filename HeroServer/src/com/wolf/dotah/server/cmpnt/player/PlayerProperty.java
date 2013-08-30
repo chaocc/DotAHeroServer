@@ -1,6 +1,7 @@
 package com.wolf.dotah.server.cmpnt.player;
 
 import java.util.List;
+import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.layer.data.HeroParser;
 
 public class PlayerProperty {
@@ -10,11 +11,12 @@ public class PlayerProperty {
     PlayerSpModel sp;
     PlayerEquipments equips;
     PlayerForce force;
+    Player player;
     
-    public PlayerProperty(int heroId) {
-        
+    public PlayerProperty(int heroId, Player p) {
+        this.player = p;
         hero = HeroParser.getParser().getHeroInfoById(heroId);
-        handCards = new PlayerHandCardsModel(hero.getHandcardLimit());
+        handCards = new PlayerHandCardsModel(p, hero.getHandcardLimit());
         hp = new PlayerHpModel(hero.getHpLimit());
         sp = new PlayerSpModel(hero.getSpLimit());
         equips = new PlayerEquipments();

@@ -100,6 +100,14 @@ public class PlayerList implements player_const {
         return playerList.get(userList.indexOf(user));
     }
     
+    public Player getPlayerByPlayerName(String name) {
+        this.getTable().getTranslator().getDispatcher().debug(tag, "getPlayerByPlayerName, name: " + name + " from list " + playerList.toString());
+        for (Player p : playerList) {
+            if (p.getUserName().equals(name)) { return p; }
+        }
+        return null;
+    }
+    
     public String[] getNameList() {
         String[] names = new String[playerList.size()];
         for (int i = 0; i < names.length; i++) {

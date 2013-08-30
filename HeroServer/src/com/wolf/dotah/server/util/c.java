@@ -29,6 +29,7 @@ public interface c {
         public String update_hand_cards = "update_player_info_hand_cards";
         public String choosing_from_hand = "choosing_from_hand";
         public String cutted = "update_table_cutted";
+        public String turn_to_player = "turn_to_player";
     }
     
     public interface player_action {
@@ -45,8 +46,9 @@ public interface c {
         String player_count = "player_count";
         String id_list = "id_list";
         public String how_many = "how_many";
-        public String hand_card = "hand_cards";
+        //        public String hand_card = "id_list";
         public String hero_candidates = "hero_candidates";
+        public String who = "who";
     }
     
     public interface game_state {

@@ -45,6 +45,12 @@ public class u {
             result = client_const.kActionChooseCardToCompare;
         } else if (action.equals(c.ac.cutted)) {
             result = client_const.action_cutted;
+        } else if (action.equals(c.ac.update_hand_cards)) {
+            result = client_const.kActionUpdatePlayerHand;
+        } else if (action.equals(c.ac.turn_to_player)) {
+            result = client_const.kActionPlayingCard;
+        } else if (action.equals(c.server_action.free_play)) {
+            result = client_const.kActionChooseCardToUse;
         }
         
         return result;

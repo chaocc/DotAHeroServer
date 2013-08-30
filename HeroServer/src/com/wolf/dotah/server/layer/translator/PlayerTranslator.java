@@ -67,7 +67,7 @@ public class PlayerTranslator {
         } else if (c.ac.choosing_from_hand.equals(string_action)) {
             List<Integer> cardList = player.getProperty().getHandCards().getCards();
             int[] cardArray = u.intArrayMapping(cardList.toArray(new Integer[] {}));
-            data.setIntegerArray(client_const.param_key.kParamCardIdList, cardArray);
+            data.setIntegerArray(client_const.param_key.id_list, cardArray);
             data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);
         }
     }
@@ -76,12 +76,13 @@ public class PlayerTranslator {
         Data data = new Data();
         data.setAction(string_action);
         addPublicData(data, string_action, player);
+        data.setString(c.param_key.who, player.getUserName());
         dispatcher.sendMessageToAllWithoutSpecificUser(data, player.getUserName());
     }
     
     private void addPublicData(Data data, String string_action, Player player) {
         if (c.ac.init_hand_cards.equals(string_action)) {
-            data.setInteger(client_const.param_key.kParamHandCardCount, player.getProperty().getHandCards().getCards().size());
+            data.setInteger(client_const.param_key.hand_card_count, player.getProperty().getHandCards().getCards().size());
         }
         
     }

@@ -17,6 +17,7 @@ import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
 import com.wolf.dotah.server.layer.translator.TableTranslator;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.u;
+import com.wolf.tool.client_const;
 
 /**
  * 
@@ -190,7 +191,6 @@ public class TableModel implements table_const, player_const, PlayerListListener
         for (Player p : this.getPlayers().getPlayerList()) {
             p.cutting();
         }
-        
         this.getTranslator().getDispatcher().waitingForEverybody().becauseOf(c.server_action.choosing);
     }
     
@@ -206,4 +206,25 @@ public class TableModel implements table_const, player_const, PlayerListListener
         return cutCards;
     }
     
+    public void startTurn(String playerName) {
+        Data data = new Data();
+        data.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
+        data.setString(client_const.param_key.kParamSourcePlayerName, playerName);
+        //TODO table 里要保存current player, 
+        this.getTranslator().getDispatcher().sendMessageToAll(data);
+        //TODO 告诉玩家可以开始玩牌了, 
+        //TODO 摸2张牌
+        
+        data = new Data();
+        data.setAction(c.server_action.free_play);//3001
+        int[] availableHandCards = players.getPlayerByPlayerName(playerName).getAvailableHandCards();
+        data.setIntegerArray(client_const.param_key.available_id_list, availableHandCards);
+        data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);//selectable count
+        this.getTranslator().getDispatcher().sendMessageToSingleUser(playerName, data);
+        
+    }
+    
+    public int getRemainCardCount() {
+        return this.remainStack.getRemainStack().size();
+    }
 }

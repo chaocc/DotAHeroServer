@@ -1,5 +1,6 @@
 package com.wolf.dotah.server.cmpnt;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.PlayerAvailableTargetModel;
@@ -143,7 +144,7 @@ public class Player implements player_const {
                 int[] pickResult = state.toData().getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
                 int heroId = ai.chooseSingle(pickResult);
                 this.initPropertyWithHeroId(heroId);
-            } else if (from.equals(c.param_key.hand_card)) {
+            } else if (from.equals(c.param_key.id_list)) {
                 Integer[] pickResult = property.getHandCards().getCards().toArray(new Integer[] {});
                 int resultId = ai.chooseSingle(u.intArrayMapping(pickResult));
                 this.translator.getDispatcher().debug(tag, this.userName + " chose from handcard " + resultId);
@@ -173,12 +174,19 @@ public class Player implements player_const {
             int heroId = pickResult[0];
             this.initPropertyWithHeroId(heroId);
         }
-        
+    }
+    
+    public PlayerTranslator getTranslator() {
+        return translator;
+    }
+    
+    public void setTranslator(PlayerTranslator translator) {
+        this.translator = translator;
     }
     
     private void initPropertyWithHeroId(int heroId) {
         
-        property = new PlayerProperty(heroId);
+        property = new PlayerProperty(heroId, this);
         //TODO 不是在这里, 而是在全都收到选择了英雄后broadcast chose property
         state.setStateDesp(playercon.state.desp.confirmed.hero);
         if (this.getAi() == null || !this.getAi().isAi()) {
@@ -207,10 +215,44 @@ public class Player implements player_const {
         state.setStateDesp(c.server_action.choosing);
         state.setUsableCardContext(property.getHandCards().getCards());
         if (ai != null && ai.isAi()) {
-            performAiAction(c.server_action.choosing, c.param_key.hand_card);
+            performAiAction(c.server_action.choosing, c.param_key.id_list);
         } else {
             translator.sendPrivateMessage(c.ac.choosing_from_hand, this);
         }
         //TODO 如果是普通的ai, 就让它选好, 如果是一般的player, 就发update state
+    }
+    
+    public int[] getAvailableHandCards() {
+        //TODO 判断哪些available
+        /*
+         * 1, 根据当前round的player, 是自己还是被人target等
+         * 2, 根据当前的技能或者其他context, 
+         * 3, 
+         */
+        List<Integer> availableList = new ArrayList<Integer>();
+        for (int card : property.getHandCards().getCards()) {
+            if (active(card)) {
+                availableList.add(card);
+                continue;
+            }
+            
+        }
+        return u.intArrayMapping(availableList.toArray(new Integer[] {}));
+    }
+    
+    private boolean active(int card) {
+        boolean firstCase = card > 45 && card < 57;
+        boolean secondCase = card > 59 && card < 70;
+        boolean thirdCase = card == 79;
+        if (firstCase || secondCase || thirdCase) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    @Override
+    public String toString() {
+        return "Player [state=" + state + ", property=" + property + ", targets=" + targets + ", table=" + table + ", translator=" + translator + ", userName=" + userName + ", ai=" + ai + "]";
     }
 }

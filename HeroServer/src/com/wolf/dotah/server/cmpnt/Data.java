@@ -4,10 +4,15 @@ import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.Number;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.u;
+import com.wolf.tool.client_const;
 
 public class Data extends EsObject {
     
     private static final long serialVersionUID = -1791116800338703971L;
+    
+    //    public Data() {
+    //        this.setInteger(client_const.param_key.kParamRemainingCardCount, value);
+    //    }
     
     public Data addBoolean(String name, boolean value) {
         

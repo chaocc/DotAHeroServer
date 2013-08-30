@@ -70,7 +70,9 @@ public class TableTranslator {
     public TableModel getTable() {
         return table;
     }
-    
+    public int getRemainCardCount(){
+        return table.getRemainCardCount();
+    }
     public void setTable(TableModel input) {
         this.table = input;
     }
@@ -81,6 +83,11 @@ public class TableTranslator {
     
     public void setDispatcher(MessageDispatcher input) {
         this.msgDispatcher = input;
+    }
+    
+    public void startTurn(String biggestPlayer) {
+        table.startTurn(biggestPlayer);
+        
     }
     
 }
