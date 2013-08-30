@@ -153,7 +153,6 @@ public class TableModel implements table_const, player_const, PlayerListListener
         return translator;
     }
     
-    //TODO 等选完hero了, 把player list 里的每个player更新好
     public interface tablevar {
         public int wait_time = c.default_wait_time;
     }
