@@ -3,6 +3,7 @@ package com.wolf.dotah.server.cmpnt;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.wolf.dotah.server.TableTranslator;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.CardDropStack;
 import com.wolf.dotah.server.cmpnt.table.CardRemainStack;
@@ -13,8 +14,6 @@ import com.wolf.dotah.server.cmpnt.table.PlayerList.PlayerListListener;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.Ticker;
 import com.wolf.dotah.server.cmpnt.table.table_const;
-import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
-import com.wolf.dotah.server.layer.translator.TableTranslator;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.u;
@@ -41,8 +40,6 @@ public class TableModel implements table_const, player_const, PlayerListListener
      * 3, 洗牌
      * 4, 将用过的牌扔到弃牌堆
      * 
-     * 
-     * 
      */
     
     /*
@@ -53,6 +50,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
     TableState state; //TODO define states
     PlayerList players;
+    DeckModel deck;
     CardRemainStack remainStack;
     CardDropStack dropStack;
     Ticker ticker;
@@ -97,12 +95,18 @@ public class TableModel implements table_const, player_const, PlayerListListener
              * 所以从一开始消息dispatch 进来的时候,  就知道是要choosing了!
              * 中间一系列过程只是为了责任分离, 让代码更易理解, 更易维护!
              */
-            ServerUpdateSequence updateSequence = new ServerUpdateSequence(c.server_action.choosing, single);
+            //            ServerUpdateSequence updateSequence = new ServerUpdateSequence(c.server_action.choosing, single);
             
-            Data stateDetail = new Data().addIntegerArray(playercon.state.param_key.general.id_list, u.intArrayMapping(candidatesForSingle));
-            single.updateState(playercon.state.desp.choosing.choosing_hero, stateDetail, updateSequence);
-            
-            updateSequence.submitServerUpdateByTable(this);
+            Data state = new Data().addIntegerArray(playercon.state.param_key.general.id_list, u.intArrayMapping(candidatesForSingle));
+            single.setAction(playercon.state.desp.choosing.choosing_hero);
+            single.setState(state);
+            state.setAction(playercon.state.desp.choosing.choosing_hero);
+            if (single.isAi()) {
+                single.performAiAction(c.param_key.hero_candidates);
+            } else {
+                this.getTranslator().getDispatcher().sendMessageToSingleUser(single.getUserName(), state);
+            }
+            //            updateSequence.submitServerUpdateByTable(this);
         }
         //TODO waiting for everybody to choose
         //TODO 从translator来做
@@ -111,7 +115,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
     private void initCardModels() {
         
-        DeckModel deck = new DeckModel(this);
+        deck = new DeckModel(this);
         //remain stack should have the behavior of dispatching handcards
         remainStack = new CardRemainStack(deck).initWithCardList(deck.getSimpleDeck());
         dropStack = new CardDropStack(deck);
@@ -162,10 +166,10 @@ public class TableModel implements table_const, player_const, PlayerListListener
         this.getTranslator().getDispatcher().broadcastMessage(data);
     }
     
-    public void startTurn(Player playerByIndex) {
-        // TODO 所有人都更新完手牌后, start turn
-        
-    }
+    //    public void startTurn(Player playerByIndex) {
+    //        // TODO 所有人都更新完手牌后, start turn
+    //        
+    //    }
     
     public List<Integer> getCardsFromRemainStack(int count) {
         List<Integer> cards = remainStack.fetchCards(count);
@@ -211,17 +215,30 @@ public class TableModel implements table_const, player_const, PlayerListListener
         data.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
         data.setString(client_const.param_key.kParamSourcePlayerName, playerName);
         //TODO table 里要保存current player, 
-        this.getTranslator().getDispatcher().sendMessageToAll(data);
+        this.getTranslator().getDispatcher().sendMessageToAllWithoutSpecificUser(data, playerName);
         //TODO 告诉玩家可以开始玩牌了, 
         //TODO 摸2张牌
-        
         data = new Data();
-        data.setAction(c.server_action.free_play);//3001
-        int[] availableHandCards = players.getPlayerByPlayerName(playerName).getAvailableHandCards();
-        data.setIntegerArray(client_const.param_key.available_id_list, availableHandCards);
-        data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);//selectable count
+        data.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
+        data.setString(client_const.param_key.kParamSourcePlayerName, playerName);
+        data.setIntegerArray(client_const.param_key.available_id_list, players.getPlayerByPlayerName(playerName).getAvailableHandCards());
+        data.setInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
         this.getTranslator().getDispatcher().sendMessageToSingleUser(playerName, data);
+        //        data = new Data();
+        //        data.setAction(c.server_action.free_play);//3001
+        //        int[] availableHandCards = players.getPlayerByPlayerName(playerName).getAvailableHandCards();
+        //        data.setIntegerArray(client_const.param_key.available_id_list, availableHandCards);
+        //        data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);//selectable count
+        //        this.getTranslator().getDispatcher().sendMessageToSingleUser(playerName, data);
         
+    }
+    
+    public DeckModel getDeck() {
+        return deck;
+    }
+    
+    public void setDeck(DeckModel deck) {
+        this.deck = deck;
     }
     
     public int getRemainCardCount() {

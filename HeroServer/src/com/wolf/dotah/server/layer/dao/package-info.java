@@ -5,4 +5,4 @@
  * @author Solomon
  *
  */
-package com.wolf.dotah.server.layer.data;
+package com.wolf.dotah.server.layer.dao;

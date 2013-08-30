@@ -3,8 +3,6 @@ package com.wolf.dotah.server;
 import com.electrotank.electroserver5.extensions.BasePlugin;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.EsObjectRO;
-import com.wolf.dotah.server.layer.translator.MessageDispatcher;
-import com.wolf.dotah.server.util.c;
 
 /**
  * Plugin 只负责分发请求, 以及和客户端互发信息, 不处理任何逻辑
@@ -19,7 +17,7 @@ import com.wolf.dotah.server.util.c;
 public class GamePlugin extends BasePlugin {
     
     private EsObject currentMessageObject;
-    private String sender;
+//    private String sender;
     private MessageDispatcher messageDispatcher;
     
     @Override
@@ -42,20 +40,20 @@ public class GamePlugin extends BasePlugin {
         logMessage(user, message);
         this.currentMessageObject = new EsObject();
         currentMessageObject.addAll(message);
-        sender = user;
+//        sender = user;
         //        messageArrived();
         
         messageDispatcher.handleMessage(user, currentMessageObject);
     }
     
-    //TODO only for test, need remove for production
-    private void messageArrived() {
-        EsObject obj = new EsObject();
-        //        obj.addAll(currentMessageObject);
-        obj.setInteger("message_arrived", currentMessageObject.getInteger(c.action, -100));
-        getApi().sendPluginMessageToUser(sender, obj);
-        
-    }
+//    //TODO only for test, need remove for production
+//    private void messageArrived() {
+//        EsObject obj = new EsObject();
+//        //        obj.addAll(currentMessageObject);
+//        obj.setInteger("message_arrived", currentMessageObject.getInteger(c.action, -100));
+//        getApi().sendPluginMessageToUser(sender, obj);
+//        
+//    }
     
     void logMessage(String tag, EsObjectRO message) {
         EsObject eso = new EsObject();

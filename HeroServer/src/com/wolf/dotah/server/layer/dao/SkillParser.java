@@ -1,4 +1,4 @@
-package com.wolf.dotah.server.layer.data;
+package com.wolf.dotah.server.layer.dao;
 
 
 import java.io.File;

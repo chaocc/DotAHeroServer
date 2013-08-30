@@ -1,4 +1,4 @@
-package com.wolf.dotah.server.layer.data;
+package com.wolf.dotah.server.layer.dao;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class CardParser {
     
     private final String path = "doc/cards";
     private static CardParser parser;
-    String tag = " ===>> CardParser";
+    static String tag = " ===>> CardParser";
     
     public static CardParser getParser() {
         
@@ -51,7 +51,8 @@ public class CardParser {
     public static void main(String... args) throws Exception {
         
         for (Card card : CardParser.getParser().getCardList()) {
-//            MessageDispatcher.getDispatcher(null).debug(tag, card);
+            System.out.println(tag + card);
         }
     }
+    
 }

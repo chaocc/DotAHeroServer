@@ -2,16 +2,14 @@ package com.wolf.dotah.server.cmpnt;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.wolf.dotah.server.MessageDispatcher;
+import com.wolf.dotah.server.PlayerTranslator;
+import com.wolf.dotah.server.TableTranslator;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.PlayerAvailableTargetModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
-import com.wolf.dotah.server.cmpnt.player.PlayerState;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
-import com.wolf.dotah.server.layer.translator.MessageDispatcher;
-import com.wolf.dotah.server.layer.translator.PlayerTranslator;
-import com.wolf.dotah.server.layer.translator.ServerUpdateSequence;
-import com.wolf.dotah.server.layer.translator.TableTranslator;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.u;
 
@@ -24,41 +22,41 @@ public class Player implements player_const {
      * TODO 考虑把state 弄简单点儿,  像table的state那样, 就是state和subject之类的.
      * 倒也不是那么简单
      */
-    private PlayerState state;//hero 在干嘛, 可以干嘛
-    
+    //    private PlayerState state;//hero 在干嘛, 可以干嘛
+    private String action;
+    private Data state;
     private PlayerProperty property;//player 属性的状态
     
     private PlayerAvailableTargetModel targets;
     private TableModel table;
     private PlayerTranslator translator;
     
-
+    /**
+     * 每一个public的update方法, 都要把update的过程加入到update steps里, 供translate时候用
+     */
+    //    public void updateState(String state, Data params) {
+    //        
+    //        //如果sequence是空的, 就可以抛出update sequence not start exception
+    //        updateState(this.getState().setStateDesp(state), params);
+    //    }
     
     /**
      * 每一个public的update方法, 都要把update的过程加入到update steps里, 供translate时候用
      */
-    public void updateState(String state, Data params, ServerUpdateSequence sequence) {
-        
-        //如果sequence是空的, 就可以抛出update sequence not start exception
-        updateState(this.getState().setStateDesp(state), params, sequence);
-    }
-    
-    /**
-     * 每一个public的update方法, 都要把update的过程加入到update steps里, 供translate时候用
-     */
-    public void updateProperty(String propertyName, Data result, ServerUpdateSequence sequence) {
+    public void updateProperty(String propertyName, Data result) {
         
         // TODO 先要把update property 翻译成server action, 然后把server action放到step里, 而不是property name
         // sequence.add(some server action,  and data);
         // TODO Auto-generated method stub
     }
     
-    private void updateState(PlayerState state, Data params, ServerUpdateSequence sequence) {
-        
-        this.state = state;
-        state.updateDetail(params);
-        sequence.add(state.getStateDesp(), this.getState().toData());
-    }
+    //    
+    //    private void updateState(PlayerState state, Data params) {
+    //        
+    //        this.state = state;
+    //        state.updateDetail(params);
+    //        sequence.add(state.getStateDesp(), this.getState().toData());
+    //    }
     
     public Data toData() {
         
@@ -75,7 +73,7 @@ public class Player implements player_const {
         this.userName = name;
         this.tag += name + ", ";
         this.translator = table.getTranslator().getDispatcher().getPlayerTranslator();
-        state = new PlayerState();
+        //        state = new PlayerState();
     }
     
     public PlayerProperty getProperty() {
@@ -86,16 +84,6 @@ public class Player implements player_const {
     public void setProperty(PlayerProperty property) {
         
         this.property = property;
-    }
-    
-    public PlayerState getState() {
-        
-        return state;
-    }
-    
-    public void setState(PlayerState state) {
-        
-        this.state = state;
     }
     
     private String userName;
@@ -130,15 +118,15 @@ public class Player implements player_const {
      * 相当于客户端拿来了新消息, 在做判断
      * @param action
      */
-    public void performAiAction(String action, String from) {
+    public void performAiAction(String fromParamKey) {
         
         if (action.equals(c.server_action.free_play)) {
         } else {// choosing
-            if (state.getStateDesp().equals(playercon.state.desp.choosing.choosing_hero)) {
-                int[] pickResult = state.toData().getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
+            if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
+                int[] pickResult = state.getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
                 int heroId = ai.chooseSingle(pickResult);
                 this.initPropertyWithHeroId(heroId);
-            } else if (from.equals(c.param_key.id_list)) {
+            } else if (action.equals(c.ac.choosing_from_hand)) {
                 Integer[] pickResult = property.getHandCards().getCards().toArray(new Integer[] {});
                 int resultId = ai.chooseSingle(u.intArrayMapping(pickResult));
                 this.translator.getDispatcher().debug(tag, this.userName + " chose from handcard " + resultId);
@@ -153,9 +141,9 @@ public class Player implements player_const {
             table.getCutCards().put(this.getUserName(), id);
         } else {
             //choosing hero
-            int[] idList = state.toData().getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
+            int[] idList = state.getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
             if (idList.length > 0) {
-                if (state.getStateDesp().equals(playercon.state.desp.choosing.choosing_hero)) {
+                if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
                     this.initPropertyWithHeroId(idList[0]);
                 }
             }
@@ -164,7 +152,7 @@ public class Player implements player_const {
     
     public void getResult(int[] pickResult) {
         
-        if (this.getState().getStateDesp().equals(playercon.state.desp.choosing.choosing_hero)) {
+        if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
             int heroId = pickResult[0];
             this.initPropertyWithHeroId(heroId);
         }
@@ -178,11 +166,27 @@ public class Player implements player_const {
         this.translator = translator;
     }
     
+    public String getAction() {
+        return action;
+    }
+    
+    public void setAction(String action) {
+        this.action = action;
+    }
+    
+    public Data getState() {
+        return state;
+    }
+    
+    public void setState(Data state) {
+        this.state = state;
+    }
+    
     private void initPropertyWithHeroId(int heroId) {
         
         property = new PlayerProperty(heroId, this);
         //TODO 不是在这里, 而是在全都收到选择了英雄后broadcast chose property
-        state.setStateDesp(playercon.state.desp.confirmed.hero);
+        action = playercon.state.desp.confirmed.hero;
         if (this.getAi() == null || !this.getAi().isAi()) {
             String[] keys = { "heroId" };
             int[] values = { heroId };
@@ -206,10 +210,9 @@ public class Player implements player_const {
     }
     
     public void cutting() {
-        state.setStateDesp(c.server_action.choosing);
-        state.setUsableCardContext(property.getHandCards().getCards());
+        action = c.ac.choosing_from_hand;
         if (ai != null && ai.isAi()) {
-            performAiAction(c.server_action.choosing, c.param_key.id_list);
+            performAiAction(c.param_key.id_list);
         } else {
             translator.sendPrivateMessage(c.ac.choosing_from_hand, this);
         }
@@ -247,6 +250,6 @@ public class Player implements player_const {
     
     @Override
     public String toString() {
-        return "Player [state=" + state + ", property=" + property + ", targets=" + targets + ", table=" + table + ", translator=" + translator + ", userName=" + userName + ", ai=" + ai + "]";
+        return "Player [property=" + property + ", targets=" + targets + ", table=" + table + ", translator=" + translator + ", userName=" + userName + ", ai=" + ai + "]";
     }
 }

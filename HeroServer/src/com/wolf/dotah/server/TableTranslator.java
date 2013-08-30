@@ -1,9 +1,8 @@
-package com.wolf.dotah.server.layer.translator;
+package com.wolf.dotah.server;
 
 import java.util.Collection;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
-import com.wolf.dotah.server.GamePlugin;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.util.c;
@@ -11,7 +10,6 @@ import com.wolf.dotah.server.util.c;
 public class TableTranslator {
     
     private TableModel table;
-    private DecisionTranslator decisionTranslator;
     final String tag = "====>> TableTranslator: ";
     private MessageDispatcher msgDispatcher;
     
@@ -59,20 +57,14 @@ public class TableTranslator {
         return table.getPlayers();
     }
     
-    public DecisionTranslator getDecisionTranslator() {
-        return decisionTranslator;
-    }
-    
-    public void setDecisionTranslator(DecisionTranslator input) {
-        this.decisionTranslator = input;
-    }
-    
     public TableModel getTable() {
         return table;
     }
-    public int getRemainCardCount(){
+    
+    public int getRemainCardCount() {
         return table.getRemainCardCount();
     }
+    
     public void setTable(TableModel input) {
         this.table = input;
     }
@@ -87,7 +79,5 @@ public class TableTranslator {
     
     public void startTurn(String biggestPlayer) {
         table.startTurn(biggestPlayer);
-        
     }
-    
 }

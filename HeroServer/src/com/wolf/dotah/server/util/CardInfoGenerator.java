@@ -1,4 +1,4 @@
-package com.wolf.tool;
+package com.wolf.dotah.server.util;
 
 
 public class CardInfoGenerator {

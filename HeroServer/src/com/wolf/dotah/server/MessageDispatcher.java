@@ -1,4 +1,4 @@
-package com.wolf.dotah.server.layer.translator;
+package com.wolf.dotah.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,10 +7,10 @@ import java.util.Map;
 import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
-import com.wolf.dotah.server.GamePlugin;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
+import com.wolf.dotah.server.cmpnt.card.Card;
 import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.util.c;
@@ -21,7 +21,7 @@ public class MessageDispatcher {
     
     private TableTranslator tableTranslator;
     private PlayerTranslator playerTranslator;
-    private DecisionTranslator decisionTranslator;
+//    private DecisionTranslator decisionTranslator;
     private GamePlugin plugin;
     
     public void sendMessageToSingleUser(String user, EsObject msg) {
@@ -118,10 +118,11 @@ public class MessageDispatcher {
             MessageDispatcher.this.sendMessageToAll(data);
             //TODO 先拼点, 
             String biggestPlayer = "";
-            int biggest = 0;
+            int biggestFaceNumber = 0;
             for (int i = 0; i < cards.size(); i++) {
-                if (cards.get(i) > biggest) {
-                    biggest = cards.get(i);
+                Card c = disp.getTableTranslator().getTable().getDeck().getCardById(cards.get(i));
+                if (c.getFaceNumber() > biggestFaceNumber) {
+                    biggestFaceNumber = c.getFaceNumber();
                     biggestPlayer = pl.get(i).getUserName();
                 }
             }
@@ -197,11 +198,8 @@ public class MessageDispatcher {
             int confirmed = 0;
             MessageDispatcher.this.debug(tag, "waitReason, " + waitReason);
             for (Player player : tableTranslator.getTable().getPlayers().getPlayerList()) {
-                String state = player.getState().getStateDesp();
-                //                if (state.equals(playercon.state.desp.choosing.choosing_hero)) {
-                //                    waiting += 1;
-                //                } else 
-                if (state.equals(playercon.state.desp.confirmed.hero)) {
+                String action = player.getAction();;
+                if (action.equals(playercon.state.desp.confirmed.hero)) {
                     MessageDispatcher.this.debug(tag, "player: " + player.getUserName() + " confirmed");
                     confirmed += 1;
                 }
@@ -266,9 +264,9 @@ public class MessageDispatcher {
         this.plugin = gamePlugin;
         tableTranslator = new TableTranslator(this);
         playerTranslator = new PlayerTranslator(this);
-        decisionTranslator = new DecisionTranslator(this);
-        tableTranslator.setDecisionTranslator(decisionTranslator);
-        playerTranslator.setDecisionTranslator(decisionTranslator);
+//        decisionTranslator = new DecisionTranslator(this);
+//        tableTranslator.setDecisionTranslator(decisionTranslator);
+//        playerTranslator.setDecisionTranslator(decisionTranslator);
     }
     
     public void debug(String tag, String msg) {
@@ -296,8 +294,8 @@ public class MessageDispatcher {
         return playerTranslator;
     }
     
-    public DecisionTranslator getDecisionTranslator() {
-        return decisionTranslator;
-    }
+//    public DecisionTranslator getDecisionTranslator() {
+//        return decisionTranslator;
+//    }
     
 }

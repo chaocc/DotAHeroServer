@@ -1,4 +1,4 @@
-package com.wolf.dotah.server.layer.translator;
+package com.wolf.dotah.server;
 
 import java.util.List;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
@@ -12,18 +12,11 @@ import com.wolf.dotah.server.util.u;
 
 public class PlayerTranslator {
     
-    private DecisionTranslator decisionTranslator;
     private MessageDispatcher dispatcher;
     final String tag = "===>> PlayerTranslator: ";
     
     public PlayerTranslator(MessageDispatcher input) {
         this.dispatcher = input;
-    }
-    
-    public void setDecisionTranslator(DecisionTranslator decisionTranslator) {
-        
-        this.decisionTranslator = decisionTranslator;
-        
     }
     
     public void translateUpdate(Player player, EsObject msg) {

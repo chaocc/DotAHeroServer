@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.card.Card;
-import com.wolf.dotah.server.layer.data.CardParser;
+import com.wolf.dotah.server.layer.dao.CardParser;
 
 public class DeckModel {
     
@@ -32,6 +32,13 @@ public class DeckModel {
             cardIdList.add(card.getId());
         }
         return cardIdList;
+    }
+    
+    public Card getCardById(Integer id) {
+        for (Card c : deck) {
+            if (c.getId() == id) { return c; }
+        }
+        return null;
     }
     
     public void setDeck(List<Card> deck) {

@@ -3,7 +3,7 @@ package com.wolf.dotah.server.cmpnt.table;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import com.wolf.dotah.server.layer.data.HeroParser;
+import com.wolf.dotah.server.layer.dao.HeroParser;
 
 public class HeroCandidateModel implements table_const {
     

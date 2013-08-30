@@ -1,8 +1,7 @@
-package com.wolf.dotah.server.layer.data;
+package com.wolf.dotah.server.layer.dao;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import net.sf.plist.NSArray;
 import net.sf.plist.NSDictionary;
@@ -12,14 +11,13 @@ import net.sf.plist.io.PropertyListParser;
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.HeroSkill;
 import com.wolf.dotah.server.cmpnt.player.HeroSkills;
-import com.wolf.dotah.server.layer.translator.MessageDispatcher;
 import com.wolf.dotah.server.util.u;
 
 public class HeroParser {
     
     private final String path = "doc/HeroCardArray.plist";
     private static HeroParser parser;
-    private final String tag = "===>> HeroParser ";
+//    private final String tag = "===>> HeroParser ";
     private int[] fake_data_hero_ids = { 2, 17, 21, 3, 12, 28 };
     
     public static HeroParser getParser() {
@@ -39,7 +37,6 @@ public class HeroParser {
 //            HeroInfo heroInfo = genHeroInfoFromNSDictWithId(hero, i);
 //            heroInfoList.add(heroInfo);
 //        }
-//        
 //        return heroInfoList;
 //    }
     
