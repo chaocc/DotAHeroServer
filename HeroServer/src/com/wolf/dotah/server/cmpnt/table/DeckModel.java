@@ -11,22 +11,25 @@ public class DeckModel {
     
     List<Card> deck;
     private TableModel table;
-    private CardRemainStack remainStack;
-    private CardDropStack dropStack;
+    List<Integer> remainStack;
+    List<Integer> dropStack;
     
     public DeckModel(TableModel tableModel) {
+    
         this.table = tableModel;
         deck = CardParser.getParser().getCardList();
         Collections.shuffle(deck);
+        remainStack = this.getSimpleDeck();
+        dropStack = new ArrayList<Integer>();
     }
     
     public List<Card> getDeck() {
-        
+    
         return deck;
     }
     
     public List<Integer> getSimpleDeck() {
-        
+    
         List<Integer> cardIdList = new ArrayList<Integer>();
         for (Card card : deck) {
             cardIdList.add(card.getId());
@@ -35,31 +38,54 @@ public class DeckModel {
     }
     
     public Card getCardById(Integer id) {
+    
         for (Card c : deck) {
             if (c.getId() == id) { return c; }
         }
         return null;
     }
     
-    public void setDeck(List<Card> deck) {
+    public List<Integer> fetchCards(int count) {
+    
+        List<Integer> cards = new ArrayList<Integer>();
+        for (int i = 0; i < count; i++) {
+            int card = remainStack.get(0);
+            cards.add(card);
+            remainStack.remove(0);
+        }
+        return cards;
+    }
+    
+    public int syncWithRemainStack() {
+    
+        int synced = 0;
         
+        List<Integer> deckCardList = this.getSimpleDeck();
+        for (Integer card : deckCardList) {
+            if (!remainStack.contains(card)) {
+                dropStack.add(card);
+                synced++;
+            }
+        }
+        return synced;
+    }
+    
+    public void setDeck(List<Card> deck) {
+    
         this.deck = deck;
     }
     
-    public CardRemainStack getRemainStack() {
-        return remainStack;
+    
+    public int getRemainCount() {
+    
+        return remainStack.size();
     }
     
-    public void setRemainStack(CardRemainStack remainStack) {
-        this.remainStack = remainStack;
+    @Override
+    public String toString() {
+    
+        return "DeckModel [deck=" + deck + ", table=" + table + ", remainStack=" + remainStack + ", dropStack=" + dropStack + "]";
     }
     
-    public CardDropStack getDropStack() {
-        return dropStack;
-    }
-    
-    public void setDropStack(CardDropStack dropStack) {
-        this.dropStack = dropStack;
-    }
     
 }

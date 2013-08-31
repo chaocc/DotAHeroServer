@@ -5,15 +5,13 @@ import java.util.List;
 import java.util.Map;
 import com.wolf.dotah.server.MessageDispatcher;
 import com.wolf.dotah.server.cmpnt.player.player_const;
-import com.wolf.dotah.server.cmpnt.table.CardDropStack;
-import com.wolf.dotah.server.cmpnt.table.CardRemainStack;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
 import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.PlayerList.PlayerListListener;
-import com.wolf.dotah.server.cmpnt.table.schedule.Ticker;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.table_const;
+import com.wolf.dotah.server.cmpnt.table.schedule.Ticker;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.u;
@@ -51,8 +49,8 @@ public class TableModel implements table_const, player_const, PlayerListListener
     TableState state; //TODO define states
     PlayerList players;
     DeckModel deck;
-    CardRemainStack remainStack;
-    CardDropStack dropStack;
+    //    CardRemainStack remainStack;
+    //    CardDropStack dropStack;
     Ticker ticker;
     private Map<String, Integer> cutCards;
     
@@ -121,9 +119,9 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
         deck = new DeckModel(this);
         //remain stack should have the behavior of dispatching handcards
-        remainStack = new CardRemainStack(deck).initWithCardList(deck.getSimpleDeck());
-        dropStack = new CardDropStack(deck);
-        dropStack.syncWithRemainStack();
+        //        remainStack = new CardRemainStack(deck).initWithCardList(deck.getSimpleDeck());
+        //        dropStack = new CardDropStack(deck);
+        //        dropStack.syncWithRemainStack();
         
     }
     
@@ -174,7 +172,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
     public List<Integer> getCardsFromRemainStack(int count) {
     
-        List<Integer> cards = remainStack.fetchCards(count);
+        List<Integer> cards = deck.fetchCards(count);
         
         return cards;
     }
@@ -258,6 +256,13 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
     public int getRemainCardCount() {
     
-        return this.remainStack.getRemainStack().size();
+        return this.deck.getRemainCount();
+    }
+    
+    @Override
+    public String toString() {
+    
+        return "TableModel [state=" + state + ", players=" + players + ", deck=" + deck + ", ticker=" + ticker + ", cutCards=" + cutCards
+            + ", disp=" + disp + ", tag=" + tag + "]";
     }
 }

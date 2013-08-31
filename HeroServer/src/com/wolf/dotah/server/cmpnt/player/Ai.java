@@ -14,4 +14,10 @@ public class Ai {
     public boolean isAi() {
         return isAi;
     }
+
+    @Override
+    public String toString() {
+    
+        return "Ai [isAi=" + isAi + ", tag=" + tag + "]";
+    }
 }

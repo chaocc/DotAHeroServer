@@ -2,7 +2,6 @@ package com.wolf.dotah.server.cmpnt.table.schedule;
 
 
 import java.util.Collection;
-
 import com.electrotank.electroserver5.extensions.BasePlugin;
 import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
@@ -19,19 +18,8 @@ public class Ticker {
     
     BasePlugin plugin;
     
-    private static Ticker ticker;
     
-    
-    public Ticker getTicker(BasePlugin plugin) {
-    
-        if (ticker == null) {
-            ticker = new Ticker(plugin);
-        }
-        return ticker;
-    }
-    
-    
-    private Ticker(BasePlugin plugin) {
+    public Ticker(BasePlugin plugin) {
     
         this.plugin = plugin;
     }
@@ -40,14 +28,14 @@ public class Ticker {
     private void startTicker() {
     
         callbackId = plugin.getApi().scheduleExecution(1000,
-                -1,
-                new ScheduledCallback() {
-                    
-                    public void scheduledCallback() {
-                    
-                        tick();
-                    }
-                });
+            -1,
+            new ScheduledCallback() {
+                
+                public void scheduledCallback() {
+                
+                    tick();
+                }
+            });
     }
     
     
@@ -80,10 +68,5 @@ public class Ticker {
         plugin.getApi().setGameLockState(true);
         Collection<String> humansInRoom = plugin.getApi().getUsers();
         
-    }
-    
-    
-    private Ticker() {
-    
     }
 }

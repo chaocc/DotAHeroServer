@@ -16,100 +16,18 @@ public class Player implements player_const {
     //TODO attackable
     //TODO disarmable
     String tag = "Player: ";
-    /*
-     * TODO 考虑把state 弄简单点儿,  像table的state那样, 就是state和subject之类的.
-     * 倒也不是那么简单
-     */
-    //    private PlayerState state;//hero 在干嘛, 可以干嘛
     private String action;
     private Data state;
     private PlayerProperty property;//player 属性的状态
     
     private PlayerAvailableTargetModel targets;
     private TableModel table;
-    
-    /**
-     * 每一个public的update方法, 都要把update的过程加入到update steps里, 供translate时候用
-     */
-    //    public void updateState(String state, Data params) {
-    //        
-    //        //如果sequence是空的, 就可以抛出update sequence not start exception
-    //        updateState(this.getState().setStateDesp(state), params);
-    //    }
-    
-    /**
-     * 每一个public的update方法, 都要把update的过程加入到update steps里, 供translate时候用
-     */
     public void updateProperty(String propertyName, Data result) {
     
         // TODO 先要把update property 翻译成server action, 然后把server action放到step里, 而不是property name
         // sequence.add(some server action,  and data);
-        // TODO Auto-generated method stub
     }
     
-    //    
-    //    private void updateState(PlayerState state, Data params) {
-    //        
-    //        this.state = state;
-    //        state.updateDetail(params);
-    //        sequence.add(state.getStateDesp(), this.getState().toData());
-    //    }
-    
-    public Data toData() {
-    
-        Data result = new Data();
-        //TODO 加state
-        //TODO 加property
-        //TODO 加PlayerAvailableTargetModel
-        return result;
-        //TODO 是否要加username 和ai?
-    }
-    
-    public Player(String name, TableModel inputTable) {
-    
-        this.table = inputTable;
-        this.userName = name;
-        this.tag += name + ", ";
-    }
-    
-    public PlayerProperty getProperty() {
-    
-        return property;
-    }
-    
-    public void setProperty(PlayerProperty property) {
-    
-        this.property = property;
-    }
-    
-    private String userName;
-    private Ai ai;
-    
-    public boolean isAi() {
-    
-        if (ai == null) { return false; }
-        return ai.isAi();
-    }
-    
-    public void setAi(Ai ai) {
-    
-        this.ai = ai;
-    }
-    
-    public Ai getAi() {
-    
-        return ai;
-    }
-    
-    public String getUserName() {
-    
-        return userName;
-    }
-    
-    public void setUserName(String userName) {
-    
-        this.userName = userName;
-    }
     
     /**
      * 相当于客户端拿来了新消息, 在做判断
@@ -155,30 +73,6 @@ public class Player implements player_const {
         }
     }
     
-    public String getAction() {
-    
-        return action;
-    }
-    
-    public void setAction(String action) {
-    
-        this.action = action;
-    }
-    
-    public Data getState() {
-    
-        return state;
-    }
-    
-    public void setState(Data state) {
-    
-        this.state = state;
-    }
-    
-    public TableModel getTable() {
-    
-        return table;
-    }
     
     private void initPropertyWithHeroId(int heroId) {
     
@@ -276,6 +170,77 @@ public class Player implements player_const {
         } else {
             return true;
         }
+    }
+    
+    public Player(String name, TableModel inputTable) {
+    
+        this.table = inputTable;
+        this.userName = name;
+        this.tag += name + ", ";
+    }
+    
+    public PlayerProperty getProperty() {
+    
+        return property;
+    }
+    
+    public void setProperty(PlayerProperty property) {
+    
+        this.property = property;
+    }
+    
+    private String userName;
+    private Ai ai;
+    
+    public boolean isAi() {
+    
+        if (ai == null) { return false; }
+        return ai.isAi();
+    }
+    
+    public void setAi(Ai ai) {
+    
+        this.ai = ai;
+    }
+    
+    public Ai getAi() {
+    
+        return ai;
+    }
+    
+    public String getUserName() {
+    
+        return userName;
+    }
+    
+    public void setUserName(String userName) {
+    
+        this.userName = userName;
+    }
+    
+    public String getAction() {
+    
+        return action;
+    }
+    
+    public void setAction(String action) {
+    
+        this.action = action;
+    }
+    
+    public Data getState() {
+    
+        return state;
+    }
+    
+    public void setState(Data state) {
+    
+        this.state = state;
+    }
+    
+    public TableModel getTable() {
+    
+        return table;
     }
     
     @Override

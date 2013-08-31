@@ -97,4 +97,11 @@ public class PlayerProperty {
         this.handCards.add(cards);
         
     }
+
+    @Override
+    public String toString() {
+    
+        return "PlayerProperty [hero=" + hero + ", handCards=" + handCards + ", hp=" + hp + ", sp=" + sp + ", equips=" + equips
+            + ", force=" + force + ", player=" + player + "]";
+    }
 }
