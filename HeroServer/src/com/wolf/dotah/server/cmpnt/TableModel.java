@@ -3,7 +3,7 @@ package com.wolf.dotah.server.cmpnt;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.wolf.dotah.server.TableTranslator;
+import com.wolf.dotah.server.MessageDispatcher;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.CardDropStack;
 import com.wolf.dotah.server.cmpnt.table.CardRemainStack;
@@ -11,8 +11,8 @@ import com.wolf.dotah.server.cmpnt.table.DeckModel;
 import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.PlayerList.PlayerListListener;
+import com.wolf.dotah.server.cmpnt.table.schedule.Ticker;
 import com.wolf.dotah.server.cmpnt.table.TableState;
-import com.wolf.dotah.server.cmpnt.table.Ticker;
 import com.wolf.dotah.server.cmpnt.table.table_const;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
@@ -56,17 +56,19 @@ public class TableModel implements table_const, player_const, PlayerListListener
     Ticker ticker;
     private Map<String, Integer> cutCards;
     
-    TableTranslator translator;
-    //    MessageDispatcher msgDispatcher;
+    //    TableTranslator translator;
+    MessageDispatcher disp;
     
     final String tag = "====>> TableModel: ";
     
-    public TableModel(PlayerList playerList) {
+    public TableModel(PlayerList playerList, MessageDispatcher dispatcher) {
+    
         state = new TableState();
         players = playerList;
         players.registerPlayerListListener(this);
         initCutCardMap();
         initCardModels();
+        this.disp = dispatcher;
         //TODO init player basic info, from plugin api
         //TODO design ticker
         // 21, 12, 2, 3, 28, 17
@@ -75,6 +77,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     }
     
     private void initCutCardMap() {
+    
         cutCards = new HashMap<String, Integer>();
     }
     
@@ -82,6 +85,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
      * init完后的第一件事就是发待选英雄
      */
     public void dispatchHeroCandidates() {
+    
         this.state.setSubject(this.getClass().getSimpleName());
         this.state.setState(tablecon.state.not_started.chooing_hero);
         HeroCandidateModel heroModel = new HeroCandidateModel();
@@ -104,17 +108,17 @@ public class TableModel implements table_const, player_const, PlayerListListener
             if (single.isAi()) {
                 single.performAiAction(c.param_key.hero_candidates);
             } else {
-                this.getTranslator().getDispatcher().sendMessageToSingleUser(single.getUserName(), state);
+                disp.sendMessageToSingleUser(single.getUserName(), state);
             }
             //            updateSequence.submitServerUpdateByTable(this);
         }
         //TODO waiting for everybody to choose
         //TODO 从translator来做
-        translator.getDispatcher().waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing_hero);
+        disp.waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing_hero);
     }
     
     private void initCardModels() {
-        
+    
         deck = new DeckModel(this);
         //remain stack should have the behavior of dispatching handcards
         remainStack = new CardRemainStack(deck).initWithCardList(deck.getSimpleDeck());
@@ -123,46 +127,44 @@ public class TableModel implements table_const, player_const, PlayerListListener
         
     }
     
-    public void setTranslator(TableTranslator tableTranslator) {
-        this.translator = tableTranslator;
-        
-    }
     
     @Override
     public void didInitPlayerList() {
+    
         this.broadcastGameStarted();
     }
     
     private void broadcastGameStarted() {
+    
         Data data = new Data();
         data.setAction(c.server_action.start_game);
         data.addStringArray("player_list", players.getNameList());
         //TODO 从translator broadcast
-        this.getTranslator().getDispatcher().broadcastMessage(data);
+        disp.broadcastMessage(data);
     }
     
     public PlayerList getPlayers() {
+    
         return players;
     }
     
     public void setPlayers(PlayerList players) {
+    
         this.players = players;
     }
     
-    public TableTranslator getTranslator() {
-        return translator;
-    }
     
     public interface tablevar {
         public int wait_time = c.default_wait_time;
     }
     
     public void broadcastHeroInited() {
+    
         Data data = new Data();
         data.setAction(c.server_action.update_player_list_info);//kActionInitPlayerHero = 1004
         //TODO先只加hero, 以后再改;
         data.addAll(this.getPlayers().toSubtleData());
-        this.getTranslator().getDispatcher().broadcastMessage(data);
+        disp.broadcastMessage(data);
     }
     
     //    public void startTurn(Player playerByIndex) {
@@ -171,50 +173,57 @@ public class TableModel implements table_const, player_const, PlayerListListener
     //    }
     
     public List<Integer> getCardsFromRemainStack(int count) {
+    
         List<Integer> cards = remainStack.fetchCards(count);
         
         return cards;
     }
     
     public void dispatchHandcards() {
+    
         // TODO 给每个人发手牌, 每发1个, 就发2个plugin message
         for (Player p : this.getPlayers().getPlayerList()) {
             //            ServerUpdateSequence updateSequence = new ServerUpdateSequence(c.server_action.update_player_info, p);
             List<Integer> cards = this.getCardsFromRemainStack(c.default_draw_count);
-            translator.getDispatcher().getPlayerTranslator().dispatchHandcards(p, cards);
-            
+            p.getHandcards(cards);
             //            updateSequence.submitServerUpdateByTable(this);
             
         }
         //        this.startTurn(this.getPlayers().getPlayerByIndex(0));
     }
     
+    
     public void updatePlayersToCutting() {
+    
         this.state.setState(tablecon.state.not_started.cutting);
         for (Player p : this.getPlayers().getPlayerList()) {
             p.cutting();
         }
-        this.getTranslator().getDispatcher().waitingForEverybody().becauseOf(c.server_action.choosing);
+        disp.waitingForEverybody().becauseOf(c.server_action.choosing);
     }
     
     public TableState getState() {
+    
         return state;
     }
     
     public void setState(TableState state) {
+    
         this.state = state;
     }
     
     public Map<String, Integer> getCutCards() {
+    
         return cutCards;
     }
     
     public void startTurn(String playerName) {
+    
         Data data = new Data();
         data.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
         data.setString(client_const.param_key.kParamSourcePlayerName, playerName);
         //TODO table 里要保存current player, 
-        this.getTranslator().getDispatcher().sendMessageToAllWithoutSpecificUser(data, playerName);
+        disp.sendMessageToAllWithoutSpecificUser(data, playerName);
         //TODO 告诉玩家可以开始玩牌了, 
         //TODO 摸2张牌
         data = new Data();
@@ -222,7 +231,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
         data.setString(client_const.param_key.kParamSourcePlayerName, playerName);
         data.setIntegerArray(client_const.param_key.available_id_list, players.getPlayerByPlayerName(playerName).getAvailableHandCards());
         data.setInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
-        this.getTranslator().getDispatcher().sendMessageToSingleUser(playerName, data);
+        disp.sendMessageToSingleUser(playerName, data);
         //        data = new Data();
         //        data.setAction(c.server_action.free_play);//3001
         //        int[] availableHandCards = players.getPlayerByPlayerName(playerName).getAvailableHandCards();
@@ -232,15 +241,23 @@ public class TableModel implements table_const, player_const, PlayerListListener
         
     }
     
+    public MessageDispatcher getDispatcher() {
+    
+        return disp;
+    }
+    
     public DeckModel getDeck() {
+    
         return deck;
     }
     
     public void setDeck(DeckModel deck) {
+    
         this.deck = deck;
     }
     
     public int getRemainCardCount() {
+    
         return this.remainStack.getRemainStack().size();
     }
 }

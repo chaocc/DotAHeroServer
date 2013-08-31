@@ -101,7 +101,7 @@ public class PlayerList implements player_const {
     }
     
     public Player getPlayerByPlayerName(String name) {
-        this.getTable().getTranslator().getDispatcher().debug(tag, "getPlayerByPlayerName, name: " + name + " from list " + playerList.toString());
+        table.getDispatcher().debug(tag, "getPlayerByPlayerName, name: " + name + " from list " + playerList.toString());
         for (Player p : playerList) {
             if (p.getUserName().equals(name)) { return p; }
         }

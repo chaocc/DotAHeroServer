@@ -1,4 +1,4 @@
-package com.wolf.dotah.server.cmpnt.table;
+package com.wolf.dotah.server.cmpnt.table.schedule;
 
 
 import java.util.Collection;

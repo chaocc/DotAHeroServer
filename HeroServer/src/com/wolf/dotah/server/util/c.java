@@ -6,7 +6,7 @@ public interface c {
     public String action_description = "action_description";
     public String action_category = "action_category";
     public int action_user_ready = 1;
-    public int default_player_count = 2;
+    public int default_player_count = 6;
     public int default_wait_time = 10;
     public int default_draw_count = 5;
     

@@ -15,12 +15,14 @@ public class ChooseHero implements ScheduledCallback {
     int waitingType;
     
     public ChooseHero(MessageDispatcher dispatcher, int waitingType) {
+    
         this.disp = dispatcher;
         this.waitingType = waitingType;
     }
     
     @Override
     public void scheduledCallback() {
+    
         boolean allConfirmed = checkWaitingState();
         boolean autoDesided = tick();
         if (allConfirmed || autoDesided) {
@@ -29,22 +31,23 @@ public class ChooseHero implements ScheduledCallback {
     }
     
     private void goon() {
+    
         waitingType = c.game_state.waiting_type.none;
-        disp.getTableTranslator().getTable().broadcastHeroInited();
-        disp.getTableTranslator().dspatchHandcards();
+        disp.getTable().broadcastHeroInited();
+        disp.dspatchHandcards();
     }
     
     private boolean checkWaitingState() {
-        //            int waiting = 0;
+    
         int confirmed = 0;
-        for (Player player : disp.getTableTranslator().getTable().getPlayers().getPlayerList()) {
+        for (Player player : disp.getTable().getPlayers().getPlayerList()) {
             String action = player.getAction();
             ;
             if (action.equals(playercon.state.desp.confirmed.hero)) {
                 confirmed += 1;
             }
         }
-        if (confirmed >= disp.getTableTranslator().getTable().getPlayers().getCount()) {
+        if (confirmed >= disp.getTable().getPlayers().getCount()) {
             disp.cancelScheduledExecution(disp.choosing_hero);
             return true;
         } else {
@@ -53,7 +56,7 @@ public class ChooseHero implements ScheduledCallback {
     }
     
     public boolean tick() {
-        
+    
         if (waitingType == c.game_state.waiting_type.none) {
             disp.cancelScheduledExecution(disp.choosing_hero);
         } else if (tickCounter < 1) {
@@ -70,8 +73,9 @@ public class ChooseHero implements ScheduledCallback {
     }
     
     private void autoDesideHero() {
+    
         tickCounter = -1;
-        for (Player player : disp.getTableTranslator().getTable().getPlayers().getPlayerList()) {
+        for (Player player : disp.getTable().getPlayers().getPlayerList()) {
             player.performSimplestChoice();
         }
     }

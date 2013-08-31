@@ -21,12 +21,14 @@ public class CutCard implements ScheduledCallback {
     int tickCounter = tablevar.wait_time;
     
     public CutCard(MessageDispatcher dispatcher, int waitingType) {
+    
         this.disp = dispatcher;
         this.waitingType = waitingType;
     }
     
     @Override
     public void scheduledCallback() {
+    
         boolean allConfirmed = checkWaitingState();
         boolean autoDesided = tick();
         if (allConfirmed || autoDesided) {
@@ -38,12 +40,12 @@ public class CutCard implements ScheduledCallback {
     }
     
     private void goon(boolean autoDesided) {
-        
+    
         waitingType = c.game_state.waiting_type.none;
         //TODO 给每个人手里都减少一张牌
         //TODO 发给client id list
-        Map<String, Integer> cutCards = disp.getTableTranslator().getTable().getCutCards();
-        List<Player> pl = disp.getTableTranslator().getPlayerList().getPlayerList();
+        Map<String, Integer> cutCards = disp.getTable().getCutCards();
+        List<Player> pl = disp.getTable().getPlayers().getPlayerList();
         List<Integer> cards = new ArrayList<Integer>();
         for (int i = 0; i < cutCards.size(); i++) {
             Player p = pl.get(i);
@@ -60,17 +62,18 @@ public class CutCard implements ScheduledCallback {
         String biggestPlayer = "";
         int biggestFaceNumber = 0;
         for (int i = 0; i < cards.size(); i++) {
-            Card c = disp.getTableTranslator().getTable().getDeck().getCardById(cards.get(i));
+            Card c = disp.getTable().getDeck().getCardById(cards.get(i));
             if (c.getFaceNumber() > biggestFaceNumber) {
                 biggestFaceNumber = c.getFaceNumber();
                 biggestPlayer = pl.get(i).getUserName();
             }
         }
-        disp.getTableTranslator().startTurn(biggestPlayer);
+        disp.getTable().startTurn(biggestPlayer);
     }
     
     private boolean checkWaitingState() {
-        if (disp.getTableTranslator().getTable().getCutCards().size() == disp.getTableTranslator().getTable().getPlayers().getCount()) {
+    
+        if (disp.getTable().getCutCards().size() == disp.getTable().getPlayers().getCount()) {
             disp.cancelScheduledExecution(disp.cutting);
             return true;
         } else {
@@ -79,12 +82,12 @@ public class CutCard implements ScheduledCallback {
     }
     
     public boolean tick() {
-        
+    
         if (waitingType == c.game_state.waiting_type.none) {
             disp.cancelScheduledExecution(disp.cutting);
         } else if (tickCounter < 1) {
             boolean autoDesided = false;
-            if (disp.getTableTranslator().getTable().getState().getState() == tablecon.state.not_started.cutting) {
+            if (disp.getTable().getState().getState() == tablecon.state.not_started.cutting) {
                 autoDesideCutting();
                 autoDesided = true;
             }
@@ -98,8 +101,9 @@ public class CutCard implements ScheduledCallback {
     }
     
     private void autoDesideCutting() {
-        for (Player p : disp.getTableTranslator().getTable().getPlayers().getPlayerList()) {
-            if (!disp.getTableTranslator().getTable().getCutCards().keySet().contains(p.getUserName())) {
+    
+        for (Player p : disp.getTable().getPlayers().getPlayerList()) {
+            if (!disp.getTable().getCutCards().keySet().contains(p.getUserName())) {
                 p.performSimplestChoice();
             }
         }

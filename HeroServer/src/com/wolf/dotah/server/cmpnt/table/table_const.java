@@ -4,7 +4,7 @@ public interface table_const {
     
     public interface candidates {
         
-        int default_count_for_each_player = 3;
+        int default_count_for_each_player = 1;
     }
     
     public interface tablecon {
