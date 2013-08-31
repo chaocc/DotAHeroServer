@@ -22,6 +22,7 @@ public class Player implements player_const {
     
     private PlayerAvailableTargetModel targets;
     private TableModel table;
+    
     public void updateProperty(String propertyName, Data result) {
     
         // TODO 先要把update property 翻译成server action, 然后把server action放到step里, 而不是property name
@@ -99,31 +100,44 @@ public class Player implements player_const {
     
     public void getHandcards(List<Integer> cards) {
     
-        // TODO 先给player发这些个卡, 
         this.property.addHandcards(cards);
         if (this.ai == null || !this.ai.isAi()) {
-            sendPrivateMessage(c.ac.init_hand_cards, this);
+            sendPrivateMessage(c.ac.init_hand_cards);
         }
-        //        translator.sendPublicMessage(c.ac.init_hand_cards, this);
-        // TODO 然后再调用 player translator的send plugin message之类的方法
+        this.sendPublicMessage(c.ac.init_hand_cards);
         
     }
     
-    private void sendPrivateMessage(String string_action, Player player) {
+    public void sendPublicMessage(String string_action) {
     
         Data data = new Data();
         data.setAction(string_action);
-        addPrivateData(data, string_action, player);
-        table.getDispatcher().sendMessageToSingleUser(player.getUserName(), data);
+        addPublicData(data, string_action);
+        table.getDispatcher().sendMessageToAllWithoutSpecificUser(data, this.getUserName());
     }
     
-    private void addPrivateData(Data data, String string_action, Player player) {
+    private void addPublicData(Data data, String string_action) {
     
         if (c.ac.init_hand_cards.equals(string_action)) {
-            Integer[] cardArray = player.getProperty().getHandCards().getCards().toArray(new Integer[] {});
+            data.setInteger(client_const.param_key.hand_card_count, property.getHandCards().getCards().size());
+        }
+    }
+    
+    private void sendPrivateMessage(String string_action) {
+    
+        Data data = new Data();
+        data.setAction(string_action);
+        addPrivateData(data, string_action);
+        table.getDispatcher().sendMessageToSingleUser(this.getUserName(), data);
+    }
+    
+    private void addPrivateData(Data data, String string_action) {
+    
+        if (c.ac.init_hand_cards.equals(string_action)) {
+            Integer[] cardArray = property.getHandCards().getCards().toArray(new Integer[] {});
             data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cardArray));
         } else if (c.ac.choosing_from_hand.equals(string_action)) {
-            List<Integer> cardList = player.getProperty().getHandCards().getCards();
+            List<Integer> cardList = property.getHandCards().getCards();
             int[] cardArray = u.intArrayMapping(cardList.toArray(new Integer[] {}));
             data.setIntegerArray(client_const.param_key.id_list, cardArray);
             data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);
@@ -136,9 +150,8 @@ public class Player implements player_const {
         if (ai != null && ai.isAi()) {
             performAiAction(c.param_key.id_list);
         } else {
-            sendPrivateMessage(c.ac.choosing_from_hand, this);
+            sendPrivateMessage(c.ac.choosing_from_hand);
         }
-        //TODO 如果是普通的ai, 就让它选好, 如果是一般的player, 就发update state
     }
     
     public int[] getAvailableHandCards() {

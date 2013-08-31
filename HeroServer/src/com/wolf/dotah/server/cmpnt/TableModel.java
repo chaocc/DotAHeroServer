@@ -11,7 +11,6 @@ import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.PlayerList.PlayerListListener;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.table_const;
-import com.wolf.dotah.server.cmpnt.table.schedule.Ticker;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.u;
@@ -49,12 +48,8 @@ public class TableModel implements table_const, player_const, PlayerListListener
     TableState state; //TODO define states
     PlayerList players;
     DeckModel deck;
-    //    CardRemainStack remainStack;
-    //    CardDropStack dropStack;
-    Ticker ticker;
     private Map<String, Integer> cutCards;
     
-    //    TableTranslator translator;
     MessageDispatcher disp;
     
     final String tag = "====>> TableModel: ";
@@ -111,17 +106,12 @@ public class TableModel implements table_const, player_const, PlayerListListener
             //            updateSequence.submitServerUpdateByTable(this);
         }
         //TODO waiting for everybody to choose
-        //TODO 从translator来做
         disp.waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing_hero);
     }
     
     private void initCardModels() {
     
         deck = new DeckModel(this);
-        //remain stack should have the behavior of dispatching handcards
-        //        remainStack = new CardRemainStack(deck).initWithCardList(deck.getSimpleDeck());
-        //        dropStack = new CardDropStack(deck);
-        //        dropStack.syncWithRemainStack();
         
     }
     
@@ -137,7 +127,6 @@ public class TableModel implements table_const, player_const, PlayerListListener
         Data data = new Data();
         data.setAction(c.server_action.start_game);
         data.addStringArray("player_list", players.getNameList());
-        //TODO 从translator broadcast
         disp.broadcastMessage(data);
     }
     
@@ -160,15 +149,10 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
         Data data = new Data();
         data.setAction(c.server_action.update_player_list_info);//kActionInitPlayerHero = 1004
-        //TODO先只加hero, 以后再改;
+        //TODO 先只加hero, 以后再改;
         data.addAll(this.getPlayers().toSubtleData());
         disp.broadcastMessage(data);
     }
-    
-    //    public void startTurn(Player playerByIndex) {
-    //        // TODO 所有人都更新完手牌后, start turn
-    //        
-    //    }
     
     public List<Integer> getCardsFromRemainStack(int count) {
     
@@ -181,13 +165,9 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
         // TODO 给每个人发手牌, 每发1个, 就发2个plugin message
         for (Player p : this.getPlayers().getPlayerList()) {
-            //            ServerUpdateSequence updateSequence = new ServerUpdateSequence(c.server_action.update_player_info, p);
             List<Integer> cards = this.getCardsFromRemainStack(c.default_draw_count);
             p.getHandcards(cards);
-            //            updateSequence.submitServerUpdateByTable(this);
-            
         }
-        //        this.startTurn(this.getPlayers().getPlayerByIndex(0));
     }
     
     
@@ -262,7 +242,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     @Override
     public String toString() {
     
-        return "TableModel [state=" + state + ", players=" + players + ", deck=" + deck + ", ticker=" + ticker + ", cutCards=" + cutCards
+        return "TableModel [state=" + state + ", players=" + players + ", deck=" + deck + ", cutCards=" + cutCards
             + ", disp=" + disp + ", tag=" + tag + "]";
     }
 }
