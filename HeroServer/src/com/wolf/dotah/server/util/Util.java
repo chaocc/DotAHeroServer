@@ -1,12 +1,11 @@
 package com.wolf.dotah.server.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 
-public class u {
-    public static int[] intArrayMapping(Integer[] integerArray) {
+public class Util {
+    public int[] intArrayMapping(Integer[] integerArray) {
+    
         int length = integerArray.length;
         int[] result = new int[length];
         for (int i = 0; i < length; i++) {
@@ -15,7 +14,8 @@ public class u {
         return result;
     }
     
-    public static Integer[] integerArrayMapping(int[] intArray) {
+    public Integer[] integerArrayMapping(int[] intArray) {
+    
         int length = intArray.length;
         Integer[] result = new Integer[length];
         for (int i = 0; i < length; i++) {
@@ -24,7 +24,8 @@ public class u {
         return result;
     }
     
-    public static int actionMapping(String action) {
+    public int actionMapping(String action) {
+    
         int result = -1;
         if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
             result = client_const.kActionUpdateDeckHero;
@@ -56,7 +57,8 @@ public class u {
         
     }
     
-    public static String actionMapping(int action) {
+    public String actionMapping(int action) {
+    
         String result = "";
         switch (action) {
             case -1: {
@@ -67,25 +69,21 @@ public class u {
         return result;
     }
     
-    public static String printArray(Integer[] choosingCards) {
+    public String printArray(Integer[] choosingCards) {
+    
         String result = Arrays.toString(choosingCards);
         //        MessageDispatcher.getDispatcher(null).debug(tag, "printArray: " + result);
         return result;
     }
     
-    public static String printArray(int[] choosingCards) {
+    public String printArray(int[] choosingCards) {
+    
         String result = Arrays.toString(choosingCards);
         //        MessageDispatcher.getDispatcher(null).debug(tag, "printArray: " + result);
         return result;
     }
     
-    final static String tag = "util: ";
+    final String tag = "util: ";
     
-    public static List<Integer> getList(int[] fake_data_hero_ids) {
-        List<Integer> result = new ArrayList<Integer>();
-        for (int i = 0; i < fake_data_hero_ids.length; i++) {
-            result.add(fake_data_hero_ids[i]);
-        }
-        return result;
-    }
+
 }

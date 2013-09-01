@@ -5,6 +5,7 @@ import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.TableModel;
+import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
 import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.schedule.ChooseHero;
@@ -65,9 +66,9 @@ public class MessageDispatcher {
         debug(tag, "because of " + serverAction);
         waitReason = serverAction;
         if (waitReason.equals(playercon.state.desp.choosing.choosing_hero)) {
-            this.choosing_hero = plugin.getApi().scheduleExecution(1000, 11, new ChooseHero(this, waitingType));
+            this.choosing_hero = plugin.getApi().scheduleExecution(1000, tablevar.wait_time + 1, new ChooseHero(this, waitingType));
         } else if (waitReason.equals(c.server_action.choosing)) {
-            this.cutting = plugin.getApi().scheduleExecution(1000, 11, new CutCard(this, waitingType));
+            this.cutting = plugin.getApi().scheduleExecution(1000, tablevar.wait_time + 1, new CutCard(this, waitingType));
         }
         
     }
@@ -85,16 +86,14 @@ public class MessageDispatcher {
                 PlayerList playerList = new PlayerList();
                 Collection<UserValue> users = plugin.getApi().getUsersInRoom(zone, room);
                 this.debug(tag, " get users : " + users.toString());
+                
                 table = new TableModel(playerList, this);
-                //                table.setTranslator(this);
                 playerList.setTable(table);
                 if (playerCount != -1) {
                     playerList.initWithUserCollectionAndPlayerCount(users, playerCount);
                 } else {
                     playerList.initWithUserCollection(users);
                 }
-                
-                this.debug(tag, " table translator inited");
             }
             table.dispatchHeroCandidates();
         } else if (client_const.kActionChooseHeroId == client_message) {
@@ -156,6 +155,7 @@ public class MessageDispatcher {
     
     public void cancelScheduledExecution(int callback_id) {
     
+        debug(tag, "cancelScheduledExecution " + callback_id);
         plugin.getApi().cancelScheduledExecution(callback_id);
     }
     

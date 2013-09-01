@@ -13,31 +13,27 @@ import com.wolf.dotah.server.util.c;
 
 public class PlayerList implements player_const {
     
-    private List<Player> playerList;
+    private List<Player> playerList = new ArrayList<Player>();
     private List<String> userList;
     private List<PlayerListListener> listeners = new ArrayList<PlayerListListener>();
     final String tag = "====>> PlayerList: ";
     private TableModel table;
     
     public void initWithUserCollection(Collection<UserValue> input) {
-        
-        //        table.getTranslator().getDispatcher().debug(tag, "initWithUserCollection");
+    
         initWithUserCollectionAndPlayerCount(input, defaultPlayerCount);
     }
     
     public void initWithUserCollectionAndPlayerCount(Collection<UserValue> usersInRoom, int playerCount) {
-        
+    
         /**
          * 保证多次调用init 方法是不管用的
          */
-        //        MessageDispatcher.getDispatcher(null).debug(tag, "initWithUserCollectionAndPlayerCount, playerList.size():" + playerList.size());
         if (playerList == null || playerList.size() == 0) {
             
             List<String> users = new ArrayList<String>();
-            //            MessageDispatcher.getDispatcher(null).debug(tag, "initWithUserCollectionAndPlayerCount, usersInRoom:" + usersInRoom.toString());
             for (UserValue userv : usersInRoom) {
                 users.add(userv.getUserName());
-                //                MessageDispatcher.getDispatcher(null).debug(tag, "initWithUserCollectionAndPlayerCount, users.add():" + userv);
                 
             }
             this.userList = users;
@@ -46,10 +42,10 @@ public class PlayerList implements player_const {
     }
     
     private void initPlayerList(int playerCount) {
-        
+    
         for (String userName : userList) {
             Player player = new Player(userName, table);
-            //            MessageDispatcher.getDispatcher(null).debug(tag, "adding player " + userName);
+            debug(tag, "adding player " + userName);
             playerList.add(player);
         }
         if (playerCount > userList.size()) {
@@ -58,7 +54,7 @@ public class PlayerList implements player_const {
                 
                 Player player = new Player(aiName + i, table);
                 player.setAi(new Ai());
-                //                MessageDispatcher.getDispatcher(null).debug(tag, "adding ai " + aiName + i);
+                debug(tag, "adding ai " + aiName + i);
                 playerList.add(player);
             }
         }
@@ -72,6 +68,7 @@ public class PlayerList implements player_const {
     }
     
     public boolean registerPlayerListListener(PlayerListListener listener) {
+    
         if (listeners.contains(listener)) {
             return false;
         } else {
@@ -81,34 +78,40 @@ public class PlayerList implements player_const {
     }
     
     public int getCount() {
-        
+    
         return playerList.size();
     }
     
     public PlayerList() {
-        playerList = new ArrayList<Player>();
+    
     }
     
     public Player getPlayerByIndex(int i) {
-        
+    
         return playerList.get(i);
     }
     
     public Player getPlayerByUserName(String user) {
-        
+    
         //TODO 现在player 一定是在ai前边的, 所以player index和user index是一样的
         return playerList.get(userList.indexOf(user));
     }
     
     public Player getPlayerByPlayerName(String name) {
-        table.getDispatcher().debug(tag, "getPlayerByPlayerName, name: " + name + " from list " + playerList.toString());
+    
+        debug(tag, "getPlayerByPlayerName, name: " + name + " from list " + playerList.toString());
         for (Player p : playerList) {
-            if (p.getUserName().equals(name)) { return p; }
+            if (p.getUserName().equals(name)) {
+                debug(tag, "returning " + p.toString());
+                return p;
+            }
         }
         return null;
     }
     
+    
     public String[] getNameList() {
+    
         String[] names = new String[playerList.size()];
         for (int i = 0; i < names.length; i++) {
             names[i] = playerList.get(i).getUserName();
@@ -117,23 +120,28 @@ public class PlayerList implements player_const {
     }
     
     public TableModel getTable() {
+    
         return table;
     }
     
     public void setTable(TableModel table) {
+    
         this.table = table;
     }
     
     public List<Player> getPlayerList() {
+    
         return playerList;
     }
     
     public List<String> getUserList() {
+    
         return userList;
     }
     
     public Data toSubtleData() {
-        Data data = new Data();
+    
+        Data data = new Data(table.u);
         int[] idList = new int[playerList.size()];
         for (int i = 0; i < idList.length; i++) {
             Player p = playerList.get(i);
@@ -141,6 +149,23 @@ public class PlayerList implements player_const {
         }
         data.setIntegerArray(c.param_key.id_list, idList);
         return data;
+    }
+    
+    private void debug(String tag, String log) {
+    
+        if (table != null) {
+            table.getDispatcher().debug(tag, log);
+        } else {
+            System.out.println(tag + " table is null in line 159");
+        }
+        
+    }
+    
+    @Override
+    public String toString() {
+    
+        return "PlayerList [playerList=" + playerList + ", userList=" + userList + ", listeners=" + listeners + ", tag=" + tag + ", table="
+            + table + "]";
     }
     
 }

@@ -12,10 +12,9 @@ import com.wolf.dotah.server.cmpnt.card.Card;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
-import com.wolf.dotah.server.util.u;
 
 public class CutCard implements ScheduledCallback {
-    
+    final String tag = "===>> CutCard schedule callback ";
     MessageDispatcher disp;
     int waitingType;
     int tickCounter = tablevar.wait_time;
@@ -29,6 +28,7 @@ public class CutCard implements ScheduledCallback {
     @Override
     public void scheduledCallback() {
     
+        disp.debug(tag, "scheduledCallback, cutting card " + tickCounter);
         boolean allConfirmed = checkWaitingState();
         boolean autoDesided = tick();
         if (allConfirmed || autoDesided) {
@@ -53,11 +53,13 @@ public class CutCard implements ScheduledCallback {
             cards.add(card);
             p.getProperty().getHandCards().remove(card, autoDesided);
         }
-        Data data = new Data();
+        Data data = new Data(disp.getTable().u);
         data.setAction(c.ac.cutted);
-        data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cards.toArray(new Integer[cards.size()])));
+        data.setIntegerArray(c.param_key.id_list, disp.getTable().u.intArrayMapping(cards.toArray(new Integer[cards.size()])));
         data.setInteger(client_const.param_key.hand_card_count, pl.get(0).getProperty().getHandCards().getCards().size());
         disp.sendMessageToAll(data);
+        
+        
         //TODO 先拼点, 
         String biggestPlayer = "";
         int biggestFaceNumber = 0;
@@ -66,14 +68,17 @@ public class CutCard implements ScheduledCallback {
             if (c.getFaceNumber() > biggestFaceNumber) {
                 biggestFaceNumber = c.getFaceNumber();
                 biggestPlayer = pl.get(i).getUserName();
+                disp.debug(tag, "changing biggest to " + biggestPlayer + " with card " + c.getName());
             }
         }
+        disp.debug(tag, "starting turn to player " + biggestPlayer);
         disp.getTable().startTurn(biggestPlayer);
     }
     
     private boolean checkWaitingState() {
     
         if (disp.getTable().getCutCards().size() == disp.getTable().getPlayers().getCount()) {
+            
             disp.cancelScheduledExecution(disp.cutting);
             return true;
         } else {

@@ -1,0 +1,25 @@
+
+
+#basic{
+    width:900px;
+    height:200px;
+    
+}
+
+table, th, td, ul, li{
+    border: 1px solid black;
+    margin:10px;
+}
+
+#other_info{
+    width:150px;
+}
+
+#basic > *{
+    float:left;
+}
+
+label, span{
+    border: 1px solid black;
+    margin:30px;
+}

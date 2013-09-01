@@ -9,13 +9,12 @@ import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
-import com.wolf.dotah.server.util.u;
 
 public class Player implements player_const {
     
     //TODO attackable
     //TODO disarmable
-    String tag = "Player: ";
+    private String tag = "Player ==>> ";
     private String action;
     private Data state;
     private PlayerProperty property;//player 属性的状态
@@ -44,7 +43,7 @@ public class Player implements player_const {
                 this.initPropertyWithHeroId(heroId);
             } else if (action.equals(c.ac.choosing_from_hand)) {
                 Integer[] pickResult = property.getHandCards().getCards().toArray(new Integer[] {});
-                int resultId = ai.chooseSingle(u.intArrayMapping(pickResult));
+                int resultId = ai.chooseSingle(table.u.intArrayMapping(pickResult));
                 this.table.getCutCards().put(this.getUserName(), resultId);
             }
         }
@@ -84,8 +83,8 @@ public class Player implements player_const {
             String[] keys = { "heroId" };
             int[] values = { heroId };
             
-            Data msg = new Data();
-            table.getDispatcher().debug(tag, "keys.length: " + keys.length);
+            Data msg = new Data(table.u);
+            debug(tag, "keys.length: " + keys.length);
             if (keys.length == 1) {
                 if (keys[0].equals("heroId")) {
                     msg.setAction(c.server_action.chose_hero);
@@ -110,7 +109,7 @@ public class Player implements player_const {
     
     public void sendPublicMessage(String string_action) {
     
-        Data data = new Data();
+        Data data = new Data(table.u);
         data.setAction(string_action);
         addPublicData(data, string_action);
         table.getDispatcher().sendMessageToAllWithoutSpecificUser(data, this.getUserName());
@@ -125,7 +124,7 @@ public class Player implements player_const {
     
     private void sendPrivateMessage(String string_action) {
     
-        Data data = new Data();
+        Data data = new Data(table.u);
         data.setAction(string_action);
         addPrivateData(data, string_action);
         table.getDispatcher().sendMessageToSingleUser(this.getUserName(), data);
@@ -135,10 +134,10 @@ public class Player implements player_const {
     
         if (c.ac.init_hand_cards.equals(string_action)) {
             Integer[] cardArray = property.getHandCards().getCards().toArray(new Integer[] {});
-            data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cardArray));
+            data.setIntegerArray(c.param_key.id_list, table.u.intArrayMapping(cardArray));
         } else if (c.ac.choosing_from_hand.equals(string_action)) {
             List<Integer> cardList = property.getHandCards().getCards();
-            int[] cardArray = u.intArrayMapping(cardList.toArray(new Integer[] {}));
+            int[] cardArray = table.u.intArrayMapping(cardList.toArray(new Integer[] {}));
             data.setIntegerArray(client_const.param_key.id_list, cardArray);
             data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);
         }
@@ -156,6 +155,7 @@ public class Player implements player_const {
     
     public int[] getAvailableHandCards() {
     
+        debug(tag, "getAvailableHandCards()");
         //TODO 判断哪些available
         /*
          * 1, 根据当前round的player, 是自己还是被人target等
@@ -170,8 +170,9 @@ public class Player implements player_const {
             }
             
         }
-        return u.intArrayMapping(availableList.toArray(new Integer[] {}));
+        return table.u.intArrayMapping(availableList.toArray(new Integer[] {}));
     }
+    
     
     private boolean active(int card) {
     
@@ -254,6 +255,14 @@ public class Player implements player_const {
     public TableModel getTable() {
     
         return table;
+    }
+    
+    private void debug(String tag, String log) {
+    
+        if (table != null) {
+            table.getDispatcher().debug(tag, log);
+        }
+        
     }
     
     @Override

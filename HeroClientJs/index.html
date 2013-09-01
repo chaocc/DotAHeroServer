@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link href="lib/jquery.mobile-1.4.0-alpha.2.css" rel="stylesheet">
+        <link href="index.css" rel="stylesheet">
+        <script type="text/javascript" src="lib/ElectroServer-5-Client-JavaScript.js"></script>
+        <script src="lib/jquery-2.0.3.js"></script>
+        <script src="lib/jquery.mobile-1.4.0-alpha.2.js"></script>
+        <script src="const.js"></script>
+        <script src="index.js"></script>
+        
+    </head>
+    <body>
+        <h3>基本信息</h3>
+        <div id="basic" >
+            <table id="self_info">
+                <thead><tr><th>属性</th><th>值</th></tr></thead>
+                <tbody>
+                    <tr><td>名字</td><td id="self_name">no name</td></tr>
+                    <tr><td>英雄</td><td id="self_hero">no hero</td></tr>
+                    <tr><td>hp</td><td><span id="self_hp">0</span>/<span id="self_hp_limit">4</span></td></tr>
+                    <tr><td>sp</td><td><span id="self_hp">0</span>/<span id="self_hp_limit">4</span></td></tr>
+                    <tr><td>武器</td><td id="self_weapon">no weapon</td></tr>
+                    <tr><td>防具</td><td id="self_armor">no armor</td></tr>
+                </tbody>
+            </table>
+            <div id="other_info">
+                <button>弃牌</button>
+                <button>取消</button>
+                <button>确定</button>
+                <label id="countdown">15</label>
+            </div>
+            <div id="status">status</div>
+            <div id="log">log: </div>
+        </div>
+        <button type="button" onclick="connect();" >连接</button>
+        <div>
+            <h3>待选牌: </h3>
+            <div id="choosing_container">
+                <input type="radio" id="choosing1" name="choosing"><label for="choosing1"><span id="">死亡法师</span></label>
+            </div>
+        </div>
+        <h3><span>手牌,,   </span></h3>
+        <div>
+            <input type="radio" id="handcards_head">
+            <label for="handcards_head"><span>花色</span><span>点数</span><span>名字, , </span><span>类型(基本牌等)</span><span>id</span></label>
+        </div>
+        <div id="handcards">
+            <input type="radio" id="radio2" name="radio">
+            <label for="radio2">
+                <span id="">方块</span>
+                <span id="">10</span>
+                <span id="">五六七八</span>
+                <span id="">类型: 魔法牌</span>
+                <span id="">44</span>
+            </label>
+        </div>
+        <h3>其他玩家</h3>
+        <div>
+            <input type="radio" id="other_player_head">
+            <label for="other_player_head"><span>名字,,,</span><span>英雄,,,,</span><span>hp</span><span>sp</span><span>手牌数</span><span>武器,,</span><span>防具,,</span></label>
+        </div>
+        <div id="handcards">
+            <input type="radio" id="other_player_1" name="other_player">
+            <label for="other_player_1">
+                <span id="">ai 01</span>
+                <span id="">魔鬼魔鬼</span>
+                <span id="">4</span>
+                <span id="">4</span>
+                <span id="">5</span>
+                <span id="">没有武器</span>
+                <span id="">没有装备</span>
+            </label>
+        </div>
+
+    </body>
+</html>

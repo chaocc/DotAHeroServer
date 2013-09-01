@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <title>Hangman</title>
+    <style>
+.letters {position:absolute;left: 0px; top: 0px; border: 2px; border-style: double; margin: 5px; padding: 5px; color:#000; background-color:#0FF; font-family:"Courier New", Courier, monospace;
+}
+.blanks {position:absolute;left: 0px; top: 0px; border:none; margin: 5px; padding: 5px; color:#006; background-color:white; font-family:"Courier New", Courier, monospace; text-decoration:underline; color: black; font-size:24px;
+}
+.scores {position:absolute;left: 0px; top: 0px; border:none; margin: 5px; padding: 5px; color:#006; background-color:white; font-family:"Arial", "Helvetica", "sans-serif"; color: black; font-size:16px;
+}
+.scoreheader {position:absolute;left: 0px; top: 0px; border:none; margin: 5px; padding: 5px; color:#006; background-color:white; font-family:"Arial", "Helvetica", "sans-serif"; text-decoration:underline; color: black; font-size:16px;
+}
+    </style>
+    <script type="text/javascript" src="ElectroServer-5-Client-JavaScript.js"></script>
+    <script type="text/javascript" src="PluginConstants.js"></script>
+    
+    <script type="text/javascript" src="hangmanController.js">
+    </script>
+    <script type="text/javascript" src="hangmanView.js">
+    </script>
+    <script type="text/javascript" src="PlayerManager.js">
+    </script>
+  </head>
+  <body>
+    <font face="Arial", "Helvetica", "sans-serif" color="#333333">
+      <div id="login">
+        <FORM name="LoginForm">
+          Input Username:
+          <INPUT type=text name="username" onKeyPress="return disableEnterKey(event)"/>
+          <INPUT type=button name="LoginButton" value="Login" onClick="connect();" onKeyPress="return disableEnterKey(event)"/>
+        </FORM>
+      </div>
+      
+      <p>
+        <canvas id="canvas" width="600" height="350">
+          Your browser doesn't support the HTML5 element canvas.
+          You can chat, but you can't play the game because it can't draw the canvas elements.
+        </canvas>
+      </p>
+      <br />
+      <p>
+        <div id="status"></div>
+      </p>
+      <br />
+      <p>
+        <div id="chat" style="display: none;">
+          <FORM name="SendForm">
+            Chat:
+            <INPUT type=text name="chat" onKeyPress="return disableEnterKey(event)"/>
+            <INPUT type=button name="SendButton" value="Send" onClick="sendPublicMessage();" onKeyPress="return disableEnterKey(event)"/>
+          </FORM>
+        </div>
+      </p>
+      
+      <div id="log"> </div>
+    </font>
+  </body>
+</html>
