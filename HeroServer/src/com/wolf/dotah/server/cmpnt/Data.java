@@ -4,24 +4,21 @@ import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.Number;
 import com.wolf.dotah.server.MessageDispatcher;
 import com.wolf.dotah.server.util.c;
-import com.wolf.dotah.server.util.Util;
+import com.wolf.dotah.server.util.u;
 
 public class Data extends EsObject {
     
     private static final long serialVersionUID = -1791116800338703971L;
     private MessageDispatcher disp;
-    private final Util u;
     
-    public Data(Util input) {
+    public Data() {
     
         super();
-        this.u = input;
     }
     
     public Data(MessageDispatcher input) {
     
         this.disp = input;
-        this.u = disp.getTable().u;
     }
     
     

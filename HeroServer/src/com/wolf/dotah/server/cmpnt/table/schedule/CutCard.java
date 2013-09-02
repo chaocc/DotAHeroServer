@@ -12,6 +12,7 @@ import com.wolf.dotah.server.cmpnt.card.Card;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
+import com.wolf.dotah.server.util.u;
 
 public class CutCard implements ScheduledCallback {
     final String tag = "===>> CutCard schedule callback ";
@@ -51,12 +52,12 @@ public class CutCard implements ScheduledCallback {
             Player p = pl.get(i);
             int card = cutCards.get(p.getUserName());
             cards.add(card);
-            p.getProperty().getHandCards().remove(card, autoDesided);
+            p.getHandCards().remove(card, autoDesided);
         }
-        Data data = new Data(disp.getTable().u);
+        Data data = new Data();
         data.setAction(c.ac.cutted);
-        data.setIntegerArray(c.param_key.id_list, disp.getTable().u.intArrayMapping(cards.toArray(new Integer[cards.size()])));
-        data.setInteger(client_const.param_key.hand_card_count, pl.get(0).getProperty().getHandCards().getCards().size());
+        data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cards.toArray(new Integer[cards.size()])));
+        data.setInteger(client_const.param_key.hand_card_count, pl.get(0).getHandCards().getCards().size());
         disp.sendMessageToAll(data);
         
         

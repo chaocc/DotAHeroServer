@@ -141,7 +141,7 @@ public class PlayerList implements player_const {
     
     public Data toSubtleData() {
     
-        Data data = new Data(table.u);
+        Data data = new Data();
         int[] idList = new int[playerList.size()];
         for (int i = 0; i < idList.length; i++) {
             Player p = playerList.get(i);
@@ -161,11 +161,10 @@ public class PlayerList implements player_const {
         
     }
     
-    @Override
-    public String toString() {
-    
-        return "PlayerList [playerList=" + playerList + ", userList=" + userList + ", listeners=" + listeners + ", tag=" + tag + ", table="
-            + table + "]";
-    }
+//    @Override
+//    public String toString() {
+//    
+//        return "PlayerList [playerList=" + playerList + ", userList=" + userList + ", listeners=" + listeners + ", tag=" + tag + "]";
+//    }
     
 }

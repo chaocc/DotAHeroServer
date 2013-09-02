@@ -3,7 +3,6 @@ package com.wolf.dotah.server.cmpnt;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.MessageDispatcher;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
@@ -12,7 +11,7 @@ import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.PlayerList.PlayerListListener;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.table_const;
-import com.wolf.dotah.server.util.Util;
+import com.wolf.dotah.server.util.u;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
 
@@ -50,7 +49,6 @@ public class TableModel implements table_const, player_const, PlayerListListener
     PlayerList players;
     DeckModel deck;
     private Map<String, Integer> cutCards;
-    public final Util u;
     MessageDispatcher disp;
     
     final String tag = "====>> TableModel: ";
@@ -63,7 +61,6 @@ public class TableModel implements table_const, player_const, PlayerListListener
         initCutCardMap();
         initCardModels();
         this.disp = dispatcher;
-        u = new Util();
         //TODO init player basic info, from plugin api
         //TODO design ticker
         // 21, 12, 2, 3, 28, 17
@@ -96,7 +93,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
              */
             //            ServerUpdateSequence updateSequence = new ServerUpdateSequence(c.server_action.choosing, single);
             
-            Data state = new Data(u).addIntegerArray(playercon.state.param_key.general.id_list, u.intArrayMapping(candidatesForSingle));
+            Data state = new Data().addIntegerArray(playercon.state.param_key.general.id_list, u.intArrayMapping(candidatesForSingle));
             single.setAction(playercon.state.desp.choosing.choosing_hero);
             single.setState(state);
             state.setAction(playercon.state.desp.choosing.choosing_hero);
@@ -126,7 +123,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
     private void broadcastGameStarted() {
     
-        Data data = new Data(u);
+        Data data = new Data();
         data.setAction(c.server_action.start_game);
         data.addStringArray("player_list", players.getNameList());
         disp.broadcastMessage(data);
@@ -149,7 +146,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
     public void broadcastHeroInited() {
     
-        Data data = new Data(u);
+        Data data = new Data();
         data.setAction(c.server_action.update_player_list_info);//kActionInitPlayerHero = 1004
         //TODO 先只加hero, 以后再改;
         data.addAll(this.getPlayers().toSubtleData());
@@ -207,18 +204,23 @@ public class TableModel implements table_const, player_const, PlayerListListener
         disp.sendMessageToAllWithoutSpecificUser(data, playerName);
         
         
-        EsObject obj = new EsObject();
+        Data obj = new Data(disp);
         disp.debug(tag, "adding action " + c.ac.turn_to_player + " for single");
-//        obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
-        obj.setInteger(c.action, 3000);
-//        obj.addString(client_const.param_key.kParamSourcePlayerName, playerName);
-        obj.setString(client_const.param_key.kParamSourcePlayerName, playerName);
+        obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
+        obj.addString(client_const.param_key.kParamSourcePlayerName, playerName);
+        //        disp.debug(tag, "trying to get player by player name ");
         disp.debug(tag, "trying to get player by player name " + playerName + " from player list " + players.toString());
-        //        Player pp = players.getPlayerByPlayerName(playerName);
-        //        int[] availableHandCards = pp.getAvailableHandCards();
-        //        obj.addIntegerArray(client_const.param_key.available_id_list, availableHandCards)
-//        obj.addInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
-        obj.setInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
+        Player pp = players.getPlayerByPlayerName(playerName);
+        int[] availableHandCards = pp.getAvailableHandCards();
+        obj.addIntegerArray(client_const.param_key.available_id_list, availableHandCards);
+        obj.addInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
+        
+        //        EsObject obj = new EsObject();
+        //        obj.setInteger(c.action, 3000);
+        //        obj.setString(client_const.param_key.kParamSourcePlayerName, playerName);
+        //        obj.setInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
+        
+        
         disp.sendMessageToSingleUser(playerName, obj);
         //TODO 告诉玩家可以开始玩牌了, 
         //TODO 摸2张牌

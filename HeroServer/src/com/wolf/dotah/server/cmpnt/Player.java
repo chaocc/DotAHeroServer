@@ -3,12 +3,15 @@ package com.wolf.dotah.server.cmpnt;
 import java.util.ArrayList;
 import java.util.List;
 import com.wolf.dotah.server.cmpnt.player.Ai;
-import com.wolf.dotah.server.cmpnt.player.PlayerAvailableTargetModel;
+import com.wolf.dotah.server.cmpnt.player.HeroInfo;
+import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
+import com.wolf.dotah.server.layer.dao.HeroParser;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
+import com.wolf.dotah.server.util.u;
 
 public class Player implements player_const {
     
@@ -18,14 +21,12 @@ public class Player implements player_const {
     private String action;
     private Data state;
     private PlayerProperty property;//player 属性的状态
-    
-    private PlayerAvailableTargetModel targets;
+    PlayerHandCardsModel handCards;
     private TableModel table;
     
     public void updateProperty(String propertyName, Data result) {
     
         // TODO 先要把update property 翻译成server action, 然后把server action放到step里, 而不是property name
-        // sequence.add(some server action,  and data);
     }
     
     
@@ -42,8 +43,8 @@ public class Player implements player_const {
                 int heroId = ai.chooseSingle(pickResult);
                 this.initPropertyWithHeroId(heroId);
             } else if (action.equals(c.ac.choosing_from_hand)) {
-                Integer[] pickResult = property.getHandCards().getCards().toArray(new Integer[] {});
-                int resultId = ai.chooseSingle(table.u.intArrayMapping(pickResult));
+                Integer[] pickResult = handCards.getCards().toArray(new Integer[] {});
+                int resultId = ai.chooseSingle(u.intArrayMapping(pickResult));
                 this.table.getCutCards().put(this.getUserName(), resultId);
             }
         }
@@ -52,7 +53,7 @@ public class Player implements player_const {
     public void performSimplestChoice() {
     
         if (table.getState().getState() == tablecon.state.not_started.cutting) {//cutting
-            int id = this.getProperty().getHandCards().getCards().get(0);
+            int id = getHandCards().getCards().get(0);
             table.getCutCards().put(this.getUserName(), id);
         } else {
             //choosing hero
@@ -76,14 +77,16 @@ public class Player implements player_const {
     
     private void initPropertyWithHeroId(int heroId) {
     
-        property = new PlayerProperty(heroId, this);
+        HeroInfo heroInfo = HeroParser.getParser().getHeroInfoById(heroId);
+        property = new PlayerProperty(heroInfo);
+        handCards = new PlayerHandCardsModel(this, heroInfo.getHandcardLimit());
         //TODO 不是在这里, 而是在全都收到选择了英雄后broadcast chose property
         action = playercon.state.desp.confirmed.hero;
         if (this.getAi() == null || !this.getAi().isAi()) {
             String[] keys = { "heroId" };
             int[] values = { heroId };
             
-            Data msg = new Data(table.u);
+            Data msg = new Data();
             debug(tag, "keys.length: " + keys.length);
             if (keys.length == 1) {
                 if (keys[0].equals("heroId")) {
@@ -99,7 +102,7 @@ public class Player implements player_const {
     
     public void getHandcards(List<Integer> cards) {
     
-        this.property.addHandcards(cards);
+        addHandcards(cards);
         if (this.ai == null || !this.ai.isAi()) {
             sendPrivateMessage(c.ac.init_hand_cards);
         }
@@ -109,7 +112,7 @@ public class Player implements player_const {
     
     public void sendPublicMessage(String string_action) {
     
-        Data data = new Data(table.u);
+        Data data = new Data();
         data.setAction(string_action);
         addPublicData(data, string_action);
         table.getDispatcher().sendMessageToAllWithoutSpecificUser(data, this.getUserName());
@@ -118,13 +121,13 @@ public class Player implements player_const {
     private void addPublicData(Data data, String string_action) {
     
         if (c.ac.init_hand_cards.equals(string_action)) {
-            data.setInteger(client_const.param_key.hand_card_count, property.getHandCards().getCards().size());
+            data.setInteger(client_const.param_key.hand_card_count, getHandCards().getCards().size());
         }
     }
     
     private void sendPrivateMessage(String string_action) {
     
-        Data data = new Data(table.u);
+        Data data = new Data();
         data.setAction(string_action);
         addPrivateData(data, string_action);
         table.getDispatcher().sendMessageToSingleUser(this.getUserName(), data);
@@ -133,11 +136,11 @@ public class Player implements player_const {
     private void addPrivateData(Data data, String string_action) {
     
         if (c.ac.init_hand_cards.equals(string_action)) {
-            Integer[] cardArray = property.getHandCards().getCards().toArray(new Integer[] {});
-            data.setIntegerArray(c.param_key.id_list, table.u.intArrayMapping(cardArray));
+            Integer[] cardArray = getHandCards().getCards().toArray(new Integer[] {});
+            data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cardArray));
         } else if (c.ac.choosing_from_hand.equals(string_action)) {
-            List<Integer> cardList = property.getHandCards().getCards();
-            int[] cardArray = table.u.intArrayMapping(cardList.toArray(new Integer[] {}));
+            List<Integer> cardList = getHandCards().getCards();
+            int[] cardArray = u.intArrayMapping(cardList.toArray(new Integer[] {}));
             data.setIntegerArray(client_const.param_key.id_list, cardArray);
             data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);
         }
@@ -163,16 +166,25 @@ public class Player implements player_const {
          * 3, 
          */
         List<Integer> availableList = new ArrayList<Integer>();
-        for (int card : property.getHandCards().getCards()) {
+        for (int card : getHandCards().getCards()) {
             if (active(card)) {
                 availableList.add(card);
                 continue;
             }
             
         }
-        return table.u.intArrayMapping(availableList.toArray(new Integer[] {}));
+        return u.intArrayMapping(availableList.toArray(new Integer[] {}));
     }
     
+    public PlayerHandCardsModel getHandCards() {
+    
+        return handCards;
+    }
+    
+    public void setHandCards(PlayerHandCardsModel handCards) {
+    
+        this.handCards = handCards;
+    }
     
     private boolean active(int card) {
     
@@ -184,6 +196,12 @@ public class Player implements player_const {
         } else {
             return true;
         }
+    }
+    
+    public void addHandcards(List<Integer> cards) {
+    
+        this.handCards.add(cards);
+        
     }
     
     public Player(String name, TableModel inputTable) {
@@ -268,7 +286,6 @@ public class Player implements player_const {
     @Override
     public String toString() {
     
-        return "Player [property=" + property + ", targets=" + targets + ", table=" + table + ", userName="
-            + userName + ", ai=" + ai + "]";
+        return "Player [userName=" + userName + "]";
     }
 }

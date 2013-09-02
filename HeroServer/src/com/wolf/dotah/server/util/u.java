@@ -3,8 +3,8 @@ package com.wolf.dotah.server.util;
 import java.util.Arrays;
 import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 
-public class Util {
-    public int[] intArrayMapping(Integer[] integerArray) {
+public class u {
+    public static int[] intArrayMapping(Integer[] integerArray) {
     
         int length = integerArray.length;
         int[] result = new int[length];
@@ -14,7 +14,7 @@ public class Util {
         return result;
     }
     
-    public Integer[] integerArrayMapping(int[] intArray) {
+    public static Integer[] integerArrayMapping(int[] intArray) {
     
         int length = intArray.length;
         Integer[] result = new Integer[length];
@@ -24,7 +24,7 @@ public class Util {
         return result;
     }
     
-    public int actionMapping(String action) {
+    public static int actionMapping(String action) {
     
         int result = -1;
         if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
@@ -57,7 +57,7 @@ public class Util {
         
     }
     
-    public String actionMapping(int action) {
+    public static String actionMapping(int action) {
     
         String result = "";
         switch (action) {
@@ -69,14 +69,14 @@ public class Util {
         return result;
     }
     
-    public String printArray(Integer[] choosingCards) {
+    public static String printArray(Integer[] choosingCards) {
     
         String result = Arrays.toString(choosingCards);
         //        MessageDispatcher.getDispatcher(null).debug(tag, "printArray: " + result);
         return result;
     }
     
-    public String printArray(int[] choosingCards) {
+    public static String printArray(int[] choosingCards) {
     
         String result = Arrays.toString(choosingCards);
         //        MessageDispatcher.getDispatcher(null).debug(tag, "printArray: " + result);
@@ -85,5 +85,5 @@ public class Util {
     
     final String tag = "util: ";
     
-
+    
 }

@@ -28,11 +28,12 @@ function onPluginMessageEvent(event) {
   var esob = event.parameters;
   var action = esob.getString(ACTION);
   log("PluginMessageEvent << action: " + action);
-//    switch(action){
-//        case :{
-//            break;
-//        }
-//    }
+    switch(action){
+        case START_GAME:{
+            
+            break;
+        }
+    }
 }
 
 
@@ -89,9 +90,7 @@ var joinRoom = function() {
     gamePluginEntry.pluginName = "GamePlugin";
     plugins.push(gamePluginEntry);
     crr.plugins = plugins;
-//    EsPluginListEntry
-    
-    
+
     
     es.engine.send(crr);
 

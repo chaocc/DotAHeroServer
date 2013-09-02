@@ -42,7 +42,7 @@ public class PlayerHandCardsModel {
     public void remove(int card, boolean sendPrivateMessage) {
     
         this.getCards().remove(this.getCards().indexOf(card));
-        Data data = new Data(player.getTable().u);
+        Data data = new Data();
         if (sendPrivateMessage) {
             // send update player handcards to self
             data.setAction(c.ac.update_hand_cards);
@@ -50,7 +50,7 @@ public class PlayerHandCardsModel {
             player.getTable().getDispatcher().sendMessageToSingleUser(this.player.getUserName(), data);
         }
         //send update player handcard count to other players
-        data = new Data(player.getTable().u);
+        data = new Data();
         data.setAction(c.ac.update_hand_cards);
         data.setInteger(client_const.param_key.hand_card_count, cards.size());
         data.setString(c.param_key.who, player.getUserName());

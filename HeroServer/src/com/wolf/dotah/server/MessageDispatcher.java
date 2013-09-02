@@ -68,7 +68,8 @@ public class MessageDispatcher {
         if (waitReason.equals(playercon.state.desp.choosing.choosing_hero)) {
             this.choosing_hero = plugin.getApi().scheduleExecution(1000, tablevar.wait_time + 1, new ChooseHero(this, waitingType));
         } else if (waitReason.equals(c.server_action.choosing)) {
-            this.cutting = plugin.getApi().scheduleExecution(1000, tablevar.wait_time + 1, new CutCard(this, waitingType));
+            CutCard cc = new CutCard(this, waitingType);
+            this.cutting = plugin.getApi().scheduleExecution(1000, tablevar.wait_time + 1, cc);
         }
         
     }
