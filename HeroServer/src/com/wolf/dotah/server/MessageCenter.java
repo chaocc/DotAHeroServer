@@ -1,20 +1,18 @@
 package com.wolf.dotah.server;
 
 import java.util.Collection;
+import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.TableModel;
-import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
-import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
-import com.wolf.dotah.server.cmpnt.table.schedule.ChooseHero;
-import com.wolf.dotah.server.cmpnt.table.schedule.CutCard;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
+import com.wolf.dotah.server.util.l;
 
-public class MessageDispatcher {
+public class MessageCenter {
     
     private GamePlugin plugin;
     private TableModel table;
@@ -50,29 +48,6 @@ public class MessageDispatcher {
         sendMessageToAll(data);
     }
     
-    //TODO 想想能不能抽出来waiter之类的 组件
-    public MessageDispatcher waitingForEverybody() {
-    
-        this.debug(tag, "start waiting");
-        waitingType = c.game_state.waiting_type.everybody;
-        return this;
-    }
-    
-    private String waitReason;
-    private int waitingType;
-    
-    public void becauseOf(String serverAction) {
-    
-        debug(tag, "because of " + serverAction);
-        waitReason = serverAction;
-        if (waitReason.equals(playercon.state.desp.choosing.choosing_hero)) {
-            this.choosing_hero = plugin.getApi().scheduleExecution(1000, tablevar.wait_time + 1, new ChooseHero(this, waitingType));
-        } else if (waitReason.equals(c.server_action.choosing)) {
-            CutCard cc = new CutCard(this, waitingType);
-            this.cutting = plugin.getApi().scheduleExecution(1000, tablevar.wait_time + 1, cc);
-        }
-        
-    }
     
     public void handleMessage(String user, EsObject msg) {
     
@@ -117,36 +92,9 @@ public class MessageDispatcher {
     
     final String tag = "===>> MessageDispatcher ==>>  ";
     
-    public MessageDispatcher(GamePlugin gamePlugin) {
+    public MessageCenter(GamePlugin gamePlugin) {
     
         this.plugin = gamePlugin;
-    }
-    
-    public void debug(String tag, String msg) {
-    
-        plugin.dlog(tag, msg);
-    }
-    
-    
-    public GamePlugin getPlugin() {
-    
-        return plugin;
-    }
-    
-    public void setPlugin(GamePlugin plugin) {
-    
-        this.plugin = plugin;
-    }
-    
-    public void dspatchHandcards() {
-    
-        table.dispatchHandcards();
-        table.updatePlayersToCutting();
-    }
-    
-    public void destroyTable() {
-    
-        table = null;
     }
     
     public TableModel getTable() {
@@ -154,12 +102,21 @@ public class MessageDispatcher {
         return table;
     }
     
-    public void cancelScheduledExecution(int callback_id) {
+    public void debug(String tag, String msg) {
     
-        debug(tag, "cancelScheduledExecution " + callback_id);
-        plugin.getApi().cancelScheduledExecution(callback_id);
+        l.logger().d(tag, msg);
     }
     
-    public int choosing_hero = -1, cutting = -1;
+    public int scheduleExecution(int i, int j, ScheduledCallback callback) {
+    
+        return plugin.getApi().scheduleExecution(i, j, callback);
+    }
+
+    public void cancelScheduledExecution(int callback_id) {
+    
+        plugin.getApi().cancelScheduledExecution(callback_id);
+        
+    }
+    
     
 }

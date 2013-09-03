@@ -2,21 +2,21 @@ package com.wolf.dotah.server.cmpnt;
 
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.Number;
-import com.wolf.dotah.server.MessageDispatcher;
+import com.wolf.dotah.server.MessageCenter;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.u;
 
 public class Data extends EsObject {
     
     private static final long serialVersionUID = -1791116800338703971L;
-    private MessageDispatcher disp;
+    private MessageCenter disp;
     
     public Data() {
     
         super();
     }
     
-    public Data(MessageDispatcher input) {
+    public Data(MessageCenter input) {
     
         this.disp = input;
     }

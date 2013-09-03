@@ -47,13 +47,13 @@ public class PlayerHandCardsModel {
             // send update player handcards to self
             data.setAction(c.ac.update_hand_cards);
             data.setIntegerArray(c.param_key.id_list, new int[] { card });
-            player.getTable().getDispatcher().sendMessageToSingleUser(this.player.getUserName(), data);
+            player.updateMyStateToClient(data);
         }
         //send update player handcard count to other players
         data = new Data();
         data.setAction(c.ac.update_hand_cards);
         data.setInteger(client_const.param_key.hand_card_count, cards.size());
         data.setString(c.param_key.who, player.getUserName());
-        player.getTable().getDispatcher().sendMessageToAllWithoutSpecificUser(data, player.getUserName());
+        player.getTable().getMessenger().sendMessageToAllWithoutSpecificUser(data, player.getUserName());
     }
 }

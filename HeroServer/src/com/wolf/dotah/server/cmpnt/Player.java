@@ -11,6 +11,7 @@ import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.layer.dao.HeroParser;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
+import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
 public class Player implements player_const {
@@ -96,9 +97,17 @@ public class Player implements player_const {
             } else if (keys.length > 1) {
                 //TODO action可以直接设成update xxx
             }
-            table.getDispatcher().sendMessageToSingleUser(this.getUserName(), msg);
+            updateMyStateToClient(msg);
+            
         }
     }
+    
+    public void updateMyStateToClient(Data msg) {
+    
+        table.sendMessageToSingleUser(userName, msg);
+        
+    }
+    
     
     public void getHandcards(List<Integer> cards) {
     
@@ -115,7 +124,7 @@ public class Player implements player_const {
         Data data = new Data();
         data.setAction(string_action);
         addPublicData(data, string_action);
-        table.getDispatcher().sendMessageToAllWithoutSpecificUser(data, this.getUserName());
+        table.getMessenger().sendMessageToAllWithoutSpecificUser(data, this.getUserName());
     }
     
     private void addPublicData(Data data, String string_action) {
@@ -130,7 +139,7 @@ public class Player implements player_const {
         Data data = new Data();
         data.setAction(string_action);
         addPrivateData(data, string_action);
-        table.getDispatcher().sendMessageToSingleUser(this.getUserName(), data);
+        table.getMessenger().sendMessageToSingleUser(userName, data);
     }
     
     private void addPrivateData(Data data, String string_action) {
@@ -278,7 +287,7 @@ public class Player implements player_const {
     private void debug(String tag, String log) {
     
         if (table != null) {
-            table.getDispatcher().debug(tag, log);
+            l.logger().d(tag, log);
         }
         
     }

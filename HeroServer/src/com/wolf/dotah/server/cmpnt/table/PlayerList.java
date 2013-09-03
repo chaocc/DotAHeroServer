@@ -10,6 +10,7 @@ import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.util.c;
+import com.wolf.dotah.server.util.l;
 
 public class PlayerList implements player_const {
     
@@ -154,17 +155,17 @@ public class PlayerList implements player_const {
     private void debug(String tag, String log) {
     
         if (table != null) {
-            table.getDispatcher().debug(tag, log);
+            l.logger().d(tag, log);
         } else {
             System.out.println(tag + " table is null in line 159");
         }
         
     }
     
-//    @Override
-//    public String toString() {
-//    
-//        return "PlayerList [playerList=" + playerList + ", userList=" + userList + ", listeners=" + listeners + ", tag=" + tag + "]";
-//    }
+    //    @Override
+    //    public String toString() {
+    //    
+    //        return "PlayerList [playerList=" + playerList + ", userList=" + userList + ", listeners=" + listeners + ", tag=" + tag + "]";
+    //    }
     
 }

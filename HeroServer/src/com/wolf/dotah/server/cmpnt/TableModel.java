@@ -3,7 +3,7 @@ package com.wolf.dotah.server.cmpnt;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.wolf.dotah.server.MessageDispatcher;
+import com.wolf.dotah.server.MessageCenter;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
 import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
@@ -11,11 +11,18 @@ import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.PlayerList.PlayerListListener;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.table_const;
-import com.wolf.dotah.server.util.u;
+import com.wolf.dotah.server.cmpnt.table.schedule.Waiter;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
+import com.wolf.dotah.server.util.u;
 
-/**
+/** 
+ * 牌桌行为主要有:
+ * 
+ * 1, 轮换turn
+ * 2, 发牌,
+ * 3, 洗牌
+ * 4, 将用过的牌扔到弃牌堆
  * 
  * 生成牌, 洗牌
  * 发英雄牌
@@ -29,16 +36,6 @@ import com.wolf.dotah.server.util.client_const;
  */
 public class TableModel implements table_const, player_const, PlayerListListener {
     
-    /**
-     * 牌桌行为主要有:
-     * 
-     * 1, 轮换turn
-     * 2, 发牌,
-     * 3, 洗牌
-     * 4, 将用过的牌扔到弃牌堆
-     * 
-     */
-    
     /*
      * TODO wait 有几种,  所有人等待特定的人, 所有人等待未知的人, 一个人等待特定的一个人, 一个列表的人等待特定的人
      * TODO 发message有几种: 发给一个人, 发给几个人, 发给所有人, 还要区分是否只有自己可见的(好像不发给所有人的都是只有自己可见)
@@ -49,11 +46,12 @@ public class TableModel implements table_const, player_const, PlayerListListener
     PlayerList players;
     DeckModel deck;
     private Map<String, Integer> cutCards;
-    MessageDispatcher disp;
+    MessageCenter disp;
+    Waiter waiter;
     
     final String tag = "====>> TableModel: ";
     
-    public TableModel(PlayerList playerList, MessageDispatcher dispatcher) {
+    public TableModel(PlayerList playerList, MessageCenter dispatcher) {
     
         state = new TableState();
         players = playerList;
@@ -61,6 +59,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
         initCutCardMap();
         initCardModels();
         this.disp = dispatcher;
+        waiter = new Waiter(disp);
         //TODO init player basic info, from plugin api
         //TODO design ticker
         // 21, 12, 2, 3, 28, 17
@@ -82,7 +81,6 @@ public class TableModel implements table_const, player_const, PlayerListListener
         this.state.setState(tablecon.state.not_started.chooing_hero);
         HeroCandidateModel heroModel = new HeroCandidateModel();
         List<Integer[]> heroCandidateList = heroModel.getCandidateForAll(players.getCount());
-        //        MessageDispatcher.getDispatcher(null).debug(tag, "hero candidates inited. \n" + heroCandidateList);
         
         for (int i = 0; i < players.getCount(); i++) {
             Integer[] candidatesForSingle = heroCandidateList.get(i);
@@ -105,7 +103,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
             //            updateSequence.submitServerUpdateByTable(this);
         }
         //TODO waiting for everybody to choose
-        disp.waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing_hero);
+        waiter.waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing_hero);
     }
     
     private void initCardModels() {
@@ -167,6 +165,8 @@ public class TableModel implements table_const, player_const, PlayerListListener
             List<Integer> cards = this.getCardsFromRemainStack(c.default_draw_count);
             p.getHandcards(cards);
         }
+        
+        updatePlayersToCutting();
     }
     
     
@@ -176,8 +176,9 @@ public class TableModel implements table_const, player_const, PlayerListListener
         for (Player p : this.getPlayers().getPlayerList()) {
             p.cutting();
         }
-        disp.waitingForEverybody().becauseOf(c.server_action.choosing);
+        waiter.waitingForEverybody().becauseOf(c.server_action.choosing);
     }
+    
     
     public TableState getState() {
     
@@ -196,7 +197,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
     public void startTurn(String playerName) {
     
-        Data data = new Data(disp);
+        Data data = new Data();
         disp.debug(tag, "adding action " + c.ac.turn_to_player + " for all other");
         data.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
         data.addString(client_const.param_key.kParamSourcePlayerName, playerName);
@@ -234,11 +235,6 @@ public class TableModel implements table_const, player_const, PlayerListListener
         
     }
     
-    public MessageDispatcher getDispatcher() {
-    
-        return disp;
-    }
-    
     public DeckModel getDeck() {
     
         return deck;
@@ -259,5 +255,15 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
         return "TableModel [state=" + state + ", players=" + players + ", deck=" + deck + ", cutCards=" + cutCards
             + ", disp=" + disp + ", tag=" + tag + "]";
+    }
+    
+    public void sendMessageToSingleUser(String userName, Data msg) {
+    
+        disp.sendMessageToSingleUser(userName, msg);
+    }
+    
+    public MessageCenter getMessenger() {
+    
+        return this.disp;
     }
 }
