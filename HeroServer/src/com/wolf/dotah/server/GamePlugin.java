@@ -25,9 +25,9 @@ public class GamePlugin extends BasePlugin {
     public void init(EsObjectRO parameters) {
     
         l.init(this);
-        //TODO 别忘了init 时候也可以收EsObj! 可以带参数来用来init!
+        //TODO 别忘了Plugin 在 init 时候也可以收EsObj! 可以带参数来用来init!
         messageDispatcher = new MessageCenter(this);
-        this.getApi().getLogger().debug("DeskPlugin initialized 0.1");
+        this.getApi().getLogger().debug("GamePlugin initialized 0.1");
     }
     
     @Override
@@ -50,14 +50,6 @@ public class GamePlugin extends BasePlugin {
         messageDispatcher.handleMessage(user, currentMessageObject);
     }
     
-    //    //TODO only for test, need remove for production
-    //    private void messageArrived() {
-    //        EsObject obj = new EsObject();
-    //        //        obj.addAll(currentMessageObject);
-    //        obj.setInteger("message_arrived", currentMessageObject.getInteger(c.action, -100));
-    //        getApi().sendPluginMessageToUser(sender, obj);
-    //        
-    //    }
     
     void logMessage(String tag, EsObjectRO message) {
     

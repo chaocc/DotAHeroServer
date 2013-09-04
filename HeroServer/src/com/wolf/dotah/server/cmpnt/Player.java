@@ -2,6 +2,8 @@ package com.wolf.dotah.server.cmpnt;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.electrotank.electroserver5.extensions.api.value.EsObject;
+import com.wolf.dotah.server.cmpnt.card.Card;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
@@ -46,7 +48,7 @@ public class Player implements player_const {
             } else if (action.equals(c.ac.choosing_from_hand)) {
                 Integer[] pickResult = handCards.getCards().toArray(new Integer[] {});
                 int resultId = ai.chooseSingle(u.intArrayMapping(pickResult));
-                this.table.getCutCards().put(this.getUserName(), resultId);
+                this.table.addResultForShowing(this.getUserName(), resultId);
             }
         }
     }
@@ -55,7 +57,7 @@ public class Player implements player_const {
     
         if (table.getState().getState() == tablecon.state.not_started.cutting) {//cutting
             int id = getHandCards().getCards().get(0);
-            table.getCutCards().put(this.getUserName(), id);
+            table.addResultForShowing(this.getUserName(), id);
         } else {
             //choosing hero
             int[] idList = state.getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
@@ -67,9 +69,10 @@ public class Player implements player_const {
         }
     }
     
-    public void getResult(int[] pickResult) {
+    public void pickedHero(EsObject msg) {
     
         if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
+            int[] pickResult = msg.getIntegerArray(c.param_key.id_list, new int[] {});
             int heroId = pickResult[0];
             this.initPropertyWithHeroId(heroId);
         }
@@ -296,5 +299,20 @@ public class Player implements player_const {
     public String toString() {
     
         return "Player [userName=" + userName + "]";
+    }
+    public interface playerListener {
+        public void usedCard();
+        
+    }
+    
+    public void useCard(EsObject msg) {
+    
+        int cardId = msg.getIntegerArray(client_const.param_key.id_list)[0];
+        int functionId = Card.getFunctionId(cardId);
+        switch (cardId) {
+        
+        }
+        
+        
     }
 }

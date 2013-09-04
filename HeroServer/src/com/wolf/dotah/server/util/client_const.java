@@ -15,7 +15,7 @@ public interface client_const {
     }
     
     public int
-            kActionUseHandCard = 100, // 使用卡牌
+            kActionUseHandCard = 100, // 使用卡牌 // 专门用来主动出牌期间选择了一个卡牌来出
             kActionUseHeroSkill = 101, // 使用英雄技能
             kActionCancel = 102, // 取消
             kActionDiscard = 103, // 确定弃牌
@@ -56,7 +56,7 @@ public interface client_const {
         final String
                 kParamUserList = "player_list",// 所有玩家列表
                 kParamRemainingCardCount = "remaining_count",// 牌堆剩余牌数
-                kParamSourcePlayerName = "player_name",// 回合开始/伤害来源/出牌的玩家
+                player_name = "player_name",// 回合开始/伤害来源/出牌的玩家
                 kParamTargetPlayerList = "target_player_list",// 目标玩家列表
                 id_list = "id_list",// 卡牌列表(英雄牌/摸的牌/获得的牌/使用的牌/弃置的牌)
                 index_list = "index_list",// 选中的哪几张牌

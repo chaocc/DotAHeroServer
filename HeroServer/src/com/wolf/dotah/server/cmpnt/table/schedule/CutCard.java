@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
-import com.wolf.dotah.server.MessageCenter;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.cmpnt.TableModel;
@@ -49,7 +48,7 @@ public class CutCard implements ScheduledCallback {
         waitingType = c.game_state.waiting_type.none;
         //TODO 给每个人手里都减少一张牌
         //TODO 发给client id list
-        Map<String, Integer> cutCards = table.getCutCards();
+        Map<String, Integer> cutCards = table.showingCards();
         List<Player> pl = table.getPlayers().getPlayerList();
         List<Integer> cards = new ArrayList<Integer>();
         for (int i = 0; i < cutCards.size(); i++) {
@@ -83,7 +82,7 @@ public class CutCard implements ScheduledCallback {
     
     private boolean checkWaitingState() {
     
-        if (table.getCutCards().size() == table.getPlayers().getCount()) {
+        if (table.showingCards().size() == table.getPlayers().getCount()) {
             
             waiter.cancelScheduledExecution(waiter.cutting);
             return true;
@@ -114,7 +113,7 @@ public class CutCard implements ScheduledCallback {
     private void autoDesideCutting() {
     
         for (Player p : table.getPlayers().getPlayerList()) {
-            if (!table.getCutCards().keySet().contains(p.getUserName())) {
+            if (!table.showingCards().keySet().contains(p.getUserName())) {
                 p.performSimplestChoice();
             }
         }

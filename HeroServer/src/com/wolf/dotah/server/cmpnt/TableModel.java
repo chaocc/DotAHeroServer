@@ -1,19 +1,21 @@
 package com.wolf.dotah.server.cmpnt;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.MessageCenter;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
 import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.PlayerList.PlayerListListener;
+import com.wolf.dotah.server.cmpnt.table.TableShowingCards;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.table_const;
 import com.wolf.dotah.server.cmpnt.table.schedule.Waiter;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
+import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
 /** 
@@ -40,12 +42,16 @@ public class TableModel implements table_const, player_const, PlayerListListener
      * TODO wait 有几种,  所有人等待特定的人, 所有人等待未知的人, 一个人等待特定的一个人, 一个列表的人等待特定的人
      * TODO 发message有几种: 发给一个人, 发给几个人, 发给所有人, 还要区分是否只有自己可见的(好像不发给所有人的都是只有自己可见)
      * TODO decision 有几种
+     * TODO action分成3种, table action, all player action, 和 specific player action
+     *                   table action 直接给table处理.
+     *                   all player action 交给 player list,  由player list交给每个player 来处理
+     *                   specific player action 交给player list, 由player list 交给指定player 来处理
      */
     
     TableState state; //TODO define states
     PlayerList players;
     DeckModel deck;
-    private Map<String, Integer> cutCards;
+    private TableShowingCards showingCards;
     MessageCenter disp;
     Waiter waiter;
     
@@ -56,7 +62,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
         state = new TableState();
         players = playerList;
         players.registerPlayerListListener(this);
-        initCutCardMap();
+        showingCards = new TableShowingCards();
         initCardModels();
         this.disp = dispatcher;
         waiter = new Waiter(disp);
@@ -65,11 +71,6 @@ public class TableModel implements table_const, player_const, PlayerListListener
         // 21, 12, 2, 3, 28, 17
         
         // each give 3
-    }
-    
-    private void initCutCardMap() {
-    
-        cutCards = new HashMap<String, Integer>();
     }
     
     /**
@@ -85,11 +86,6 @@ public class TableModel implements table_const, player_const, PlayerListListener
         for (int i = 0; i < players.getCount(); i++) {
             Integer[] candidatesForSingle = heroCandidateList.get(i);
             Player single = players.getPlayerByIndex(i);
-            /**
-             * 所以从一开始消息dispatch 进来的时候,  就知道是要choosing了!
-             * 中间一系列过程只是为了责任分离, 让代码更易理解, 更易维护!
-             */
-            //            ServerUpdateSequence updateSequence = new ServerUpdateSequence(c.server_action.choosing, single);
             
             Data state = new Data().addIntegerArray(playercon.state.param_key.general.id_list, u.intArrayMapping(candidatesForSingle));
             single.setAction(playercon.state.desp.choosing.choosing_hero);
@@ -190,17 +186,21 @@ public class TableModel implements table_const, player_const, PlayerListListener
         this.state = state;
     }
     
-    public Map<String, Integer> getCutCards() {
+    public Map<String, Integer> showingCards() {
     
-        return cutCards;
+        return showingCards.getAllPlayerChoosingOrUsingCardMap();
+    }
+    
+    public void addResultForShowing(String user, Integer card) {
+    
+        showingCards.addResultToShow(user, card);
     }
     
     public void startTurn(String playerName) {
     
         Data data = new Data();
-        disp.debug(tag, "adding action " + c.ac.turn_to_player + " for all other");
         data.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
-        data.addString(client_const.param_key.kParamSourcePlayerName, playerName);
+        data.addString(client_const.param_key.player_name, playerName);
         //TODO table 里要保存current player, 
         disp.sendMessageToAllWithoutSpecificUser(data, playerName);
         
@@ -208,18 +208,12 @@ public class TableModel implements table_const, player_const, PlayerListListener
         Data obj = new Data(disp);
         disp.debug(tag, "adding action " + c.ac.turn_to_player + " for single");
         obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
-        obj.addString(client_const.param_key.kParamSourcePlayerName, playerName);
-        //        disp.debug(tag, "trying to get player by player name ");
+        obj.addString(client_const.param_key.player_name, playerName);
         disp.debug(tag, "trying to get player by player name " + playerName + " from player list " + players.toString());
         Player pp = players.getPlayerByPlayerName(playerName);
         int[] availableHandCards = pp.getAvailableHandCards();
         obj.addIntegerArray(client_const.param_key.available_id_list, availableHandCards);
         obj.addInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
-        
-        //        EsObject obj = new EsObject();
-        //        obj.setInteger(c.action, 3000);
-        //        obj.setString(client_const.param_key.kParamSourcePlayerName, playerName);
-        //        obj.setInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
         
         
         disp.sendMessageToSingleUser(playerName, obj);
@@ -253,7 +247,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     @Override
     public String toString() {
     
-        return "TableModel [state=" + state + ", players=" + players + ", deck=" + deck + ", cutCards=" + cutCards
+        return "TableModel [state=" + state + ", players=" + players + ", deck=" + deck + ", cutCards=" + showingCards
             + ", disp=" + disp + ", tag=" + tag + "]";
     }
     
@@ -265,5 +259,15 @@ public class TableModel implements table_const, player_const, PlayerListListener
     public MessageCenter getMessenger() {
     
         return this.disp;
+    }
+    
+    public void choseCard(String user, EsObject msg) {
+    
+        int[] id = msg.getIntegerArray(c.param_key.id_list, new int[] {});
+        l.logger().d(user, "table.getState().getState() :  " + state.getState());
+        if (state.getState() == tablecon.state.not_started.cutting) {
+            this.addResultForShowing(user, id[0]);
+        }
+        
     }
 }

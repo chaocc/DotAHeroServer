@@ -47,7 +47,6 @@ public interface c {
         String player_count = "player_count";
         String id_list = "id_list";
         public String how_many = "how_many";
-        //        public String hand_card = "id_list";
         public String hero_candidates = "hero_candidates";
         public String who = "who";
     }

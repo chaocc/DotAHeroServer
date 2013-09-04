@@ -7,7 +7,6 @@ import com.electrotank.electroserver5.extensions.api.value.UserValue;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
-import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.l;
@@ -74,19 +73,20 @@ public class MessageCenter {
             table.dispatchHeroCandidates();
         } else if (client_const.kActionChooseHeroId == client_message) {
             
-            int[] pickResult = msg.getIntegerArray(c.param_key.id_list, new int[] {});
-            table.getPlayers().getPlayerByUserName(user).getResult(pickResult);
+            
+            table.getPlayers().getPlayerByUserName(user).pickedHero(msg);
             
             
         } else if (client_const.kActionChooseCard == client_message) {
             //TODO 改成不要在这里写, 在player里写
             //TODO 简化player的state后, 使用player的state莱判断
             //现在先用table的state来判断
-            int[] id = msg.getIntegerArray(c.param_key.id_list, new int[] {});
-            this.debug(user, "table.getState().getState() :  " + table.getState().getState());
-            if (table.getState().getState() == tablecon.state.not_started.cutting) {
-                table.getCutCards().put(user, id[0]);
-            }
+            
+            table.choseCard(user, msg);
+            
+            
+        } else if (client_const.kActionUseHandCard == client_message) {
+            table.getPlayers().getPlayerByUserName(user).useCard(msg);
         }
     }
     
@@ -111,7 +111,7 @@ public class MessageCenter {
     
         return plugin.getApi().scheduleExecution(i, j, callback);
     }
-
+    
     public void cancelScheduledExecution(int callback_id) {
     
         plugin.getApi().cancelScheduledExecution(callback_id);

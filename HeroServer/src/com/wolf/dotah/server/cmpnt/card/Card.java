@@ -490,4 +490,10 @@ public class Card implements card_const {
     
         this.enhancedFunction = enhancedFunction;
     }
+
+
+    public static int getFunctionId(int cardId) {
+        
+        return 0;
+    }
 }
