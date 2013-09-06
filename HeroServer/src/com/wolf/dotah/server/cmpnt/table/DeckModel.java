@@ -37,13 +37,13 @@ public class DeckModel {
         return cardIdList;
     }
     
-    public Card getCardById(Integer id) {
-    
-        for (Card c : deck) {
-            if (c.getId() == id) { return c; }
-        }
-        return null;
-    }
+//    public Card getCardById(Integer id) {
+//    
+//        for (Card c : deck) {
+//            if (c.getId() == id) { return c; }
+//        }
+//        return null;
+//    }
     
     public List<Integer> fetchCards(int count) {
     

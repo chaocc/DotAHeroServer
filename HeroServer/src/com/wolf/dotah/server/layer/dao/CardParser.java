@@ -15,7 +15,7 @@ public class CardParser {
     static String tag = " ===>> CardParser";
     
     public static CardParser getParser() {
-        
+    
         if (parser == null) {
             parser = new CardParser();
         }
@@ -23,7 +23,7 @@ public class CardParser {
     }
     
     public List<Card> getCardList() {
-        
+    
         List<Card> cardList = new ArrayList<Card>();
         JsonReader jsonReader;
         try {
@@ -44,12 +44,20 @@ public class CardParser {
         return cardList;
     }
     
+    public Card getCardById(int cardId) {
+    
+        for (Card card : getCardList()) {
+            if (card.getId() == cardId) { return card; }
+        }
+        return null;
+    }
+    
     private CardParser() {
-        
+    
     }
     
     public static void main(String... args) throws Exception {
-        
+    
         for (Card card : CardParser.getParser().getCardList()) {
             System.out.println(tag + card);
         }

@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.cmpnt.card.Card;
+import com.wolf.dotah.server.cmpnt.card.card_const.functioncon;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
+import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.layer.dao.HeroParser;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
@@ -308,9 +310,109 @@ public class Player implements player_const {
     public void useCard(EsObject msg) {
     
         int cardId = msg.getIntegerArray(client_const.param_key.id_list)[0];
-        int functionId = Card.getFunctionId(cardId);
-        switch (cardId) {
+        // add card to drop card stack
         
+        
+        Card card = CardParser.getParser().getCardById(cardId);
+        int functionId = card.getFunction();
+        switch (functionId) {//主要是b, s, m三类
+            case functioncon.b_normal_attack: {
+                // 1, broadcast somebody is attacking another(target)
+                String action = c.ac.normal_attack;
+                String source = userName;
+                String[] targets = msg.getStringArray(target_player_list);
+                table.updateInfo(new CustomData());
+                //                Data dataObj = new Data();
+                //                dataObj.setInteger(name, value);
+                //                requireAction.setInteger(code_client_action_required, ac_require_attacked);
+                //                requireAction.setIntegerArray(USED_CARDS, cards);
+                //                requireAction.setString(PLAYER_NAME, user);
+                //                for (String target : obj.getStringArray(TARGET_PLAYERS)) {
+                //                    sendGamePluginMessageToUser(target, requireAction);
+                //                }
+                
+                // 2, update target player to require react 
+                // with choosing from handcards, 
+                // evisions are available.
+                
+                // 3, if attack hitted, then update target's sp, hp
+                
+                // 4, if attack evaded, then update drop card stack
+                
+                break;
+            }
+            case functioncon.b_chaos_attack: {
+                
+                break;
+            }
+            case functioncon.b_flame_attack: {
+                
+                break;
+            }
+            case functioncon.b_heal: {
+                
+                break;
+            }
+            case functioncon.s_GodsStrength: {
+                
+                break;
+            }
+            case functioncon.s_LagunaBlade: {
+                
+                break;
+            }
+            case functioncon.s_viper_raid: {
+                
+                break;
+            }
+            case functioncon.m_Chakra: {
+                
+                break;
+            }
+            case functioncon.m_Dispel: {
+                
+                break;
+            }
+            case functioncon.m_Disarm: {
+                
+                break;
+            }
+            case functioncon.m_ElunesArrow: {
+                
+                break;
+            }
+            case functioncon.m_EnergyTransport: {
+                
+                break;
+            }
+            case functioncon.m_Fanaticism: {
+                
+                break;
+            }
+            case functioncon.m_Greed: {
+                
+                break;
+            }
+            case functioncon.m_Mislead: {
+                
+                break;
+            }
+            case functioncon.m_enhanced_Disarm: {
+                
+                break;
+            }
+            case functioncon.m_enhanced_ElunesArrow: {
+                
+                break;
+            }
+            case functioncon.m_enhanced_EnergyTransport: {
+                
+                break;
+            }
+            case functioncon.m_enhanced_Greed: {
+                
+                break;
+            }
         }
         
         

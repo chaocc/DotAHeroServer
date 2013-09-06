@@ -32,6 +32,9 @@ public interface c {
         public String cutted = "update_table_cutted";
         public String turn_to_player = "turn_to_player";
     }
+    public interface spread_action {
+        public String normal_attack = "normal_attack";
+    }
     
     public interface player_action {
         

@@ -10,6 +10,7 @@ import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
 import com.wolf.dotah.server.cmpnt.card.Card;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
+import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.l;
@@ -69,7 +70,7 @@ public class CutCard implements ScheduledCallback {
         String biggestPlayer = "";
         int biggestFaceNumber = 0;
         for (int i = 0; i < cards.size(); i++) {
-            Card c = table.getDeck().getCardById(cards.get(i));
+            Card c = CardParser.getParser().getCardById(cards.get(i));
             if (c.getFaceNumber() > biggestFaceNumber) {
                 biggestFaceNumber = c.getFaceNumber();
                 biggestPlayer = pl.get(i).getUserName();

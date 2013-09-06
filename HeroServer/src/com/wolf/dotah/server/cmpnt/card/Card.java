@@ -1,8 +1,6 @@
 package com.wolf.dotah.server.cmpnt.card;
 
 
-
-
 /**
  * 以下都属于这个类别
  * 基本牌       B
@@ -251,7 +249,7 @@ public class Card implements card_const {
     
     
     public Card(int id, String name, String suits, char type, int faceNumber, boolean distanceLimited, boolean dispellable, int distance,
-            boolean enhancable) {
+        boolean enhancable) {
     
         super();
         this.id = id;
@@ -267,8 +265,8 @@ public class Card implements card_const {
     
     
     public Card(int id, String name, String suits, int suitsCode, String color, int colorCode, char type, int typeCode, int faceNumber,
-            boolean distanceLimited, boolean dispellable, boolean equipable, int distance, int function, boolean enhancable,
-            int enhancedFunction) {
+        boolean distanceLimited, boolean dispellable, boolean equipable, int distance, int function, boolean enhancable,
+        int enhancedFunction) {
     
         super();
         this.id = id;
@@ -294,9 +292,9 @@ public class Card implements card_const {
     public String toString() {
     
         return "Card [id=" + id + ", name=" + name + ", suits=" + suits + ", suitsCode=" + suitsCode + ", color=" + color + ", colorCode="
-                + colorCode + ", type=" + type + ", typeCode=" + typeCode + ", faceNumber=" + faceNumber + ", distanceLimited="
-                + distanceLimited + ", dispellable=" + dispellable + ", equipable=" + equipable + ", distance=" + distance + ", function="
-                + function + ", enhancable=" + enhancable + ", enhancedFunction=" + enhancedFunction + "]";
+            + colorCode + ", type=" + type + ", typeCode=" + typeCode + ", faceNumber=" + faceNumber + ", distanceLimited="
+            + distanceLimited + ", dispellable=" + dispellable + ", equipable=" + equipable + ", distance=" + distance + ", function="
+            + function + ", enhancable=" + enhancable + ", enhancedFunction=" + enhancedFunction + "]";
     }
     
     
@@ -490,9 +488,9 @@ public class Card implements card_const {
     
         this.enhancedFunction = enhancedFunction;
     }
-
-
-    public static int getFunctionId(int cardId) {
+    
+    
+    public int getFunctionId() {
         
         return 0;
     }
