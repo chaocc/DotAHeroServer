@@ -9,10 +9,13 @@ import com.wolf.dotah.server.util.client_const;
 
 public class PlayerHandCardsModel {
     
+    private List<HandCardsChangeListener> changeListeners;
+    
     public PlayerHandCardsModel(Player p, int handcardLimit) {
     
         this.limit = handcardLimit;
         this.player = p;
+        changeListeners = new ArrayList<HandCardsChangeListener>();
     }
     
     private Player player;
@@ -22,6 +25,9 @@ public class PlayerHandCardsModel {
     public void add(List<Integer> input) {
     
         cards.addAll(input);
+        for (HandCardsChangeListener listener : changeListeners) {
+            listener.onHandCardsAdded(input);
+        }
     }
     
     public List<Integer> getCards() {
@@ -55,5 +61,13 @@ public class PlayerHandCardsModel {
         data.setInteger(client_const.param_key.hand_card_count, cards.size());
         data.setString(c.param_key.who, player.getUserName());
         player.getTable().getMessenger().sendMessageToAllWithoutSpecificUser(data, player.getUserName());
+    }
+    public interface HandCardsChangeListener {
+        public void onHandCardsAdded(List<Integer> newCards);
+    }
+    
+    public void registerHandcardChangeListener(HandCardsChangeListener input) {
+    
+        this.changeListeners.add(input);
     }
 }

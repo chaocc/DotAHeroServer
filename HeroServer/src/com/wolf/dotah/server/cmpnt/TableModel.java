@@ -169,6 +169,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     public void updatePlayersToCutting() {
     
         this.state.setState(tablecon.state.not_started.cutting);
+        showingCards.startUsing(1);
         for (Player p : this.getPlayers().getPlayerList()) {
             p.cutting();
         }
@@ -205,20 +206,14 @@ public class TableModel implements table_const, player_const, PlayerListListener
         disp.sendMessageToAllWithoutSpecificUser(data, playerName);
         
         
-        Data obj = new Data(disp);
-        disp.debug(tag, "adding action " + c.ac.turn_to_player + " for single");
-        obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
-        obj.addString(client_const.param_key.player_name, playerName);
-        disp.debug(tag, "trying to get player by player name " + playerName + " from player list " + players.toString());
         Player pp = players.getPlayerByPlayerName(playerName);
-        int[] availableHandCards = pp.getAvailableHandCards();
-        obj.addIntegerArray(client_const.param_key.available_id_list, availableHandCards);
-        obj.addInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
+        if (pp.getAi() != null && pp.isAi()) {
+            pp.getAi().startTurn();
+        } else {
+            pp.startTurn();
+            
+        }
         
-        
-        disp.sendMessageToSingleUser(playerName, obj);
-        //TODO 告诉玩家可以开始玩牌了, 
-        //TODO 摸2张牌
         
         //        data = new Data();
         //        data.setAction(c.server_action.free_play);//3001
@@ -269,5 +264,24 @@ public class TableModel implements table_const, player_const, PlayerListListener
             this.addResultForShowing(user, id[0]);
         }
         
+    }
+    
+    public void playerUpdateInfo(String userName, Data customData) {
+    
+        this.sendMessageToAllWithoutSpecificUser(customData, userName);
+        
+        
+    }
+    
+    private void sendMessageToAllWithoutSpecificUser(Data customData, String userName) {
+    
+        disp.sendMessageToAllWithoutSpecificUser(customData, userName);
+        
+    }
+    
+    public List<Integer> drawCardsFromDeck(int i) {
+    
+        
+        return deck.fetchCards(2);
     }
 }

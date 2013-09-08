@@ -31,10 +31,14 @@ public interface c {
         public String choosing_from_hand = "choosing_from_hand";
         public String cutted = "update_table_cutted";
         public String turn_to_player = "turn_to_player";
-    }
-    public interface spread_action {
         public String normal_attack = "normal_attack";
     }
+    public interface reason {
+        
+        String attacked = "attacked";
+        //        public String normal_attack = "normal_attack";
+    }
+    
     
     public interface player_action {
         
@@ -52,6 +56,7 @@ public interface c {
         public String how_many = "how_many";
         public String hero_candidates = "hero_candidates";
         public String who = "who";
+        public String biggist_card_id = "biggest_card_id";
     }
     
     public interface game_state {

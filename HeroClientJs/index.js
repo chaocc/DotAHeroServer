@@ -1,6 +1,6 @@
 var server = new ElectroServer.Server("server1");
 
-var availableConnection = new ElectroServer.AvailableConnection("localhost", 8989, ElectroServer.TransportType.BinaryHTTP);
+var availableConnection = new ElectroServer.AvailableConnection("192.168.1.106", 8989, ElectroServer.TransportType.BinaryHTTP);
 
 server.addAvailableConnection(availableConnection);
 
@@ -38,84 +38,84 @@ function onPluginMessageEvent(event) {
   var esob = event.parameters;
   var action = esob.getString(ACTION);
   log("PluginMessageEvent << action: " + action);
-    switch(action){
-        case START_GAME:{
+//    switch(action){
+//        case START_GAME:{
 //          TEMP
-            self.users = [obj stringArrayWithKey:kParamUserList];
-//            self.users = _es.managerHelper.userManager.users;
-            [[BGRoomLayer sharedRoomLayer] showGameLayer];
-            NSLog(@"All login users: %@", self.users);
-            
-            _gameLayer = [BGGameLayer sharedGameLayer];
-            _playingDeck = _gameLayer.playingDeck;
-            break;
-            
-        case kActionUpdateDeckHero:
-            [_playingDeck updatePlayingDeckWithHeroIds:[obj intArrayWithKey:kParamCardIdList]];
-            break;
-            
-        case kActionUpdateDeckSelectedHeros:
-            [_gameLayer renderOtherPlayersHeroWithHeroIds:[obj intArrayWithKey:kParamCardIdList]];
-            break;
-        
-        case kActionUpdateDeckCuttedCard:
-            _playingDeck.isNeedClearDeck = YES;
-        case kActionUpdateDeckUsedCard:
-        case kActionUpdateDeckAssigning:
-            [_playingDeck updatePlayingDeckWithCardIds:[obj intArrayWithKey:kParamCardIdList]];
-            _player.handCardCount = [obj intWithKey:kParamHandCardCount];
-            break;
-            
-        case kActionUpdateDeckHandCard:
-            [_playingDeck updatePlayingDeckWithCardCount:[obj intWithKey:kParamHandCardCount]
-                                            equipmentIds:[obj intArrayWithKey:kParamCardIdList]];
-            break;
-            
-        case kActionInitPlayerHero:
-            [_player renderHeroWithHeroId:[obj intWithKey:kParamSelectedHeroId]];
-            break;
-            
-        case kActionInitPlayerCard:
-            [_player renderHandCardWithCardIds:[obj intArrayWithKey:kParamCardIdList]];
-            break;
-            
-        case kActionUpdatePlayerHero:
-            [_player updateHeroWithBloodPoint:[obj intWithKey:kParamHeroBloodPoint]
-                                   angerPoint:[obj intWithKey:kParamHeroAngerPoint]];
-            break;
-        
-        case kActionUpdatePlayerHand:
-            [_player updateHandCardWithCardIds:[obj intArrayWithKey:kParamCardIdList]];
-            break;
-            
-        case kActionUpdatePlayerEquipment:
-            [_player updateEquipmentWithCardIds:[obj intArrayWithKey:kParamCardIdList]];
-            break;
-            
-        case kActionChooseCardToCut:
-            [_player addPlayingMenu];
-            [_player addProgressBar];
-            [_gameLayer addProgressBarForOtherPlayers];
-            break;
-            
-        case kActionPlayingCard:
-            _playingDeck.isNeedClearDeck = YES; // 每张卡牌结算完后需要清除桌面
-        case kActionChooseCardToUse:
-        case kActionChooseCardToDiscard:
-        case kActionChoosingColor:
-        case kActionChoosingSuits:
-            [_player addProgressBar];
-            if (_player.playerName == _gameLayer.selfPlayer.playerName) {
-                [_player addPlayingMenu];
-                [_player enableHandCardWithCardIds:[obj intArrayWithKey:kParamAvailableIdList]
-                               selectableCardCount:[obj intWithKey:kParamSelectableCardCount]];
-            }
-            break;
-            
-        case kActionChooseCardToExtract:
-            _player.canExtractCardCount = [obj intWithKey:kParamExtractedCardCount];
-            break;
-    }
+//            self.users = [obj stringArrayWithKey:kParamUserList];
+////            self.users = _es.managerHelper.userManager.users;
+//            [[BGRoomLayer sharedRoomLayer] showGameLayer];
+//            NSLog(@"All login users: %@", self.users);
+//            
+//            _gameLayer = [BGGameLayer sharedGameLayer];
+//            _playingDeck = _gameLayer.playingDeck;
+//            break;
+//            
+//        case kActionUpdateDeckHero:
+//            [_playingDeck updatePlayingDeckWithHeroIds:[obj intArrayWithKey:kParamCardIdList]];
+//            break;
+//            
+//        case kActionUpdateDeckSelectedHeros:
+//            [_gameLayer renderOtherPlayersHeroWithHeroIds:[obj intArrayWithKey:kParamCardIdList]];
+//            break;
+//        
+//        case kActionUpdateDeckCuttedCard:
+//            _playingDeck.isNeedClearDeck = YES;
+//        case kActionUpdateDeckUsedCard:
+//        case kActionUpdateDeckAssigning:
+//            [_playingDeck updatePlayingDeckWithCardIds:[obj intArrayWithKey:kParamCardIdList]];
+//            _player.handCardCount = [obj intWithKey:kParamHandCardCount];
+//            break;
+//            
+//        case kActionUpdateDeckHandCard:
+//            [_playingDeck updatePlayingDeckWithCardCount:[obj intWithKey:kParamHandCardCount]
+//                                            equipmentIds:[obj intArrayWithKey:kParamCardIdList]];
+//            break;
+//            
+//        case kActionInitPlayerHero:
+//            [_player renderHeroWithHeroId:[obj intWithKey:kParamSelectedHeroId]];
+//            break;
+//            
+//        case kActionInitPlayerCard:
+//            [_player renderHandCardWithCardIds:[obj intArrayWithKey:kParamCardIdList]];
+//            break;
+//            
+//        case kActionUpdatePlayerHero:
+//            [_player updateHeroWithBloodPoint:[obj intWithKey:kParamHeroBloodPoint]
+//                                   angerPoint:[obj intWithKey:kParamHeroAngerPoint]];
+//            break;
+//        
+//        case kActionUpdatePlayerHand:
+//            [_player updateHandCardWithCardIds:[obj intArrayWithKey:kParamCardIdList]];
+//            break;
+//            
+//        case kActionUpdatePlayerEquipment:
+//            [_player updateEquipmentWithCardIds:[obj intArrayWithKey:kParamCardIdList]];
+//            break;
+//            
+//        case kActionChooseCardToCut:
+//            [_player addPlayingMenu];
+//            [_player addProgressBar];
+//            [_gameLayer addProgressBarForOtherPlayers];
+//            break;
+//            
+//        case kActionPlayingCard:
+//            _playingDeck.isNeedClearDeck = YES; // 每张卡牌结算完后需要清除桌面
+//        case kActionChooseCardToUse:
+//        case kActionChooseCardToDiscard:
+//        case kActionChoosingColor:
+//        case kActionChoosingSuits:
+//            [_player addProgressBar];
+//            if (_player.playerName == _gameLayer.selfPlayer.playerName) {
+//                [_player addPlayingMenu];
+//                [_player enableHandCardWithCardIds:[obj intArrayWithKey:kParamAvailableIdList]
+//                               selectableCardCount:[obj intWithKey:kParamSelectableCardCount]];
+//            }
+//            break;
+//            
+//        case kActionChooseCardToExtract:
+//            _player.canExtractCardCount = [obj intWithKey:kParamExtractedCardCount];
+//            break;
+//    }
 }
 
 
@@ -160,8 +160,8 @@ function onJoinRoomEvent(event) {
 }
 var joinRoom = function() {
     setStatus("joining Room");
-    zoneName = "test_zone";
-    roomName = "text_room";
+    zoneName = "self_test_zone";
+    roomName = "self_text_room";
     var crr = new CreateRoomRequest();
     crr.zoneName = zoneName;
     crr.roomName = roomName;

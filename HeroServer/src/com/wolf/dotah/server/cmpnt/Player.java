@@ -5,9 +5,11 @@ import java.util.List;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.cmpnt.card.Card;
 import com.wolf.dotah.server.cmpnt.card.card_const.functioncon;
+import com.wolf.dotah.server.cmpnt.data.CustomData;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
+import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel.HandCardsChangeListener;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
@@ -18,7 +20,7 @@ import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
-public class Player implements player_const {
+public class Player implements player_const, HandCardsChangeListener {
     
     //TODO attackable
     //TODO disarmable
@@ -59,6 +61,7 @@ public class Player implements player_const {
     
         if (table.getState().getState() == tablecon.state.not_started.cutting) {//cutting
             int id = getHandCards().getCards().get(0);
+            
             table.addResultForShowing(this.getUserName(), id);
         } else {
             //choosing hero
@@ -86,6 +89,7 @@ public class Player implements player_const {
         HeroInfo heroInfo = HeroParser.getParser().getHeroInfoById(heroId);
         property = new PlayerProperty(heroInfo);
         handCards = new PlayerHandCardsModel(this, heroInfo.getHandcardLimit());
+        handCards.registerHandcardChangeListener(this);
         //TODO 不是在这里, 而是在全都收到选择了英雄后broadcast chose property
         action = playercon.state.desp.confirmed.hero;
         if (this.getAi() == null || !this.getAi().isAi()) {
@@ -120,24 +124,24 @@ public class Player implements player_const {
         if (this.ai == null || !this.ai.isAi()) {
             sendPrivateMessage(c.ac.init_hand_cards);
         }
-        this.sendPublicMessage(c.ac.init_hand_cards);
+        //        this.sendPublicMessage(c.ac.init_hand_cards);
         
     }
     
-    public void sendPublicMessage(String string_action) {
-    
-        Data data = new Data();
-        data.setAction(string_action);
-        addPublicData(data, string_action);
-        table.getMessenger().sendMessageToAllWithoutSpecificUser(data, this.getUserName());
-    }
-    
-    private void addPublicData(Data data, String string_action) {
-    
-        if (c.ac.init_hand_cards.equals(string_action)) {
-            data.setInteger(client_const.param_key.hand_card_count, getHandCards().getCards().size());
-        }
-    }
+    //    public void sendPublicMessage(String string_action) {
+    //    
+    //        Data data = new Data();
+    //        data.setAction(string_action);
+    //        addPublicData(data, string_action);
+    //        table.getMessenger().sendMessageToAllWithoutSpecificUser(data, this.getUserName());
+    //    }
+    //    
+    //    private void addPublicData(Data data, String string_action) {
+    //    
+    //        if (c.ac.init_hand_cards.equals(string_action)) {
+    //            data.setInteger(client_const.param_key.hand_card_count, getHandCards().getCards().size());
+    //        }
+    //    }
     
     private void sendPrivateMessage(String string_action) {
     
@@ -320,8 +324,16 @@ public class Player implements player_const {
                 // 1, broadcast somebody is attacking another(target)
                 String action = c.ac.normal_attack;
                 String source = userName;
-                String[] targets = msg.getStringArray(target_player_list);
-                table.updateInfo(new CustomData());
+                String[] targets = msg.getStringArray(client_const.param_key.target_player_list);
+                table.playerUpdateInfo(userName, new CustomData(action, source, targets));
+                
+                
+                String targetName = targets[0];
+                Player targetPlayer = table.getPlayers().getPlayerByPlayerName(targetName);
+                action = c.ac.choosing_from_hand;
+                String reason = c.reason.attacked;
+                targetPlayer.updateState(action, reason);
+                
                 //                Data dataObj = new Data();
                 //                dataObj.setInteger(name, value);
                 //                requireAction.setInteger(code_client_action_required, ac_require_attacked);
@@ -415,6 +427,81 @@ public class Player implements player_const {
             }
         }
         
+        
+    }
+    
+    
+    private void updateState(String state, String reason) {
+    
+        /* 
+         * TODO 每次先根据reason 来判断哪些牌或者操作是允许的, 
+         * 把这些牌或者操作添加到data里, 
+         * 把action和允许的牌和操作更新给客户端, 让客户端选择.
+         * 
+         */
+        
+        if (reason.equals(c.reason.attacked)) {
+            
+        }
+        
+        
+    }
+    
+    
+    public void startTurn() {
+    
+        this.drawHandCards(2);
+        this.freePlay();
+        
+        
+    }
+    
+    
+    private void freePlay() {
+    
+        Data obj = new Data();
+        obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
+        obj.addString(client_const.param_key.player_name, userName);
+        
+        int[] availableHandCards = this.getAvailableHandCards();
+        obj.addIntegerArray(client_const.param_key.available_id_list, availableHandCards);
+        obj.addInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
+        
+        
+        
+        
+        table.sendMessageToSingleUser(userName, obj);
+        
+        obj=new Data();
+        obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
+        obj.addString(client_const.param_key.player_name, userName);
+        table.playerUpdateInfo(userName, obj);
+        
+    }
+    
+    
+    private void drawHandCards(int i) {
+    
+        List<Integer> cards = table.drawCardsFromDeck(2);
+        this.handCards.add(cards);
+        
+    }
+    
+    
+    @Override
+    public void onHandCardsAdded(List<Integer> newCards) {
+    
+        
+        Data obj = new Data();
+        obj.setAction(c.ac.update_hand_cards);//kActionUpdatePlayerHand,  2003
+        obj.setIntegerArray(c.param_key.id_list, u.intArrayMapping(newCards.toArray(new Integer[] {})));
+        this.updateMyStateToClient(obj);
+        
+        obj = new Data();
+        obj.setAction(c.ac.update_hand_cards);
+        obj.setInteger(c.param_key.how_many, newCards.size());
+        obj.setString(c.param_key.who, userName);
+        table.playerUpdateInfo(userName, obj);
         
     }
 }

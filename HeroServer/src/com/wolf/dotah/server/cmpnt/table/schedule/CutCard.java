@@ -54,29 +54,36 @@ public class CutCard implements ScheduledCallback {
         List<Integer> cards = new ArrayList<Integer>();
         for (int i = 0; i < cutCards.size(); i++) {
             Player p = pl.get(i);
+            l.logger().d(tag, "cutCards, " + cutCards.toString());
             int card = cutCards.get(p.getUserName());
             cards.add(card);
             p.getHandCards().remove(card, autoDesided);
         }
+        
+        //TODO 先拼点, 
+        String biggestPlayer = "";
+        int biggestFaceNumber = 0;
+        int biggestCardId = -1;
+        for (int i = 0; i < cards.size(); i++) {
+            Card c = CardParser.getParser().getCardById(cards.get(i));
+            if (c.getFaceNumber() > biggestFaceNumber) {
+                biggestFaceNumber = c.getFaceNumber();
+                biggestCardId = c.getId();
+                biggestPlayer = pl.get(i).getUserName();
+                l.logger().d(tag, "changing biggest to " + biggestPlayer + " with card " + c.getName());
+            }
+        }
+        
+        
         Data data = new Data();
         data.setAction(c.ac.cutted);
         data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cards.toArray(new Integer[cards.size()])));
+        data.setInteger(c.param_key.biggist_card_id, biggestCardId);
         data.setInteger(client_const.param_key.hand_card_count, pl.get(0).getHandCards().getCards().size());
         //  TODO  scheduler里不该有这么实际的逻辑, 要通过调用table等的行为实现. 所以这里不需要依赖messenger
         table.getMessenger().sendMessageToAll(data);
         
         
-        //TODO 先拼点, 
-        String biggestPlayer = "";
-        int biggestFaceNumber = 0;
-        for (int i = 0; i < cards.size(); i++) {
-            Card c = CardParser.getParser().getCardById(cards.get(i));
-            if (c.getFaceNumber() > biggestFaceNumber) {
-                biggestFaceNumber = c.getFaceNumber();
-                biggestPlayer = pl.get(i).getUserName();
-                l.logger().d(tag, "changing biggest to " + biggestPlayer + " with card " + c.getName());
-            }
-        }
         l.logger().d(tag, "starting turn to player " + biggestPlayer);
         table.startTurn(biggestPlayer);
     }
