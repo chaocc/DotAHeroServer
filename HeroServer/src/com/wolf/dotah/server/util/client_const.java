@@ -34,6 +34,7 @@ public interface client_const {
         kActionUpdateDeckPlayingCard = 1003, // 更新桌面: 牌堆顶的牌
         action_update_table_confirmed_heros = 1004, // 更新桌面: 玩家列表
         action_cutted = 1005,// 切牌完成
+        kActionClearPlayingDeck = 1100,
         
         kActionInitPlayerHero = 2000, // 初始化玩家: 选中的英雄
         kActionInitPlayerCard = 2001, // 初始化玩家: 发初始手牌

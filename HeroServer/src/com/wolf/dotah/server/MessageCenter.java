@@ -86,7 +86,7 @@ public class MessageCenter {
             
             
         } else if (client_const.kActionUseHandCard == client_message) {
-            table.getPlayers().getPlayerByUserName(user).useCard(msg);
+            table.playerUseCard(user,msg);
         }
     }
     

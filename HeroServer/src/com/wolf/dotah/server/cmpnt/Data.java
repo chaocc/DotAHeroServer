@@ -2,23 +2,17 @@ package com.wolf.dotah.server.cmpnt;
 
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.Number;
-import com.wolf.dotah.server.MessageCenter;
 import com.wolf.dotah.server.util.c;
+import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
 public class Data extends EsObject {
     
     private static final long serialVersionUID = -1791116800338703971L;
-    private MessageCenter disp;
     
     public Data() {
     
         super();
-    }
-    
-    public Data(MessageCenter input) {
-    
-        this.disp = input;
     }
     
     
@@ -212,13 +206,19 @@ public class Data extends EsObject {
         return this;
     }
     
+    public Data setAction(int clientAction) {
+    
+        debug("function id ", clientAction + "");
+        this.setInteger(c.action, clientAction);
+        return this;
+    }
+    
     private void debug(String name, String value) {
     
-        if (disp != null) {
-            disp.debug("adding data to esobj ===>> ", value);
-        }
+        l.logger().d("adding data to esobj ===>> ", value);
+        
         
     }
-
+    
     
 }

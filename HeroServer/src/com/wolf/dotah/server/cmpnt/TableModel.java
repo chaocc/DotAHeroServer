@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.MessageCenter;
+import com.wolf.dotah.server.cmpnt.card.Card;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
 import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
@@ -13,6 +14,7 @@ import com.wolf.dotah.server.cmpnt.table.TableShowingCards;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.table_const;
 import com.wolf.dotah.server.cmpnt.table.schedule.Waiter;
+import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.l;
@@ -283,5 +285,41 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
         
         return deck.fetchCards(2);
+    }
+    
+    public void updateTableInfoToOtherFromPlayer(String userName, int action, EsObject msg) {
+    
+        /*
+         * 其实就是转发广播
+         * 可能有目标, 
+         * 也可能有card id
+         * 之类的信息
+         */
+        Data data = new Data();
+        data.addAll(msg);
+        
+        /*
+         * 但是加工一下
+         * 设上正确的action
+         * 设上source
+         */
+        data.setAction(action);
+        String source = userName;
+        data.addString(client_const.param_key.player_name, source);
+        
+        this.sendMessageToAllWithoutSpecificUser(data, userName);
+    }
+    
+    public void playerUseCard(String user, EsObject msg) {
+    
+        int cardId = msg.getIntegerArray(client_const.param_key.id_list)[0];
+        // add card to drop card stack
+        Card card = CardParser.getParser().getCardById(cardId);
+        int functionId = card.getFunction();
+        updateTableInfoToOtherFromPlayer(user, functionId, msg);
+        
+        
+        players.getPlayerByUserName(user).useCard(msg, functionId);
+        
     }
 }

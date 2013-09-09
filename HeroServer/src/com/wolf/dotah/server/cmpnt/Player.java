@@ -3,9 +3,7 @@ package com.wolf.dotah.server.cmpnt;
 import java.util.ArrayList;
 import java.util.List;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
-import com.wolf.dotah.server.cmpnt.card.Card;
 import com.wolf.dotah.server.cmpnt.card.card_const.functioncon;
-import com.wolf.dotah.server.cmpnt.data.CustomData;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
@@ -13,7 +11,6 @@ import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel.HandCardsChangeLi
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
 import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
-import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.layer.dao.HeroParser;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
@@ -311,28 +308,17 @@ public class Player implements player_const, HandCardsChangeListener {
         
     }
     
-    public void useCard(EsObject msg) {
+    public void useCard(EsObject info, int functionId) {
     
-        int cardId = msg.getIntegerArray(client_const.param_key.id_list)[0];
-        // add card to drop card stack
         
-        
-        Card card = CardParser.getParser().getCardById(cardId);
-        int functionId = card.getFunction();
         switch (functionId) {//主要是b, s, m三类
             case functioncon.b_normal_attack: {
-                // 1, broadcast somebody is attacking another(target)
-                String action = c.ac.normal_attack;
-                String source = userName;
-                String[] targets = msg.getStringArray(client_const.param_key.target_player_list);
-                table.playerUpdateInfo(userName, new CustomData(action, source, targets));
                 
-                
-                String targetName = targets[0];
+                String targetName = info.getStringArray(client_const.param_key.target_player_list)[0];
                 Player targetPlayer = table.getPlayers().getPlayerByPlayerName(targetName);
                 action = c.ac.choosing_from_hand;
                 String reason = c.reason.attacked;
-                targetPlayer.updateState(action, reason);
+                targetPlayer.updateState(action, reason, info);
                 
                 //                Data dataObj = new Data();
                 //                dataObj.setInteger(name, value);
@@ -431,8 +417,10 @@ public class Player implements player_const, HandCardsChangeListener {
     }
     
     
-    private void updateState(String state, String reason) {
+    private void updateState(String state, String reason, EsObject stateInfo) {
     
+        this.action = state;
+        this.state.addAll(stateInfo);
         /* 
          * TODO 每次先根据reason 来判断哪些牌或者操作是允许的, 
          * 把这些牌或者操作添加到data里, 
@@ -468,11 +456,9 @@ public class Player implements player_const, HandCardsChangeListener {
         obj.addInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
         
         
-        
-        
         table.sendMessageToSingleUser(userName, obj);
         
-        obj=new Data();
+        obj = new Data();
         obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
         obj.addString(client_const.param_key.player_name, userName);
         table.playerUpdateInfo(userName, obj);

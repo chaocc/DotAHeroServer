@@ -9,7 +9,6 @@ public class CustomData extends Data {
     public CustomData(String action, String sourcePlayer, String[] targetPlayers) {
     
         this.setAction(action);
-        this.setString(client_const.param_key.player_name, sourcePlayer);
-        this.setStringArray(client_const.param_key.target_player_list, targetPlayers);
+
     }
 }
