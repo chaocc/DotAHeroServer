@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import com.wolf.dotah.server.layer.dao.HeroParser;
+import com.wolf.dotah.server.util.c;
 
-public class HeroCandidateModel implements table_const {
+public class HeroCandidateModel {
     
     List<Integer> allHeroList;
     List<Integer> availableList;
@@ -15,7 +16,7 @@ public class HeroCandidateModel implements table_const {
     public Integer[] getCandidatesForSinglePlayer() {
     
         Candidates result = new Candidates();
-        for (int i = 0; i < candidates.default_count_for_each_player; i++) {
+        for (int i = 0; i < c.default_hero_candidates_count_for_each_player; i++) {
             result.addCandidate(availableList.get(i));
         }
         

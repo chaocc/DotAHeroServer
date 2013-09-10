@@ -6,7 +6,7 @@ public interface card_const {
     final int card_code_base = 10000;
     
     
-    public interface typecon {
+    public interface card_type {
         
         final char e = 'e';// none weapon equipment
         final char w = 'w';// weapon, also equipment
@@ -24,7 +24,7 @@ public interface card_const {
         final int dCode = card_code_base + eCode + 20;
         
     }
-    
+
     public interface colorcon {
         
         final String red = "red";
@@ -47,7 +47,7 @@ public interface card_const {
         final int club_code = card_code_base + 40;
     }
     
-    public interface namecon {
+    public interface func_name {
         
         String normal_attack = "普通攻击";
         String flame_attack = "火焰攻击";
@@ -114,5 +114,41 @@ public interface card_const {
         final int w_DemonEdge = function_code_base + 28;// 恶魔刀锋
         final int d_SacredRelic = function_code_base + 29;// 圣者遗物
     }
-    
+    //  kHeroAttributeStrength = 1,             // 力量型
+    //  kHeroAttributeAgility,                  // 敏捷型
+    //  kHeroAttributeIntelligence              // 智力型
+    //  kHeroSkillCategoryActive = 0,           // 主动技能
+    //  kHeroSkillCategoryPassive,              // 被动技能
+    //  kHeroSkillTypeGeneral = 0,              // 普通技
+    //  kHeroSkillTypeRestricted,               // 限制技
+    //  kHeroSkillTypeLimited                   // 限定技
+    public interface hero_type {
+        
+        int strengthCode = 1;
+        int agilityCode = 2;
+        int intelligenceCode = 3;
+        
+        String strength = "力量";
+        String agility = "敏捷";
+        String intelligence = "智力";
+        
+    }
+    public interface hero_skill {
+        
+        public interface categorycon {
+            
+            int activeCode = 0;
+            int passiveCode = 1;
+            String active = "主动技";
+            String passive = "被动技";
+        }
+        
+        public interface typecon {
+            
+            int generalCode = 0;
+            int limitedCode = 1;
+            String general = "普通技";
+            String limited = "限制技";
+        }
+    }
 }

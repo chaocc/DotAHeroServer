@@ -9,6 +9,7 @@ public interface c {
     public int default_player_count = 2;
     public int default_wait_time = 10;
     public int default_draw_count = 5;
+    public int default_hero_candidates_count_for_each_player = 1;
     
     public interface server_action {
         //TODO 分成很少的几个action, 比如choosing之类的, chose, 至于是chose hero, hero就用参数
@@ -52,13 +53,103 @@ public interface c {
         
         public String left = "left";
         String player_count = "player_count";
-        String id_list = "id_list";
+        String id_list = "id_list";// 卡牌列表(英雄牌/摸的牌/获得的牌/使用的牌/弃置的牌)
         public String how_many = "how_many";
         public String hero_candidates = "hero_candidates";
         public String who = "who";
         public String biggist_card_id = "biggest_card_id";
+        
+        final String
+            kParamUserList = "player_list",// 所有玩家列表
+            kParamRemainingCardCount = "remaining_count",// 牌堆剩余牌数
+            player_name = "player_name",// 回合开始/伤害来源/出牌的玩家
+            target_player_list = "target_player_list",// 目标玩家列表
+            index_list = "index_list",// 选中的哪几张牌
+            hand_card_count = "hand_card_count",// 玩家手牌数量
+            kParamSelectableCardCount = "selectable_count",// 可选择的卡牌数量
+            //                selectable_ids = "selectable_ids",
+            kParamExtractedCardCount = "extracted_count",// 可抽取目标的卡牌数量
+            kParamSelectedHeroId = "id",// 选中的英雄
+            kParamSelectedSkillId = "selected_skill_id",// 选中的英雄技能
+            kParamSelectedColor = "selected_color",// 选中的颜色
+            kParamSelectedSuits = "selected_suits",// 选中的花色
+            kParamIsStrengthened = "is_strengthened",// 是否被强化
+            kParamHeroBloodPoint = "hp",// 血量值
+            kParamHeroAngerPoint = "sp", // 怒气值
+            
+            available_id_list = "available_id_list"
+            
+            //        attach_source_player = "attach_source_player",
+            //        attach_target_player = "attach_target_player"
+            
+            ;
     }
     
+    interface playercon {
+        
+        String aiName = "AI Player ";
+        String aiPlayerName = "I'm AI ";
+        interface property {
+            
+        }
+        
+        interface state {
+            
+            interface desp {
+                String unavailable = "unavailable";
+                String free_play = "free_play";
+                String idle = "idle";//没进度条, 什么都没做, 比如有人在free_play
+                
+                interface waiting {
+                    String waiting = "waiting"; //有进度条, 比如等待某人的驱散
+                    
+                }
+                
+                interface choosing {
+                    String choosing = "choosing";
+                    String choosing_hero = "choosing_hero";
+                }
+                
+                interface confirmed {
+                    String hero = "hero_confirmed";
+                    String id = "id";
+                }
+            }
+            
+            interface param_key {
+                interface general {
+                    String choosing_card = "choosing_card";
+                    String id_list = c.param_key.id_list;
+                }
+                
+                interface detail {
+                    String hero_candidates = "hero_candidates";
+                }
+            }
+        }
+        
+    }
+    public interface tablecon {
+        
+        public interface state {
+            
+            public interface not_started {
+                
+                int chooing_hero = 1;
+                int cutting = 5;
+                int determing_destiny = 2;
+            }
+            
+            public interface started {
+                
+                int free_playing = 3;
+                int deciding = 4;
+            }
+            
+            int ended = 5;
+        }
+        
+    }
     public interface game_state {
         
         public String none = "";

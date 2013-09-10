@@ -2,4 +2,5 @@
 2, 在schedule中, 如果收到client的结果需要立刻cancel schedule
 3, 使用 kActionClearPlayingDeck = 1100,  // 清空桌面  来是客户端清空桌面
 4, 把魔法牌都写完.
+5, 整理常量
 

@@ -4,7 +4,6 @@ import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
-import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 import com.wolf.dotah.server.util.c;
 
 public class ChooseHero implements ScheduledCallback {
@@ -45,7 +44,7 @@ public class ChooseHero implements ScheduledCallback {
         for (Player player : table.getPlayers().getPlayerList()) {
             String action = player.getAction();
             ;
-            if (action.equals(playercon.state.desp.confirmed.hero)) {
+            if (action.equals(c.playercon.state.desp.confirmed.hero)) {
                 confirmed += 1;
             }
         }

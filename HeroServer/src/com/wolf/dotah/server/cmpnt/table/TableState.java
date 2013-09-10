@@ -13,7 +13,7 @@ package com.wolf.dotah.server.cmpnt.table;
  * @author Solomon
  *
  */
-public class TableState implements table_const {
+public class TableState  {
     
     int state;
     String subject;

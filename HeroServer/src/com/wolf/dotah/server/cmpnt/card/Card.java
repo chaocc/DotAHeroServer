@@ -49,27 +49,27 @@ public class Card implements card_const {
         genColorCode();
         
         switch (this.type) {
-            case typecon.e: {
+            case card_type.e: {
                 genEinfo();
                 break;
             }
-            case typecon.w: {
+            case card_type.w: {
                 genWinfo();
                 break;
             }
-            case typecon.d: {
+            case card_type.d: {
                 genDinfo();
                 break;
             }
-            case typecon.b: {
+            case card_type.b: {
                 genBinfo();
                 break;
             }
-            case typecon.s: {
+            case card_type.s: {
                 genSinfo();
                 break;
             }
-            case typecon.m: {
+            case card_type.m: {
                 genMinfo();
                 break;
             }
@@ -83,27 +83,27 @@ public class Card implements card_const {
     
         this.dispellable = true;
         
-        if (name.equals(namecon.Fanaticism)) {
+        if (name.equals(func_name.Fanaticism)) {
             this.function = functioncon.m_Fanaticism;
-        } else if (name.equals(namecon.Mislead)) {
+        } else if (name.equals(func_name.Mislead)) {
             this.function = functioncon.m_Mislead;
-        } else if (name.equals(namecon.Chakra)) {
+        } else if (name.equals(func_name.Chakra)) {
             this.function = functioncon.m_Chakra;
-        } else if (name.equals(namecon.Dispel)) {
+        } else if (name.equals(func_name.Dispel)) {
             this.function = functioncon.m_Dispel;
         }
         
         // enhancable magics 
-        else if (name.equals(namecon.Disarm)) {
+        else if (name.equals(func_name.Disarm)) {
             this.function = functioncon.m_Disarm;
             this.enhancedFunction = functioncon.m_enhanced_Disarm;
-        } else if (name.equals(namecon.ElunesArrow)) {
+        } else if (name.equals(func_name.ElunesArrow)) {
             this.function = functioncon.m_ElunesArrow;
             this.enhancedFunction = functioncon.m_enhanced_ElunesArrow;
-        } else if (name.equals(namecon.EnergyTransport)) {
+        } else if (name.equals(func_name.EnergyTransport)) {
             this.function = functioncon.m_EnergyTransport;
             this.enhancedFunction = functioncon.m_enhanced_EnergyTransport;
-        } else if (name.equals(namecon.Greed)) {
+        } else if (name.equals(func_name.Greed)) {
             this.function = functioncon.m_Greed;
             this.enhancedFunction = functioncon.m_enhanced_Greed;
         }
@@ -112,11 +112,11 @@ public class Card implements card_const {
     
     private void genSinfo() {
     
-        if (name.equals(namecon.laguna_blade)) {
+        if (name.equals(func_name.laguna_blade)) {
             this.function = functioncon.s_LagunaBlade;
-        } else if (name.equals(namecon.god_strength)) {
+        } else if (name.equals(func_name.god_strength)) {
             this.function = functioncon.s_GodsStrength;
-        } else if (name.equals(namecon.viper_raid)) {
+        } else if (name.equals(func_name.viper_raid)) {
             this.function = functioncon.s_viper_raid;
         }
     }
@@ -124,15 +124,15 @@ public class Card implements card_const {
     
     private void genBinfo() {
     
-        if (name.equals(namecon.normal_attack)) {
+        if (name.equals(func_name.normal_attack)) {
             this.function = functioncon.b_normal_attack;
-        } else if (name.equals(namecon.chaos_attack)) {
+        } else if (name.equals(func_name.chaos_attack)) {
             this.function = functioncon.b_chaos_attack;
-        } else if (name.equals(namecon.flame_attack)) {
+        } else if (name.equals(func_name.flame_attack)) {
             this.function = functioncon.b_flame_attack;
-        } else if (name.equals(namecon.heal)) {
+        } else if (name.equals(func_name.heal)) {
             this.function = functioncon.b_heal;
-        } else if (name.equals(namecon.evasion)) {
+        } else if (name.equals(func_name.evasion)) {
             this.function = functioncon.b_evasion;
         }
     }
@@ -159,28 +159,28 @@ public class Card implements card_const {
     private void genTypeCode() {
     
         switch (this.type) {
-            case typecon.e: {
-                this.typeCode = typecon.eCode;
+            case card_type.e: {
+                this.typeCode = card_type.eCode;
                 break;
             }
-            case typecon.w: {
-                this.typeCode = typecon.wCode;
+            case card_type.w: {
+                this.typeCode = card_type.wCode;
                 break;
             }
-            case typecon.b: {
-                this.typeCode = typecon.bCode;
+            case card_type.b: {
+                this.typeCode = card_type.bCode;
                 break;
             }
-            case typecon.s: {
-                this.typeCode = typecon.sCode;
+            case card_type.s: {
+                this.typeCode = card_type.sCode;
                 break;
             }
-            case typecon.m: {
-                this.typeCode = typecon.mCode;
+            case card_type.m: {
+                this.typeCode = card_type.mCode;
                 break;
             }
-            case typecon.d: {
-                this.typeCode = typecon.dCode;
+            case card_type.d: {
+                this.typeCode = card_type.dCode;
                 break;
             }
         }

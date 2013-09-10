@@ -1,7 +1,9 @@
 package com.wolf.dotah.server.cmpnt.player;
 
+import com.wolf.dotah.server.cmpnt.card.card_const;
 
-public class HeroInfo implements hero_const {
+
+public class HeroInfo implements card_const {
     
     int id;
     String name;
@@ -29,16 +31,16 @@ public class HeroInfo implements hero_const {
     public HeroInfo genInfo() {
     
         switch (heroTypeCode) {
-            case typecon.agilityCode: {
-                this.heroType = typecon.agility;
+            case hero_type.agilityCode: {
+                this.heroType = hero_type.agility;
                 break;
             }
-            case typecon.intelligenceCode: {
-                this.heroType = typecon.intelligence;
+            case hero_type.intelligenceCode: {
+                this.heroType = hero_type.intelligence;
                 break;
             }
-            case typecon.strengthCode: {
-                this.heroType = typecon.strength;
+            case hero_type.strengthCode: {
+                this.heroType = hero_type.strength;
                 break;
             }
         }

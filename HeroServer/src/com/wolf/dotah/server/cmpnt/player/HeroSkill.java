@@ -1,9 +1,11 @@
 package com.wolf.dotah.server.cmpnt.player;
 
+import com.wolf.dotah.server.cmpnt.card.card_const;
 
 
 
-public class HeroSkill implements hero_const {
+
+public class HeroSkill implements card_const {
     
     
     int functionId;
@@ -39,23 +41,23 @@ public class HeroSkill implements hero_const {
     public HeroSkill genInfo() {
     
         switch (skillTypeCode) {
-            case skill.typecon.generalCode: {
-                this.skillType = skill.typecon.general;
+            case hero_skill.typecon.generalCode: {
+                this.skillType = hero_skill.typecon.general;
                 break;
             }
-            case skill.typecon.limitedCode: {
-                this.skillType = skill.typecon.limited;
+            case hero_skill.typecon.limitedCode: {
+                this.skillType = hero_skill.typecon.limited;
                 break;
             }
         }
         
         switch (skillCategoryCode) {
-            case skill.categorycon.activeCode: {
-                this.skillCategory = skill.categorycon.active;
+            case hero_skill.categorycon.activeCode: {
+                this.skillCategory = hero_skill.categorycon.active;
                 break;
             }
-            case skill.categorycon.passiveCode: {
-                this.skillCategory = skill.categorycon.passive;
+            case hero_skill.categorycon.passiveCode: {
+                this.skillCategory = hero_skill.categorycon.passive;
                 break;
             }
         }

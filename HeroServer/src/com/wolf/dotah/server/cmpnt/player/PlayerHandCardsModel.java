@@ -5,7 +5,6 @@ import java.util.List;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.util.c;
-import com.wolf.dotah.server.util.client_const;
 
 public class PlayerHandCardsModel {
     
@@ -58,7 +57,7 @@ public class PlayerHandCardsModel {
         //send update player handcard count to other players
         data = new Data();
         data.setAction(c.ac.update_hand_cards);
-        data.setInteger(client_const.param_key.hand_card_count, cards.size());
+        data.setInteger(c.param_key.hand_card_count, cards.size());
         data.setString(c.param_key.who, player.getUserName());
         player.getTable().getMessenger().sendMessageToAllWithoutSpecificUser(data, player.getUserName());
     }

@@ -3,7 +3,6 @@ package com.wolf.dotah.server.cmpnt.player;
 import java.util.Random;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.util.c;
-import com.wolf.dotah.server.util.client_const;
 
 public class Ai {
     final boolean isAi = true;

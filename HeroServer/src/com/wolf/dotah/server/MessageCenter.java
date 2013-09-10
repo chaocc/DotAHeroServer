@@ -19,20 +19,20 @@ public class MessageCenter {
     public void sendMessageToSingleUser(String user, EsObject msg) {
     
         this.debug(tag, "sendMessageToSingleUser:  user: " + user + ",  msg: " + msg.toString());
-        msg.setInteger(client_const.param_key.kParamRemainingCardCount, table.getRemainCardCount());
+        msg.setInteger(c.param_key.kParamRemainingCardCount, table.getRemainCardCount());
         plugin.getApi().sendPluginMessageToUser(user, msg);
     }
     
     public void sendMessageToAll(EsObject msg) {
     
         this.debug(tag, "sendMessageToAll: " + msg.toString());
-        msg.setInteger(client_const.param_key.kParamRemainingCardCount, table.getRemainCardCount());
+        msg.setInteger(c.param_key.kParamRemainingCardCount, table.getRemainCardCount());
         plugin.getApi().sendPluginMessageToRoom(plugin.getApi().getZoneId(), plugin.getApi().getRoomId(), msg);
     }
     
     public void sendMessageToAllWithoutSpecificUser(EsObject msg, String exceptionUser) {
     
-        msg.setInteger(client_const.param_key.kParamRemainingCardCount, table.getRemainCardCount());
+        msg.setInteger(c.param_key.kParamRemainingCardCount, table.getRemainCardCount());
         this.debug(tag, "sendMessageToAllWithoutSpecificUser: exceptionUser: " + exceptionUser + ",  msg: " + msg.toString());
         Collection<UserValue> users = plugin.getApi().getUsersInRoom(plugin.getApi().getZoneId(), plugin.getApi().getRoomId());
         for (UserValue userv : users) {

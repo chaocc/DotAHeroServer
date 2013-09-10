@@ -5,18 +5,15 @@ import java.util.Map;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.MessageCenter;
 import com.wolf.dotah.server.cmpnt.card.Card;
-import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
 import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
 import com.wolf.dotah.server.cmpnt.table.PlayerList.PlayerListListener;
 import com.wolf.dotah.server.cmpnt.table.TableShowingCards;
 import com.wolf.dotah.server.cmpnt.table.TableState;
-import com.wolf.dotah.server.cmpnt.table.table_const;
 import com.wolf.dotah.server.cmpnt.table.schedule.Waiter;
 import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.util.c;
-import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
@@ -38,7 +35,7 @@ import com.wolf.dotah.server.util.u;
  * @author Solomon
  *
  */
-public class TableModel implements table_const, player_const, PlayerListListener {
+public class TableModel implements PlayerListListener {
     
     /*
      * TODO wait 有几种,  所有人等待特定的人, 所有人等待未知的人, 一个人等待特定的一个人, 一个列表的人等待特定的人
@@ -81,7 +78,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     public void dispatchHeroCandidates() {
     
         this.state.setSubject(this.getClass().getSimpleName());
-        this.state.setState(tablecon.state.not_started.chooing_hero);
+        this.state.setState(c.tablecon.state.not_started.chooing_hero);
         HeroCandidateModel heroModel = new HeroCandidateModel();
         List<Integer[]> heroCandidateList = heroModel.getCandidateForAll(players.getCount());
         
@@ -89,10 +86,10 @@ public class TableModel implements table_const, player_const, PlayerListListener
             Integer[] candidatesForSingle = heroCandidateList.get(i);
             Player single = players.getPlayerByIndex(i);
             
-            Data state = new Data().addIntegerArray(playercon.state.param_key.general.id_list, u.intArrayMapping(candidatesForSingle));
-            single.setAction(playercon.state.desp.choosing.choosing_hero);
+            Data state = new Data().addIntegerArray(c.playercon.state.param_key.general.id_list, u.intArrayMapping(candidatesForSingle));
+            single.setAction(c.playercon.state.desp.choosing.choosing_hero);
             single.setState(state);
-            state.setAction(playercon.state.desp.choosing.choosing_hero);
+            state.setAction(c.playercon.state.desp.choosing.choosing_hero);
             if (single.isAi()) {
                 single.performAiAction(c.param_key.hero_candidates);
             } else {
@@ -101,7 +98,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
             //            updateSequence.submitServerUpdateByTable(this);
         }
         //TODO waiting for everybody to choose
-        waiter.waitingForEverybody().becauseOf(playercon.state.desp.choosing.choosing_hero);
+        waiter.waitingForEverybody().becauseOf(c.playercon.state.desp.choosing.choosing_hero);
     }
     
     private void initCardModels() {
@@ -170,7 +167,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
     public void updatePlayersToCutting() {
     
-        this.state.setState(tablecon.state.not_started.cutting);
+        this.state.setState(c.tablecon.state.not_started.cutting);
         showingCards.startUsing(1);
         for (Player p : this.getPlayers().getPlayerList()) {
             p.cutting();
@@ -203,7 +200,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
         Data data = new Data();
         data.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
-        data.addString(client_const.param_key.player_name, playerName);
+        data.addString(c.param_key.player_name, playerName);
         //TODO table 里要保存current player, 
         disp.sendMessageToAllWithoutSpecificUser(data, playerName);
         
@@ -262,7 +259,7 @@ public class TableModel implements table_const, player_const, PlayerListListener
     
         int[] id = msg.getIntegerArray(c.param_key.id_list, new int[] {});
         l.logger().d(user, "table.getState().getState() :  " + state.getState());
-        if (state.getState() == tablecon.state.not_started.cutting) {
+        if (state.getState() == c.tablecon.state.not_started.cutting) {
             this.addResultForShowing(user, id[0]);
         }
         
@@ -305,14 +302,14 @@ public class TableModel implements table_const, player_const, PlayerListListener
          */
         data.setAction(action);
         String source = userName;
-        data.addString(client_const.param_key.player_name, source);
+        data.addString(c.param_key.player_name, source);
         
         this.sendMessageToAllWithoutSpecificUser(data, userName);
     }
     
     public void playerUseCard(String user, EsObject msg) {
     
-        int cardId = msg.getIntegerArray(client_const.param_key.id_list)[0];
+        int cardId = msg.getIntegerArray(c.param_key.id_list)[0];
         // add card to drop card stack
         Card card = CardParser.getParser().getCardById(cardId);
         int functionId = card.getFunction();

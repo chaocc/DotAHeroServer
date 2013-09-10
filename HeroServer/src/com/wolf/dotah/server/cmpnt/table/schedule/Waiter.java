@@ -2,7 +2,6 @@ package com.wolf.dotah.server.cmpnt.table.schedule;
 
 import com.wolf.dotah.server.MessageCenter;
 import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
-import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.l;
 
@@ -31,7 +30,7 @@ public class Waiter {
     
         l.logger().d(tag, "because of " + serverAction);
         waitReason = serverAction;
-        if (waitReason.equals(playercon.state.desp.choosing.choosing_hero)) {
+        if (waitReason.equals(c.playercon.state.desp.choosing.choosing_hero)) {
             this.choosing_hero = messenger.scheduleExecution(1000, tablevar.wait_time + 1, new ChooseHero(messenger.getTable(), this, waitingType));
         } else if (waitReason.equals(c.server_action.choosing)) {
             CutCard cc = new CutCard(messenger.getTable(), this, waitingType);

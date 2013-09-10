@@ -8,11 +8,10 @@ import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.player.Ai;
-import com.wolf.dotah.server.cmpnt.player.player_const;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.l;
 
-public class PlayerList implements player_const {
+public class PlayerList {
     
     private List<Player> playerList = new ArrayList<Player>();
     private List<String> userList;
@@ -22,7 +21,7 @@ public class PlayerList implements player_const {
     
     public void initWithUserCollection(Collection<UserValue> input) {
     
-        initWithUserCollectionAndPlayerCount(input, defaultPlayerCount);
+        initWithUserCollectionAndPlayerCount(input, c.default_player_count);
     }
     
     public void initWithUserCollectionAndPlayerCount(Collection<UserValue> usersInRoom, int playerCount) {
@@ -53,9 +52,9 @@ public class PlayerList implements player_const {
             int aiCount = playerCount - userList.size();
             for (int i = 0; i < aiCount; i++) {
                 
-                Player player = new Player(aiName + i, table);
+                Player player = new Player(c.playercon.aiName + i, table);
                 player.setAi(new Ai());
-                debug(tag, "adding ai " + aiName + i);
+                debug(tag, "adding ai " + c.playercon.aiName + i);
                 playerList.add(player);
             }
         }

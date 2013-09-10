@@ -9,15 +9,12 @@ import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel.HandCardsChangeListener;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
-import com.wolf.dotah.server.cmpnt.player.player_const;
-import com.wolf.dotah.server.cmpnt.table.table_const.tablecon;
 import com.wolf.dotah.server.layer.dao.HeroParser;
 import com.wolf.dotah.server.util.c;
-import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
-public class Player implements player_const, HandCardsChangeListener {
+public class Player implements HandCardsChangeListener {
     
     //TODO attackable
     //TODO disarmable
@@ -42,8 +39,8 @@ public class Player implements player_const, HandCardsChangeListener {
     
         if (action.equals(c.server_action.free_play)) {
         } else {// choosing
-            if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
-                int[] pickResult = state.getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
+            if (action.equals(c.playercon.state.desp.choosing.choosing_hero)) {
+                int[] pickResult = state.getIntegerArray(c.playercon.state.param_key.general.id_list, new int[] {});
                 int heroId = ai.chooseSingle(pickResult);
                 this.initPropertyWithHeroId(heroId);
             } else if (action.equals(c.ac.choosing_from_hand)) {
@@ -56,15 +53,15 @@ public class Player implements player_const, HandCardsChangeListener {
     
     public void performSimplestChoice() {
     
-        if (table.getState().getState() == tablecon.state.not_started.cutting) {//cutting
+        if (table.getState().getState() == c.tablecon.state.not_started.cutting) {//cutting
             int id = getHandCards().getCards().get(0);
             
             table.addResultForShowing(this.getUserName(), id);
         } else {
             //choosing hero
-            int[] idList = state.getIntegerArray(playercon.state.param_key.general.id_list, new int[] {});
+            int[] idList = state.getIntegerArray(c.playercon.state.param_key.general.id_list, new int[] {});
             if (idList.length > 0) {
-                if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
+                if (action.equals(c.playercon.state.desp.choosing.choosing_hero)) {
                     this.initPropertyWithHeroId(idList[0]);
                 }
             }
@@ -73,7 +70,7 @@ public class Player implements player_const, HandCardsChangeListener {
     
     public void pickedHero(EsObject msg) {
     
-        if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
+        if (action.equals(c.playercon.state.desp.choosing.choosing_hero)) {
             int[] pickResult = msg.getIntegerArray(c.param_key.id_list, new int[] {});
             int heroId = pickResult[0];
             this.initPropertyWithHeroId(heroId);
@@ -88,7 +85,7 @@ public class Player implements player_const, HandCardsChangeListener {
         handCards = new PlayerHandCardsModel(this, heroInfo.getHandcardLimit());
         handCards.registerHandcardChangeListener(this);
         //TODO 不是在这里, 而是在全都收到选择了英雄后broadcast chose property
-        action = playercon.state.desp.confirmed.hero;
+        action = c.playercon.state.desp.confirmed.hero;
         if (this.getAi() == null || !this.getAi().isAi()) {
             String[] keys = { "heroId" };
             int[] values = { heroId };
@@ -156,8 +153,8 @@ public class Player implements player_const, HandCardsChangeListener {
         } else if (c.ac.choosing_from_hand.equals(string_action)) {
             List<Integer> cardList = getHandCards().getCards();
             int[] cardArray = u.intArrayMapping(cardList.toArray(new Integer[] {}));
-            data.setIntegerArray(client_const.param_key.id_list, cardArray);
-            data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);
+            data.setIntegerArray(c.param_key.id_list, cardArray);
+            data.setInteger(c.param_key.kParamSelectableCardCount, 1);
         }
     }
     
@@ -314,7 +311,7 @@ public class Player implements player_const, HandCardsChangeListener {
         switch (functionId) {//主要是b, s, m三类
             case functioncon.b_normal_attack: {
                 
-                String targetName = info.getStringArray(client_const.param_key.target_player_list)[0];
+                String targetName = info.getStringArray(c.param_key.target_player_list)[0];
                 Player targetPlayer = table.getPlayers().getPlayerByPlayerName(targetName);
                 action = c.ac.choosing_from_hand;
                 String reason = c.reason.attacked;
@@ -449,18 +446,18 @@ public class Player implements player_const, HandCardsChangeListener {
     
         Data obj = new Data();
         obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
-        obj.addString(client_const.param_key.player_name, userName);
+        obj.addString(c.param_key.player_name, userName);
         
         int[] availableHandCards = this.getAvailableHandCards();
-        obj.addIntegerArray(client_const.param_key.available_id_list, availableHandCards);
-        obj.addInteger(client_const.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
+        obj.addIntegerArray(c.param_key.available_id_list, availableHandCards);
+        obj.addInteger(c.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
         
         
         table.sendMessageToSingleUser(userName, obj);
         
         obj = new Data();
         obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
-        obj.addString(client_const.param_key.player_name, userName);
+        obj.addString(c.param_key.player_name, userName);
         table.playerUpdateInfo(userName, obj);
         
     }

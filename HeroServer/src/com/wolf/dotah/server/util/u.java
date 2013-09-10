@@ -1,7 +1,6 @@
 package com.wolf.dotah.server.util;
 
 import java.util.Arrays;
-import com.wolf.dotah.server.cmpnt.player.player_const.playercon;
 
 public class u {
     public static int[] intArrayMapping(Integer[] integerArray) {
@@ -27,7 +26,7 @@ public class u {
     public static int actionMapping(String action) {
     
         int result = -1;
-        if (action.equals(playercon.state.desp.choosing.choosing_hero)) {
+        if (action.equals(c.playercon.state.desp.choosing.choosing_hero)) {
             result = client_const.kActionUpdateDeckHero;
         } else if (action.equals(c.server_action.update_table_info)) {
             //                        result = client_const.action_update_table_player_list;
