@@ -5,16 +5,14 @@ import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.util.c;
 
 public class Animating implements ScheduledCallback {
-    final String tag = "===>> CutCard schedule callback ";
+    final String tag = "==> Animating waiting 2 ";
     TableModel table;
-    Waiter waiter;
     int waitingType;
     int tickCounter = c.default_wait_time;
     
-    public Animating(TableModel inputTable, Waiter inputWaiter, int waitingType) {
+    public Animating(TableModel inputTable, int waitingType) {
     
         this.table = inputTable;
-        this.waiter = inputWaiter;
         this.waitingType = waitingType;
     }
     

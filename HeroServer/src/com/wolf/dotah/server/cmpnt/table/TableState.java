@@ -13,7 +13,7 @@ package com.wolf.dotah.server.cmpnt.table;
  * @author Solomon
  *
  */
-public class TableState  {
+public class TableState {
     
     int state;
     String subject;
@@ -21,14 +21,18 @@ public class TableState  {
     //    Player currentPlayer;
     
     public int getState() {
+    
         return state;
     }
     
-    public void setState(int state) {
+    public TableState setState(int state) {
+    
         this.state = state;
+        return this;
     }
     
     public void setSubject(String name) {
+    
         this.subject = name;
         
     }

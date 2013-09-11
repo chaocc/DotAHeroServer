@@ -84,6 +84,8 @@ public class MessageCenter {
             
         } else if (client_const.kActionUseHandCard == client_message) {
             table.playerUseCard(user, msg);
+        } else if (client_const.kActionStartRound == client_message) {
+            table.startTurn(user);
         }
     }
     

@@ -7,7 +7,8 @@ public interface client_const {
     public static final int
         ACTION_BASE = 0,
         ACTION_USER_READY = ACTION_BASE + 1,
-        ACTION_START_GAME = ACTION_BASE + 2;
+        ACTION_START_GAME = ACTION_BASE + 2,
+        kActionStartRound = ACTION_BASE + 3;
     
     interface action {
         int count_down = -100;
@@ -52,7 +53,7 @@ public interface client_const {
         kActionChooseCardToDiscard = 3005, // 选择卡牌: 弃置
         kActionChoosingColor = 3006, // 选择颜色阶段
         kActionChoosingSuits = 3007; // 选择花色阶段
-
+        
     //    typedef NS_ENUM(NSInteger, BGCardColor) {
     //        kCardColorInvalid = 0,
     //        kCardColorRed = 1,                  // 红色

@@ -141,6 +141,7 @@ public interface c {
             int chooing_hero = 1;
             int cutting = 5;
             int determing_destiny = 2;
+            int can_start_turn = 6;
         }
         
         public interface started {

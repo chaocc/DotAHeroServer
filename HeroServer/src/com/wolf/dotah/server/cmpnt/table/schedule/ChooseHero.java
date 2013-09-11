@@ -11,12 +11,10 @@ public class ChooseHero implements ScheduledCallback {
     TableModel table;
     int tickCounter = c.default_wait_time;
     int waitingType;
-    Waiter waiter;
     
-    public ChooseHero(TableModel input, Waiter inputWaiter, int waitingType) {
+    public ChooseHero(TableModel input, int waitingType) {
     
         this.table = input;
-        this.waiter = inputWaiter;
         this.waitingType = waitingType;
     }
     
@@ -47,7 +45,7 @@ public class ChooseHero implements ScheduledCallback {
             }
         }
         if (confirmed >= table.getPlayers().getCount()) {
-            waiter.cancelScheduledExecution(waiter.execution_id);
+            table.cancelScheduledExecution();
             return true;
         } else {
             return false;
@@ -57,12 +55,12 @@ public class ChooseHero implements ScheduledCallback {
     public boolean tick() {
     
         if (waitingType == c.game_state.waiting_type.none) {
-            waiter.cancelScheduledExecution(waiter.execution_id);
+            table.cancelScheduledExecution();
         } else if (tickCounter < 1) {
             boolean autoDesided = false;
             autoDesideHero();
             autoDesided = true;
-            waiter.cancelScheduledExecution(waiter.execution_id);
+            table.cancelScheduledExecution();
             waitingType = c.game_state.waiting_type.none;
             return autoDesided;
         } else {

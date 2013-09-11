@@ -195,28 +195,30 @@ public class TableModel implements PlayerListListener {
     public void startTurn(String biggestPlayer, int delaySec) {
     
         //TODO waiter.waitingForEverybody().becauseOf(c.reason.animating, 2);
-        
-        startTurn(biggestPlayer);
+        this.setState(new TableState().setState(c.game_state.not_started.can_start_turn));
+        //        startTurn(biggestPlayer);
     }
     
     public void startTurn(String playerName) {
     
-        
-        Data data = new Data();
-        data.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
-        data.addString(c.param_key.player_name, playerName);
-        //TODO table 里要保存current player, 
-        disp.sendMessageToAllWithoutSpecificUser(data, playerName);
-        
-        
-        Player pp = players.getPlayerByPlayerName(playerName);
-        if (pp.getAi() != null && pp.isAi()) {
-            pp.getAi().startTurn();
-        } else {
-            pp.startTurn();
+        if (this.getState().getState() == c.game_state.not_started.can_start_turn) {
+            this.cancelScheduledExecution();
             
+            Data data = new Data();
+            data.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
+            data.addString(c.param_key.player_name, playerName);
+            //TODO table 里要保存current player, 
+            disp.sendMessageToAllWithoutSpecificUser(data, playerName);
+            
+            
+            Player pp = players.getPlayerByPlayerName(playerName);
+            if (pp.getAi() != null && pp.isAi()) {
+                pp.getAi().startTurn();
+            } else {
+                pp.startTurn();
+                
+            }
         }
-        
         
         //        data = new Data();
         //        data.setAction(c.server_action.free_play);//3001
@@ -224,6 +226,12 @@ public class TableModel implements PlayerListListener {
         //        data.setIntegerArray(client_const.param_key.available_id_list, availableHandCards);
         //        data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);//selectable count
         //        this.getTranslator().getDispatcher().sendMessageToSingleUser(playerName, data);
+        
+    }
+    
+    public void cancelScheduledExecution() {
+    
+        disp.cancelScheduledExecution(waiter.execution_id);
         
     }
     

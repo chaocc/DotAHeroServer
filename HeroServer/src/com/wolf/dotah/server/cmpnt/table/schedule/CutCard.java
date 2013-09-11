@@ -16,14 +16,13 @@ import com.wolf.dotah.server.util.u;
 public class CutCard implements ScheduledCallback {
     final String tag = "===>> CutCard schedule callback ";
     TableModel table;
-    Waiter waiter;
+    //    Waiter waiter;
     int waitingType;
     int tickCounter = c.default_wait_time;
     
-    public CutCard(TableModel inputTable, Waiter inputWaiter, int waitingType) {
+    public CutCard(TableModel inputTable, int waitingType) {
     
         this.table = inputTable;
-        this.waiter = inputWaiter;
         this.waitingType = waitingType;
     }
     
@@ -89,7 +88,7 @@ public class CutCard implements ScheduledCallback {
     
         if (table.showingCards().size() == table.getPlayers().getCount()) {
             
-            waiter.cancelScheduledExecution(waiter.execution_id);
+            table.cancelScheduledExecution();
             return true;
         } else {
             return false;
@@ -99,14 +98,14 @@ public class CutCard implements ScheduledCallback {
     public boolean tick() {
     
         if (waitingType == c.game_state.waiting_type.none) {
-            waiter.cancelScheduledExecution(waiter.execution_id);
+            table.cancelScheduledExecution();
         } else if (tickCounter < 1) {
             boolean autoDesided = false;
             if (table.getState().getState() == c.game_state.not_started.cutting) {
                 autoDesideCutting();
                 autoDesided = true;
             }
-            waiter.cancelScheduledExecution(waiter.execution_id);
+            table.cancelScheduledExecution();
             waitingType = c.game_state.waiting_type.none;
             return autoDesided;
         } else {
