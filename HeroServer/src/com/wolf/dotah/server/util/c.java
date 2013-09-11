@@ -59,6 +59,7 @@ public interface c {
         public String hero_candidates = "hero_candidates";
         public String who = "who";
         public String biggist_card_id = "biggest_card_id";
+        public String clear_showing_cards = "clear_showing";
         
         final String
             kParamUserList = "player_list",// 所有玩家列表

@@ -207,6 +207,7 @@ public class TableModel implements PlayerListListener {
             Data data = new Data();
             data.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
             data.addString(c.param_key.player_name, playerName);
+            data.addBoolean(c.param_key.clear_showing_cards, true);
             //TODO table 里要保存current player, 
             disp.sendMessageToAllWithoutSpecificUser(data, playerName);
             

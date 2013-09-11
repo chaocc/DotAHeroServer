@@ -447,7 +447,7 @@ public class Player implements HandCardsChangeListener {
         Data obj = new Data();
         obj.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
         obj.addString(c.param_key.player_name, userName);
-        
+        obj.addBoolean(c.param_key.clear_showing_cards, true);
         int[] availableHandCards = this.getAvailableHandCards();
         obj.addIntegerArray(c.param_key.available_id_list, availableHandCards);
         obj.addInteger(c.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
