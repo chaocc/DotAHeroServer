@@ -1,7 +1,6 @@
 package com.wolf.dotah.server.cmpnt.table.schedule;
 
 import com.wolf.dotah.server.MessageCenter;
-import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.l;
 
@@ -26,15 +25,26 @@ public class Waiter {
     }
     
     
-    public void becauseOf(String serverAction) {
+    public void becauseOf(String reason) {
     
-        l.logger().d(tag, "because of " + serverAction);
-        waitReason = serverAction;
+        int waitTime = c.default_wait_time + 1;
+        becauseOf(reason, waitTime);
+        
+    }
+    
+    public void becauseOf(String reason, int waitTime) {
+    
+        
+        l.logger().d(tag, "because of " + reason);
+        waitReason = reason;
         if (waitReason.equals(c.playercon.state.desp.choosing.choosing_hero)) {
-            this.choosing_hero = messenger.scheduleExecution(1000, tablevar.wait_time + 1, new ChooseHero(messenger.getTable(), this, waitingType));
-        } else if (waitReason.equals(c.server_action.choosing)) {
+            this.execution_id = messenger.scheduleExecution(1000, waitTime, new ChooseHero(messenger.getTable(), this, waitingType));
+        } else if (waitReason.equals(c.action_string.choosing)) {
             CutCard cc = new CutCard(messenger.getTable(), this, waitingType);
-            this.cutting = messenger.scheduleExecution(1000, tablevar.wait_time + 1, cc);
+            this.execution_id = messenger.scheduleExecution(1000, waitTime, cc);
+        } else if (waitReason.equals(c.reason.animating)) {
+            CutCard cc = new CutCard(messenger.getTable(), this, waitingType);
+            this.execution_id = messenger.scheduleExecution(1000, waitTime, cc);
         }
         
     }
@@ -45,5 +55,8 @@ public class Waiter {
         messenger.cancelScheduledExecution(callback_id);
     }
     
-    public int choosing_hero = -1, cutting = -1;
+    //    public int choosing_hero = -1, cutting = -1;
+    public int execution_id = -1;
+    
+    
 }

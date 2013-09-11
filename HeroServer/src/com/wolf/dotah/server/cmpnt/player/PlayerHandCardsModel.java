@@ -50,13 +50,13 @@ public class PlayerHandCardsModel {
         Data data = new Data();
         if (sendPrivateMessage) {
             // send update player handcards to self
-            data.setAction(c.ac.update_hand_cards);
+            data.setAction(c.action.update_hand_cards);
             data.setIntegerArray(c.param_key.id_list, new int[] { card });
             player.updateMyStateToClient(data);
         }
         //send update player handcard count to other players
         data = new Data();
-        data.setAction(c.ac.update_hand_cards);
+        data.setAction(c.action.update_hand_cards);
         data.setInteger(c.param_key.hand_card_count, cards.size());
         data.setString(c.param_key.who, player.getUserName());
         player.getTable().getMessenger().sendMessageToAllWithoutSpecificUser(data, player.getUserName());

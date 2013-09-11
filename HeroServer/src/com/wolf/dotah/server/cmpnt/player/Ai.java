@@ -26,7 +26,7 @@ public class Ai {
     public void startTurn() {
     
         Data obj = new Data();
-        obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
+        obj.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
 //        obj.addString(client_const.param_key.player_name, this.player.getUserName());
 //        
 //        int[] availableHandCards = pp.getAvailableHandCards();

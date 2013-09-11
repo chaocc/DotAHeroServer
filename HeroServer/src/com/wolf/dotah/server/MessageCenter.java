@@ -50,7 +50,7 @@ public class MessageCenter {
     
     public void handleMessage(String user, EsObject msg) {
     
-        int client_message = msg.getInteger(c.action, -1);
+        int client_message = msg.getInteger(c.a, -1);
         this.debug(tag, "plugin: " + plugin);
         if (client_const.ACTION_START_GAME == client_message) {
             this.debug(tag, "translateGameStartFromClient");
@@ -72,8 +72,6 @@ public class MessageCenter {
             }
             table.dispatchHeroCandidates();
         } else if (client_const.kActionChooseHeroId == client_message) {
-            
-            
             table.getPlayers().getPlayerByUserName(user).pickedHero(msg);
             
             
@@ -81,12 +79,11 @@ public class MessageCenter {
             //TODO 改成不要在这里写, 在player里写
             //TODO 简化player的state后, 使用player的state莱判断
             //现在先用table的state来判断
-            
             table.choseCard(user, msg);
             
             
         } else if (client_const.kActionUseHandCard == client_message) {
-            table.playerUseCard(user,msg);
+            table.playerUseCard(user, msg);
         }
     }
     

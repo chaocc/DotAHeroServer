@@ -7,7 +7,6 @@ import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.cmpnt.TableModel;
-import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
 import com.wolf.dotah.server.cmpnt.card.Card;
 import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.util.c;
@@ -19,7 +18,7 @@ public class CutCard implements ScheduledCallback {
     TableModel table;
     Waiter waiter;
     int waitingType;
-    int tickCounter = tablevar.wait_time;
+    int tickCounter = c.default_wait_time;
     
     public CutCard(TableModel inputTable, Waiter inputWaiter, int waitingType) {
     
@@ -74,7 +73,7 @@ public class CutCard implements ScheduledCallback {
         
         
         Data data = new Data();
-        data.setAction(c.ac.cutted);
+        data.setAction(c.action.cutted);
         data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cards.toArray(new Integer[cards.size()])));
         data.setInteger(c.param_key.biggist_card_id, biggestCardId);
         data.setInteger(c.param_key.hand_card_count, pl.get(0).getHandCards().getCards().size());
@@ -83,14 +82,14 @@ public class CutCard implements ScheduledCallback {
         
         
         l.logger().d(tag, "starting turn to player " + biggestPlayer);
-        table.startTurn(biggestPlayer);
+        table.startTurn(biggestPlayer, 2);
     }
     
     private boolean checkWaitingState() {
     
         if (table.showingCards().size() == table.getPlayers().getCount()) {
             
-            waiter.cancelScheduledExecution(waiter.cutting);
+            waiter.cancelScheduledExecution(waiter.execution_id);
             return true;
         } else {
             return false;
@@ -100,14 +99,14 @@ public class CutCard implements ScheduledCallback {
     public boolean tick() {
     
         if (waitingType == c.game_state.waiting_type.none) {
-            waiter.cancelScheduledExecution(waiter.cutting);
+            waiter.cancelScheduledExecution(waiter.execution_id);
         } else if (tickCounter < 1) {
             boolean autoDesided = false;
-            if (table.getState().getState() == c.tablecon.state.not_started.cutting) {
+            if (table.getState().getState() == c.game_state.not_started.cutting) {
                 autoDesideCutting();
                 autoDesided = true;
             }
-            waiter.cancelScheduledExecution(waiter.cutting);
+            waiter.cancelScheduledExecution(waiter.execution_id);
             waitingType = c.game_state.waiting_type.none;
             return autoDesided;
         } else {

@@ -78,7 +78,7 @@ public class TableModel implements PlayerListListener {
     public void dispatchHeroCandidates() {
     
         this.state.setSubject(this.getClass().getSimpleName());
-        this.state.setState(c.tablecon.state.not_started.chooing_hero);
+        this.state.setState(c.game_state.not_started.chooing_hero);
         HeroCandidateModel heroModel = new HeroCandidateModel();
         List<Integer[]> heroCandidateList = heroModel.getCandidateForAll(players.getCount());
         
@@ -117,7 +117,7 @@ public class TableModel implements PlayerListListener {
     private void broadcastGameStarted() {
     
         Data data = new Data();
-        data.setAction(c.server_action.start_game);
+        data.setAction(c.action_string.start_game);
         data.addStringArray("player_list", players.getNameList());
         disp.broadcastMessage(data);
     }
@@ -133,14 +133,10 @@ public class TableModel implements PlayerListListener {
     }
     
     
-    public interface tablevar {
-        public int wait_time = c.default_wait_time;
-    }
-    
     public void broadcastHeroInited() {
     
         Data data = new Data();
-        data.setAction(c.server_action.update_player_list_info);//kActionInitPlayerHero = 1004
+        data.setAction(c.action_string.update_player_list_info);//kActionInitPlayerHero = 1004
         //TODO 先只加hero, 以后再改;
         data.addAll(this.getPlayers().toSubtleData());
         disp.broadcastMessage(data);
@@ -167,12 +163,12 @@ public class TableModel implements PlayerListListener {
     
     public void updatePlayersToCutting() {
     
-        this.state.setState(c.tablecon.state.not_started.cutting);
+        this.state.setState(c.game_state.not_started.cutting);
         showingCards.startUsing(1);
         for (Player p : this.getPlayers().getPlayerList()) {
             p.cutting();
         }
-        waiter.waitingForEverybody().becauseOf(c.server_action.choosing);
+        waiter.waitingForEverybody().becauseOf(c.action_string.choosing);
     }
     
     
@@ -196,10 +192,18 @@ public class TableModel implements PlayerListListener {
         showingCards.addResultToShow(user, card);
     }
     
+    public void startTurn(String biggestPlayer, int delaySec) {
+    
+        //TODO waiter.waitingForEverybody().becauseOf(c.reason.animating, 2);
+        
+        startTurn(biggestPlayer);
+    }
+    
     public void startTurn(String playerName) {
     
+        
         Data data = new Data();
-        data.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
+        data.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
         data.addString(c.param_key.player_name, playerName);
         //TODO table 里要保存current player, 
         disp.sendMessageToAllWithoutSpecificUser(data, playerName);
@@ -259,7 +263,8 @@ public class TableModel implements PlayerListListener {
     
         int[] id = msg.getIntegerArray(c.param_key.id_list, new int[] {});
         l.logger().d(user, "table.getState().getState() :  " + state.getState());
-        if (state.getState() == c.tablecon.state.not_started.cutting) {
+        if (state.getState() == c.game_state.not_started.cutting) {
+            state.setState(c.game_state.none);
             this.addResultForShowing(user, id[0]);
         }
         
@@ -319,4 +324,10 @@ public class TableModel implements PlayerListListener {
         players.getPlayerByUserName(user).useCard(msg, functionId);
         
     }
+    
+    public Waiter getWaiter() {
+    
+        return waiter;
+    }
+    
 }

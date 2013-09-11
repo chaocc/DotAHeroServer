@@ -3,14 +3,13 @@ package com.wolf.dotah.server.cmpnt.table.schedule;
 import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.cmpnt.TableModel;
-import com.wolf.dotah.server.cmpnt.TableModel.tablevar;
 import com.wolf.dotah.server.util.c;
 
 public class ChooseHero implements ScheduledCallback {
     
     final String tag = "==> choose hero";
     TableModel table;
-    int tickCounter = tablevar.wait_time;
+    int tickCounter = c.default_wait_time;
     int waitingType;
     Waiter waiter;
     
@@ -43,13 +42,12 @@ public class ChooseHero implements ScheduledCallback {
         int confirmed = 0;
         for (Player player : table.getPlayers().getPlayerList()) {
             String action = player.getAction();
-            ;
             if (action.equals(c.playercon.state.desp.confirmed.hero)) {
                 confirmed += 1;
             }
         }
         if (confirmed >= table.getPlayers().getCount()) {
-            waiter.cancelScheduledExecution(waiter.choosing_hero);
+            waiter.cancelScheduledExecution(waiter.execution_id);
             return true;
         } else {
             return false;
@@ -59,12 +57,12 @@ public class ChooseHero implements ScheduledCallback {
     public boolean tick() {
     
         if (waitingType == c.game_state.waiting_type.none) {
-            waiter.cancelScheduledExecution(waiter.choosing_hero);
+            waiter.cancelScheduledExecution(waiter.execution_id);
         } else if (tickCounter < 1) {
             boolean autoDesided = false;
             autoDesideHero();
             autoDesided = true;
-            waiter.cancelScheduledExecution(waiter.choosing_hero);
+            waiter.cancelScheduledExecution(waiter.execution_id);
             waitingType = c.game_state.waiting_type.none;
             return autoDesided;
         } else {

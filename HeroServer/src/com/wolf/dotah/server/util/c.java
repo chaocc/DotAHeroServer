@@ -2,7 +2,7 @@ package com.wolf.dotah.server.util;
 
 public interface c {
     
-    public String action = "action";
+    public String a = "action";
     public String action_description = "action_description";
     public String action_category = "action_category";
     public int action_user_ready = 1;
@@ -11,7 +11,7 @@ public interface c {
     public int default_draw_count = 5;
     public int default_hero_candidates_count_for_each_player = 1;
     
-    public interface server_action {
+    public interface action_string {
         //TODO 分成很少的几个action, 比如choosing之类的, chose, 至于是chose hero, hero就用参数
         public String none = "";
         public String start_game = "start_game";
@@ -26,7 +26,7 @@ public interface c {
         
     }
     
-    public interface ac {
+    public interface action {
         public String init_hand_cards = "init_player_info_hand_cards";
         public String update_hand_cards = "update_player_info_hand_cards";
         public String choosing_from_hand = "choosing_from_hand";
@@ -38,6 +38,7 @@ public interface c {
         
         String attacked = "attacked";
         //        public String normal_attack = "normal_attack";
+        String animating = "animating";
     }
     
     
@@ -129,32 +130,26 @@ public interface c {
         }
         
     }
-    public interface tablecon {
-        
-        public interface state {
-            
-            public interface not_started {
-                
-                int chooing_hero = 1;
-                int cutting = 5;
-                int determing_destiny = 2;
-            }
-            
-            public interface started {
-                
-                int free_playing = 3;
-                int deciding = 4;
-            }
-            
-            int ended = 5;
-        }
-        
-    }
+    
     public interface game_state {
         
-        public String none = "";
+        public int none = -1;
         public String waiting = "waiting";
         
+        public interface not_started {
+            
+            int chooing_hero = 1;
+            int cutting = 5;
+            int determing_destiny = 2;
+        }
+        
+        public interface started {
+            
+            int free_playing = 3;
+            int deciding = 4;
+        }
+        
+        int ended = 5;
         interface waiting_type {
             int none = -1;
             int everybody = 10;

@@ -4,18 +4,18 @@ import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.util.c;
 
-public class FreePlay implements ScheduledCallback {
-    final String tag = "==> FreePlay counting down ==> ";
+public class Animating implements ScheduledCallback {
+    final String tag = "===>> CutCard schedule callback ";
     TableModel table;
-    int tickCounter = c.default_wait_time;
-    int waitingType;
     Waiter waiter;
+    int waitingType;
+    int tickCounter = c.default_wait_time;
     
-    public FreePlay(TableModel inputTable, Waiter inputWaiter, int inputWaitingType) {
+    public Animating(TableModel inputTable, Waiter inputWaiter, int waitingType) {
     
         this.table = inputTable;
         this.waiter = inputWaiter;
-        this.waitingType = inputWaitingType;
+        this.waitingType = waitingType;
     }
     
     

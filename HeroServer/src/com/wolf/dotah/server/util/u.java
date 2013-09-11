@@ -28,27 +28,27 @@ public class u {
         int result = -1;
         if (action.equals(c.playercon.state.desp.choosing.choosing_hero)) {
             result = client_const.kActionUpdateDeckHero;
-        } else if (action.equals(c.server_action.update_table_info)) {
+        } else if (action.equals(c.action_string.update_table_info)) {
             //                        result = client_const.action_update_table_player_list;
-        } else if (action.equals(c.server_action.count_down)) {
+        } else if (action.equals(c.action_string.count_down)) {
             result = client_const.action.count_down;
-        } else if (action.equals(c.server_action.update_player_list_info)) {
+        } else if (action.equals(c.action_string.update_player_list_info)) {
             result = client_const.action_update_table_confirmed_heros;
-        } else if (action.equals(c.server_action.start_game)) {
+        } else if (action.equals(c.action_string.start_game)) {
             result = client_const.ACTION_START_GAME;
-        } else if (action.equals(c.server_action.chose_hero)) {
+        } else if (action.equals(c.action_string.chose_hero)) {
             result = client_const.kActionInitPlayerHero;
-        } else if (action.equals(c.ac.init_hand_cards)) {
+        } else if (action.equals(c.action.init_hand_cards)) {
             result = client_const.kActionInitPlayerCard;
-        } else if (action.equals(c.ac.choosing_from_hand)) {
+        } else if (action.equals(c.action.choosing_from_hand)) {
             result = client_const.kActionChooseCardToCompare;
-        } else if (action.equals(c.ac.cutted)) {
+        } else if (action.equals(c.action.cutted)) {
             result = client_const.action_cutted;
-        } else if (action.equals(c.ac.update_hand_cards)) {
+        } else if (action.equals(c.action.update_hand_cards)) {
             result = client_const.kActionUpdatePlayerHand;
-        } else if (action.equals(c.ac.turn_to_player)) {
+        } else if (action.equals(c.action.turn_to_player)) {
             result = client_const.kActionPlayingCard;
-        } else if (action.equals(c.server_action.free_play)) {
+        } else if (action.equals(c.action_string.free_play)) {
             result = client_const.kActionChooseCardToUse;
         }
         

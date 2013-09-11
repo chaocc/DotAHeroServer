@@ -201,7 +201,7 @@ public class Data extends EsObject {
     public Data setAction(String serverAction) {
     
         debug("action", serverAction + "");
-        this.setInteger(c.action, u.actionMapping(serverAction));
+        this.setInteger(c.a, u.actionMapping(serverAction));
         this.setString(c.action_description, serverAction);
         return this;
     }
@@ -209,7 +209,7 @@ public class Data extends EsObject {
     public Data setAction(int clientAction) {
     
         debug("function id ", clientAction + "");
-        this.setInteger(c.action, clientAction);
+        this.setInteger(c.a, clientAction);
         return this;
     }
     

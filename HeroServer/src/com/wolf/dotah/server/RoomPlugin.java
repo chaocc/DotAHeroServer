@@ -19,7 +19,7 @@ public class RoomPlugin extends BasePlugin {
         messageIn.addAll(message);
         d.debug(user + " requests: " + messageIn.toString());
         //TODO 这个逻辑还需要理清楚, 这样太简陋了
-        int action = messageIn.getInteger(c.action);
+        int action = messageIn.getInteger(c.a);
         if (action == c.action_user_ready) {
             getApi().sendPluginMessageToUser(user, messageIn);
         }

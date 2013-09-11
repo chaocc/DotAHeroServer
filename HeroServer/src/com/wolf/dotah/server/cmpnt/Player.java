@@ -33,17 +33,17 @@ public class Player implements HandCardsChangeListener {
     
     /**
      * 相当于客户端拿来了新消息, 在做判断
-     * @param action
+     * @param a
      */
     public void performAiAction(String fromParamKey) {
     
-        if (action.equals(c.server_action.free_play)) {
+        if (action.equals(c.action_string.free_play)) {
         } else {// choosing
             if (action.equals(c.playercon.state.desp.choosing.choosing_hero)) {
                 int[] pickResult = state.getIntegerArray(c.playercon.state.param_key.general.id_list, new int[] {});
                 int heroId = ai.chooseSingle(pickResult);
                 this.initPropertyWithHeroId(heroId);
-            } else if (action.equals(c.ac.choosing_from_hand)) {
+            } else if (action.equals(c.action.choosing_from_hand)) {
                 Integer[] pickResult = handCards.getCards().toArray(new Integer[] {});
                 int resultId = ai.chooseSingle(u.intArrayMapping(pickResult));
                 this.table.addResultForShowing(this.getUserName(), resultId);
@@ -53,7 +53,7 @@ public class Player implements HandCardsChangeListener {
     
     public void performSimplestChoice() {
     
-        if (table.getState().getState() == c.tablecon.state.not_started.cutting) {//cutting
+        if (table.getState().getState() == c.game_state.not_started.cutting) {//cutting
             int id = getHandCards().getCards().get(0);
             
             table.addResultForShowing(this.getUserName(), id);
@@ -94,7 +94,7 @@ public class Player implements HandCardsChangeListener {
             debug(tag, "keys.length: " + keys.length);
             if (keys.length == 1) {
                 if (keys[0].equals("heroId")) {
-                    msg.setAction(c.server_action.chose_hero);
+                    msg.setAction(c.action_string.chose_hero);
                     msg.setInteger("id", values[0]);
                 }
             } else if (keys.length > 1) {
@@ -116,7 +116,7 @@ public class Player implements HandCardsChangeListener {
     
         addHandcards(cards);
         if (this.ai == null || !this.ai.isAi()) {
-            sendPrivateMessage(c.ac.init_hand_cards);
+            sendPrivateMessage(c.action.init_hand_cards);
         }
         //        this.sendPublicMessage(c.ac.init_hand_cards);
         
@@ -147,10 +147,10 @@ public class Player implements HandCardsChangeListener {
     
     private void addPrivateData(Data data, String string_action) {
     
-        if (c.ac.init_hand_cards.equals(string_action)) {
+        if (c.action.init_hand_cards.equals(string_action)) {
             Integer[] cardArray = getHandCards().getCards().toArray(new Integer[] {});
             data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cardArray));
-        } else if (c.ac.choosing_from_hand.equals(string_action)) {
+        } else if (c.action.choosing_from_hand.equals(string_action)) {
             List<Integer> cardList = getHandCards().getCards();
             int[] cardArray = u.intArrayMapping(cardList.toArray(new Integer[] {}));
             data.setIntegerArray(c.param_key.id_list, cardArray);
@@ -160,11 +160,11 @@ public class Player implements HandCardsChangeListener {
     
     public void cutting() {
     
-        action = c.ac.choosing_from_hand;
+        action = c.action.choosing_from_hand;
         if (ai != null && ai.isAi()) {
             performAiAction(c.param_key.id_list);
         } else {
-            sendPrivateMessage(c.ac.choosing_from_hand);
+            sendPrivateMessage(c.action.choosing_from_hand);
         }
     }
     
@@ -313,7 +313,7 @@ public class Player implements HandCardsChangeListener {
                 
                 String targetName = info.getStringArray(c.param_key.target_player_list)[0];
                 Player targetPlayer = table.getPlayers().getPlayerByPlayerName(targetName);
-                action = c.ac.choosing_from_hand;
+                action = c.action.choosing_from_hand;
                 String reason = c.reason.attacked;
                 targetPlayer.updateState(action, reason, info);
                 
@@ -445,7 +445,7 @@ public class Player implements HandCardsChangeListener {
     private void freePlay() {
     
         Data obj = new Data();
-        obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
+        obj.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
         obj.addString(c.param_key.player_name, userName);
         
         int[] availableHandCards = this.getAvailableHandCards();
@@ -456,7 +456,7 @@ public class Player implements HandCardsChangeListener {
         table.sendMessageToSingleUser(userName, obj);
         
         obj = new Data();
-        obj.setAction(c.ac.turn_to_player);//kActionPlayingCard 出牌阶段
+        obj.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
         obj.addString(c.param_key.player_name, userName);
         table.playerUpdateInfo(userName, obj);
         
@@ -476,12 +476,12 @@ public class Player implements HandCardsChangeListener {
     
         
         Data obj = new Data();
-        obj.setAction(c.ac.update_hand_cards);//kActionUpdatePlayerHand,  2003
+        obj.setAction(c.action.update_hand_cards);//kActionUpdatePlayerHand,  2003
         obj.setIntegerArray(c.param_key.id_list, u.intArrayMapping(newCards.toArray(new Integer[] {})));
         this.updateMyStateToClient(obj);
         
         obj = new Data();
-        obj.setAction(c.ac.update_hand_cards);
+        obj.setAction(c.action.update_hand_cards);
         obj.setInteger(c.param_key.how_many, newCards.size());
         obj.setString(c.param_key.who, userName);
         table.playerUpdateInfo(userName, obj);

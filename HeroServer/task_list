@@ -1,6 +1,15 @@
 1, 等待收到kActionStartRound=3后, 再发3000 开始一轮, 仅限切牌这1次. 如果超时(2秒)的话, 就再由server选择.
-2, 在schedule中, 如果收到client的结果需要立刻cancel schedule
-3, 使用 kActionClearPlayingDeck = 1100,  // 清空桌面  来是客户端清空桌面
+3, 使用 kActionClearPlayingDeck = 1100,  // 清空桌面  来是客户端清空桌面,   改成带个clearTable参数, 客户端去检查true就clear
 4, 把魔法牌都写完.
+6, 
+
+
+
+delay task
+2, (之后再解)  在schedule中, 如果收到client的结果需要立刻cancel schedule
+
+
+
+done
 5, 整理常量
 
