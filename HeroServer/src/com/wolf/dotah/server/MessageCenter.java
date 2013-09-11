@@ -53,6 +53,7 @@ public class MessageCenter {
         int client_message = msg.getInteger(c.a, -1);
         this.debug(tag, "plugin: " + plugin);
         if (client_const.ACTION_START_GAME == client_message) {
+            plugin.getApi().setGameLockState(true);
             this.debug(tag, "translateGameStartFromClient");
             if (table == null) {
                 int playerCount = msg.getInteger(c.param_key.player_count, -1);

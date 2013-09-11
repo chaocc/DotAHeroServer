@@ -18,8 +18,6 @@ public class TableState {
     int state;
     String subject;
     
-    //    Player currentPlayer;
-    
     public int getState() {
     
         return state;
@@ -35,6 +33,17 @@ public class TableState {
     
         this.subject = name;
         
+    }
+    
+    public String getSubject() {
+    
+        return subject;
+    }
+    
+    public boolean isEqualToState(int inputState) {
+    
+        if (inputState == state) { return true; }
+        return false;
     }
     
 }

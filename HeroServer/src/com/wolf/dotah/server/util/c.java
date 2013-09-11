@@ -149,6 +149,7 @@ public interface c {
             
             int free_playing = 3;
             int deciding = 4;
+            int somebody_attacking = 10;
         }
         
         int ended = 5;

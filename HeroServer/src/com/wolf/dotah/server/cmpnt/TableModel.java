@@ -47,7 +47,7 @@ public class TableModel implements PlayerListListener {
      *                   specific player action 交给player list, 由player list 交给指定player 来处理
      */
     
-    TableState state; //TODO define states
+    TableState tableState; //TODO define states
     PlayerList players;
     DeckModel deck;
     private TableShowingCards showingCards;
@@ -58,7 +58,7 @@ public class TableModel implements PlayerListListener {
     
     public TableModel(PlayerList playerList, MessageCenter dispatcher) {
     
-        state = new TableState();
+        tableState = new TableState();
         players = playerList;
         players.registerPlayerListListener(this);
         showingCards = new TableShowingCards();
@@ -77,8 +77,8 @@ public class TableModel implements PlayerListListener {
      */
     public void dispatchHeroCandidates() {
     
-        this.state.setSubject(this.getClass().getSimpleName());
-        this.state.setState(c.game_state.not_started.chooing_hero);
+        this.tableState.setSubject(this.getClass().getSimpleName());
+        this.tableState.setState(c.game_state.not_started.chooing_hero);
         HeroCandidateModel heroModel = new HeroCandidateModel();
         List<Integer[]> heroCandidateList = heroModel.getCandidateForAll(players.getCount());
         
@@ -163,7 +163,7 @@ public class TableModel implements PlayerListListener {
     
     public void updatePlayersToCutting() {
     
-        this.state.setState(c.game_state.not_started.cutting);
+        this.tableState.setState(c.game_state.not_started.cutting);
         showingCards.startUsing(1);
         for (Player p : this.getPlayers().getPlayerList()) {
             p.cutting();
@@ -174,12 +174,12 @@ public class TableModel implements PlayerListListener {
     
     public TableState getState() {
     
-        return state;
+        return tableState;
     }
     
     public void setState(TableState state) {
     
-        this.state = state;
+        this.tableState = state;
     }
     
     public Map<String, Integer> showingCards() {
@@ -201,7 +201,7 @@ public class TableModel implements PlayerListListener {
     
     public void startTurn(String playerName) {
     
-        if (this.getState().getState() == c.game_state.not_started.can_start_turn) {
+        if (tableState.isEqualToState(c.game_state.not_started.can_start_turn)) {
             this.cancelScheduledExecution();
             
             Data data = new Data();
@@ -254,7 +254,7 @@ public class TableModel implements PlayerListListener {
     @Override
     public String toString() {
     
-        return "TableModel [state=" + state + ", players=" + players + ", deck=" + deck + ", cutCards=" + showingCards
+        return "TableModel [state=" + tableState + ", players=" + players + ", deck=" + deck + ", cutCards=" + showingCards
             + ", disp=" + disp + ", tag=" + tag + "]";
     }
     
@@ -271,10 +271,25 @@ public class TableModel implements PlayerListListener {
     public void choseCard(String user, EsObject msg) {
     
         int[] id = msg.getIntegerArray(c.param_key.id_list, new int[] {});
-        l.logger().d(user, "table.getState().getState() :  " + state.getState());
-        if (state.getState() == c.game_state.not_started.cutting) {
-            state.setState(c.game_state.none);
+        l.logger().d(user, "table.getState().getState() :  " + tableState.getState());
+        if (tableState.isEqualToState(c.game_state.not_started.cutting)) {
+            tableState.setState(c.game_state.none);
             this.addResultForShowing(user, id[0]);
+        } else if (tableState.isEqualToState(c.game_state.started.somebody_attacking)) {
+            String player = tableState.getSubject();
+            if(user.equals(player)){
+                
+                
+                
+                sldfkldsl;
+                
+                
+                
+                
+                
+                
+                
+            }
         }
         
     }
