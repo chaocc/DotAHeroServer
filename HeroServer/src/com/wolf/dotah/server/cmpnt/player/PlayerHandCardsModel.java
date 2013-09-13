@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
+import com.wolf.dotah.server.cmpnt.card.card_const.functioncon;
 import com.wolf.dotah.server.util.c;
 
 public class PlayerHandCardsModel {
@@ -60,6 +61,35 @@ public class PlayerHandCardsModel {
         data.setInteger(c.param_key.hand_card_count, cards.size());
         data.setString(c.param_key.who, player.getUserName());
         player.getTable().getMessenger().sendMessageToAllWithoutSpecificUser(data, player.getUserName());
+    }
+    
+    
+    public List<Integer>getCardsByFunction(int functionId){
+        List<Integer> result = new ArrayList<Integer>();
+        switch(functionId){
+            case functioncon.b_evasion:{
+                collect evasion cards
+                break;
+            }
+        }
+        return result;
+    }
+    
+    public List<Integer>getCardsByUsage(String usage){
+        List<Integer> result = new ArrayList<Integer>();
+        if(usage.equals("active")){
+            for (int card : getCards()) {
+                boolean firstCase = card > 45 && card < 57;
+                boolean secondCase = card > 59 && card < 70;
+                boolean thirdCase = card == 79;
+                if (firstCase || secondCase || thirdCase) {
+                     continue;
+                } else {
+                    result.add(card);
+                }
+            }
+        }
+        return result;
     }
     public interface HandCardsChangeListener {
         public void onHandCardsAdded(List<Integer> newCards);

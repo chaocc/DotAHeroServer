@@ -46,7 +46,8 @@ public interface client_const {
         kActionUpdatePlayerEquipmentExtracted = 2006, // 更新玩家: 装备去的牌被抽取
         
         kActionPlayingCard = 3000, // 出牌阶段
-        kActionChooseCardToUse = 3001, // 选择卡牌: 使用
+        kActionChooseCardToUse = 3001, // 选择卡牌: 主动使用
+        action_choose_card_to_react = 3008,// 选择卡牌: 被动出闪什么的
         kActionChooseCardToCompare = 3002, // 选择卡牌: 拼点
         kActionChooseCardToExtract = 3003, // 选择目标卡牌: 抽取
         kActionChooseCardToGive = 3004, // 选择卡牌: 交给其他玩家
