@@ -64,26 +64,32 @@ public class PlayerHandCardsModel {
     }
     
     
-    public List<Integer>getCardsByFunction(int functionId){
+    public List<Integer> getCardsByFunction(int functionId) {
+    
         List<Integer> result = new ArrayList<Integer>();
-        switch(functionId){
-            case functioncon.b_evasion:{
-                collect evasion cards
+        switch (functionId) {
+            case functioncon.b_evasion: {
+                for (int cardId : cards) {
+                    if ((cardId > 59 && cardId < 70) || cardId == 79) {
+                        result.add(cardId);
+                    }
+                }
                 break;
             }
         }
         return result;
     }
     
-    public List<Integer>getCardsByUsage(String usage){
+    public List<Integer> getCardsByUsage(String usage) {
+    
         List<Integer> result = new ArrayList<Integer>();
-        if(usage.equals("active")){
+        if (usage.equals("active")) {
             for (int card : getCards()) {
                 boolean firstCase = card > 45 && card < 57;
                 boolean secondCase = card > 59 && card < 70;
                 boolean thirdCase = card == 79;
                 if (firstCase || secondCase || thirdCase) {
-                     continue;
+                    continue;
                 } else {
                     result.add(card);
                 }

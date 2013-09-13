@@ -414,7 +414,7 @@ public class Player implements HandCardsChangeListener {
             Integer[] evasions = this.handCards.getCardsByFunction(functioncon.b_normal_attack).toArray(new Integer[] {});
             stateInfo.setIntegerArray(c.param_key.id_list, u.intArrayMapping(evasions));
             this.updateMyStateToClient(stateInfo);
-            
+            start waiting
         }
         
         

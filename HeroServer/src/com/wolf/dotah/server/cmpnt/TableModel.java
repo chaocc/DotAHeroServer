@@ -58,7 +58,7 @@ public class TableModel implements PlayerListListener {
     
     public TableModel(PlayerList playerList, MessageCenter dispatcher) {
     
-        tableState = new TableState();
+        tableState = new TableState(c.game_state.none);
         players = playerList;
         players.registerPlayerListListener(this);
         showingCards = new TableShowingCards();
@@ -195,7 +195,7 @@ public class TableModel implements PlayerListListener {
     public void startTurn(String biggestPlayer, int delaySec) {
     
         //TODO waiter.waitingForEverybody().becauseOf(c.reason.animating, 2);
-        this.setState(new TableState().setState(c.game_state.not_started.can_start_turn));
+        this.setState(new TableState(c.game_state.not_started.can_start_turn));
         //        startTurn(biggestPlayer);
     }
     
