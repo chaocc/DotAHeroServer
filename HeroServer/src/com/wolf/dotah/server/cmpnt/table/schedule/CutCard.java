@@ -7,7 +7,7 @@ import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.cmpnt.TableModel;
-import com.wolf.dotah.server.cmpnt.card.Card;
+import com.wolf.dotah.server.cmpnt.cardandskill.Card;
 import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.l;

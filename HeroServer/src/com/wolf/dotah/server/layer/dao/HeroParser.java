@@ -8,8 +8,8 @@ import net.sf.plist.NSDictionary;
 import net.sf.plist.NSInteger;
 import net.sf.plist.NSObject;
 import net.sf.plist.io.PropertyListParser;
+import com.wolf.dotah.server.cmpnt.cardandskill.HeroSkill;
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
-import com.wolf.dotah.server.cmpnt.player.HeroSkill;
 import com.wolf.dotah.server.cmpnt.player.HeroSkills;
 
 public class HeroParser {

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
-import com.wolf.dotah.server.cmpnt.card.card_const.functioncon;
+import com.wolf.dotah.server.cmpnt.cardandskill.card_const.functioncon;
 import com.wolf.dotah.server.util.c;
 
 public class PlayerHandCardsModel {

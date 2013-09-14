@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.MessageCenter;
-import com.wolf.dotah.server.cmpnt.card.Card;
+import com.wolf.dotah.server.cmpnt.cardandskill.Card;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
 import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
 import com.wolf.dotah.server.cmpnt.table.PlayerList;
@@ -87,9 +87,9 @@ public class TableModel implements PlayerListListener {
             Player single = players.getPlayerByIndex(i);
             
             Data state = new Data().addIntegerArray(c.playercon.state.param_key.general.id_list, u.intArrayMapping(candidatesForSingle));
-            single.setAction(c.playercon.state.desp.choosing.choosing_hero);
+            single.setAction(c.playercon.state.choosing.choosing_hero);
             single.setState(state);
-            state.setAction(c.playercon.state.desp.choosing.choosing_hero);
+            state.setAction(c.playercon.state.choosing.choosing_hero);
             if (single.isAi()) {
                 single.performAiAction(c.param_key.hero_candidates);
             } else {
@@ -98,7 +98,7 @@ public class TableModel implements PlayerListListener {
             //            updateSequence.submitServerUpdateByTable(this);
         }
         //TODO waiting for everybody to choose
-        waiter.waitingForEverybody().becauseOf(c.playercon.state.desp.choosing.choosing_hero);
+        waiter.waitingForEverybody().becauseOf(c.playercon.state.choosing.choosing_hero);
     }
     
     private void initCardModels() {
@@ -117,7 +117,7 @@ public class TableModel implements PlayerListListener {
     private void broadcastGameStarted() {
     
         Data data = new Data();
-        data.setAction(c.action_string.start_game);
+        data.setAction(c.action.start_game);
         data.addStringArray("player_list", players.getNameList());
         disp.broadcastMessage(data);
     }
@@ -136,7 +136,7 @@ public class TableModel implements PlayerListListener {
     public void broadcastHeroInited() {
     
         Data data = new Data();
-        data.setAction(c.action_string.update_player_list_info);//kActionInitPlayerHero = 1004
+        data.setAction(c.action.update_player_list_info);//kActionInitPlayerHero = 1004
         //TODO 先只加hero, 以后再改;
         data.addAll(this.getPlayers().toSubtleData());
         disp.broadcastMessage(data);
@@ -168,7 +168,7 @@ public class TableModel implements PlayerListListener {
         for (Player p : this.getPlayers().getPlayerList()) {
             p.cutting();
         }
-        waiter.waitingForEverybody().becauseOf(c.action_string.choosing);
+        waiter.waitingForEverybody().becauseOf(c.action.choosing);
     }
     
     

@@ -1,6 +1,7 @@
 package com.wolf.dotah.server.cmpnt.table.schedule;
 
 import com.wolf.dotah.server.MessageCenter;
+import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.l;
 
@@ -23,6 +24,13 @@ public class Waiter {
         return this;
     }
     
+    public Waiter waitForSingleChoosing(Player player, int sec) {
+    
+        l.logger().d(tag, "start waiting for ==> " + player.getUserName());
+        waitingType = c.game_state.waiting_type.single;
+        this.execution_id = messenger.scheduleExecution(1000, sec * 1000, new SinglePlayerChoosing(messenger.getTable(), player));
+        return this;
+    }
     
     public void becauseOf(String reason) {
     
@@ -36,9 +44,9 @@ public class Waiter {
         
         l.logger().d(tag, "because of " + reason);
         waitReason = reason;
-        if (waitReason.equals(c.playercon.state.desp.choosing.choosing_hero)) {
+        if (waitReason.equals(c.playercon.state.choosing.choosing_hero)) {
             this.execution_id = messenger.scheduleExecution(1000, waitTime, new ChooseHero(messenger.getTable(), waitingType));
-        } else if (waitReason.equals(c.action_string.choosing)) {
+        } else if (waitReason.equals(c.action.choosing)) {
             CutCard cc = new CutCard(messenger.getTable(), waitingType);
             this.execution_id = messenger.scheduleExecution(1000, waitTime, cc);
         } else if (waitReason.equals(c.reason.animating)) {

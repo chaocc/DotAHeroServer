@@ -87,6 +87,8 @@ public class MessageCenter {
             table.playerUseCard(user, msg);
         } else if (client_const.kActionStartRound == client_message) {
             table.startTurn(user);
+        } else if (client_const.kActionCancel == client_message) {
+            table.getPlayers().getPlayerByPlayerName(user).cancel();
         }
     }
     

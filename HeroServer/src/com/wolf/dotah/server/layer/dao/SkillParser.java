@@ -12,7 +12,7 @@ import net.sf.plist.NSObject;
 import net.sf.plist.io.PropertyListException;
 import net.sf.plist.io.PropertyListParser;
 
-import com.wolf.dotah.server.cmpnt.player.HeroSkill;
+import com.wolf.dotah.server.cmpnt.cardandskill.HeroSkill;
 
 
 public class SkillParser {

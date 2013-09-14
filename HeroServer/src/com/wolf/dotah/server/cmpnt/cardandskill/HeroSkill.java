@@ -1,6 +1,5 @@
-package com.wolf.dotah.server.cmpnt.player;
+package com.wolf.dotah.server.cmpnt.cardandskill;
 
-import com.wolf.dotah.server.cmpnt.card.card_const;
 
 
 

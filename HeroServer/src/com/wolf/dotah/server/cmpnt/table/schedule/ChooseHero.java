@@ -40,7 +40,7 @@ public class ChooseHero implements ScheduledCallback {
         int confirmed = 0;
         for (Player player : table.getPlayers().getPlayerList()) {
             String action = player.getAction();
-            if (action.equals(c.playercon.state.desp.confirmed.hero)) {
+            if (action.equals(c.playercon.state.confirmed.hero)) {
                 confirmed += 1;
             }
         }

@@ -1,4 +1,4 @@
-package com.wolf.dotah.server.cmpnt.card;
+package com.wolf.dotah.server.cmpnt.cardandskill;
 
 
 public interface card_const {

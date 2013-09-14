@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import com.wolf.dotah.server.cmpnt.TableModel;
-import com.wolf.dotah.server.cmpnt.card.Card;
+import com.wolf.dotah.server.cmpnt.cardandskill.Card;
 import com.wolf.dotah.server.layer.dao.CardParser;
 
 public class DeckModel {

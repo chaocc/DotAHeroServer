@@ -11,8 +11,8 @@ public interface c {
     public int default_draw_count = 5;
     public int default_hero_candidates_count_for_each_player = 1;
     
-    public interface action_string {
-        //TODO 分成很少的几个action, 比如choosing之类的, chose, 至于是chose hero, hero就用参数
+    
+    public interface action {
         public String none = "";
         public String start_game = "start_game";
         public String free_play = "free_play";
@@ -23,10 +23,6 @@ public interface c {
         public String update_player_list_info = "update_player_list_info";
         
         public String chose_hero = "chose_hero";
-        
-    }
-    
-    public interface action {
         public String init_hand_cards = "init_player_info_hand_cards";
         public String update_hand_cards = "update_player_info_hand_cards";
         public String choosing_from_hand = "choosing_from_hand";
@@ -34,6 +30,7 @@ public interface c {
         public String cutted = "update_table_cutted";
         public String turn_to_player = "turn_to_player";
         public String normal_attack = "normal_attack";
+        public String decided = "decided";
     }
     public interface reason {
         
@@ -86,6 +83,7 @@ public interface c {
             //        attach_target_player = "attach_target_player"
             
             ;
+        public String single_result = "single_result";
     }
     
     interface playercon {
@@ -97,26 +95,19 @@ public interface c {
         }
         
         interface state {
+            String unavailable = "unavailable";
+            String free_play = "free_play";
+            String idle = "idle";//没进度条, 什么都没做, 比如有人在free_play
+            String waiting = "waiting"; //有进度条, 比如等待某人的驱散
             
-            interface desp {
-                String unavailable = "unavailable";
-                String free_play = "free_play";
-                String idle = "idle";//没进度条, 什么都没做, 比如有人在free_play
-                
-                interface waiting {
-                    String waiting = "waiting"; //有进度条, 比如等待某人的驱散
-                    
-                }
-                
-                interface choosing {
-                    String choosing = "choosing";
-                    String choosing_hero = "choosing_hero";
-                }
-                
-                interface confirmed {
-                    String hero = "hero_confirmed";
-                    String id = "id";
-                }
+            interface choosing {
+                String choosing = "choosing";
+                String choosing_hero = "choosing_hero";
+            }
+            
+            interface confirmed {
+                String hero = "hero_confirmed";
+                String id = "id";
             }
             
             interface param_key {

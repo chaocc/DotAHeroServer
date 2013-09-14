@@ -26,17 +26,17 @@ public class u {
     public static int actionMapping(String action) {
     
         int result = -1;
-        if (action.equals(c.playercon.state.desp.choosing.choosing_hero)) {
+        if (action.equals(c.playercon.state.choosing.choosing_hero)) {
             result = client_const.kActionUpdateDeckHero;
-        } else if (action.equals(c.action_string.update_table_info)) {
+        } else if (action.equals(c.action.update_table_info)) {
             //                        result = client_const.action_update_table_player_list;
-        } else if (action.equals(c.action_string.count_down)) {
+        } else if (action.equals(c.action.count_down)) {
             result = client_const.action.count_down;
-        } else if (action.equals(c.action_string.update_player_list_info)) {
+        } else if (action.equals(c.action.update_player_list_info)) {
             result = client_const.action_update_table_confirmed_heros;
-        } else if (action.equals(c.action_string.start_game)) {
+        } else if (action.equals(c.action.start_game)) {
             result = client_const.ACTION_START_GAME;
-        } else if (action.equals(c.action_string.chose_hero)) {
+        } else if (action.equals(c.action.chose_hero)) {
             result = client_const.kActionInitPlayerHero;
         } else if (action.equals(c.action.init_hand_cards)) {
             result = client_const.kActionInitPlayerCard;
@@ -48,7 +48,7 @@ public class u {
             result = client_const.kActionUpdatePlayerHand;
         } else if (action.equals(c.action.turn_to_player)) {
             result = client_const.kActionPlayingCard;
-        } else if (action.equals(c.action_string.free_play)) {
+        } else if (action.equals(c.action.free_play)) {
             result = client_const.kActionChooseCardToUse;
         }
         
