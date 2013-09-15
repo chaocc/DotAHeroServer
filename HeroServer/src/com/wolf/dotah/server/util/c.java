@@ -17,7 +17,7 @@ public interface c {
         public String start_game = "start_game";
         public String free_play = "free_play";
         public String update_table_info = "update_table_info";
-        public String update_player_info = "update_player_info";
+        public String update_player_property = "update_player_info";//update player property
         public String choosing = "choosing";
         public String count_down = "counting_down";
         public String update_player_list_info = "update_player_list_info";
@@ -31,12 +31,14 @@ public interface c {
         public String turn_to_player = "turn_to_player";
         public String normal_attack = "normal_attack";
         public String decided = "decided";
+        public Object choosing_from_showing = "choosing_from_showing";
     }
     public interface reason {
         
-        String attacked = "attacked";
+        String normal_attacked = "normal_attacked";
         //        public String normal_attack = "normal_attack";
         String animating = "animating";
+        String chaos_attacked = "chaos_attacked";
     }
     
     
@@ -75,7 +77,9 @@ public interface c {
             kParamSelectedSuits = "selected_suits",// 选中的花色
             kParamIsStrengthened = "is_strengthened",// 是否被强化
             kParamHeroBloodPoint = "hp",// 血量值
+            hp_changed = "hp_changed",
             kParamHeroAngerPoint = "sp", // 怒气值
+            sp_changed = "sp_changed",
             
             available_id_list = "available_id_list"
             

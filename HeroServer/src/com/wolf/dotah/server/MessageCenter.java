@@ -6,7 +6,7 @@ import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.TableModel;
-import com.wolf.dotah.server.cmpnt.table.PlayerList;
+import com.wolf.dotah.server.cmpnt.table.Players;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.l;
@@ -59,7 +59,7 @@ public class MessageCenter {
                 int playerCount = msg.getInteger(c.param_key.player_count, -1);
                 int zone = plugin.getApi().getZoneId();
                 int room = plugin.getApi().getRoomId();
-                PlayerList playerList = new PlayerList();
+                Players playerList = new Players();
                 Collection<UserValue> users = plugin.getApi().getUsersInRoom(zone, room);
                 this.debug(tag, " get users : " + users.toString());
                 
@@ -73,22 +73,17 @@ public class MessageCenter {
             }
             table.dispatchHeroCandidates();
         } else if (client_const.kActionChooseHeroId == client_message) {
-            table.getPlayers().getPlayerByUserName(user).pickedHero(msg);
+            table.players.getPlayerByUserName(user).pickedHero(msg);
             
             
         } else if (client_const.kActionChooseCard == client_message) {
-            //TODO 改成不要在这里写, 在player里写
-            //TODO 简化player的state后, 使用player的state莱判断
-            //现在先用table的state来判断
             table.choseCard(user, msg);
-            
-            
         } else if (client_const.kActionUseHandCard == client_message) {
             table.playerUseCard(user, msg);
         } else if (client_const.kActionStartRound == client_message) {
             table.startTurn(user);
         } else if (client_const.kActionCancel == client_message) {
-            table.getPlayers().getPlayerByPlayerName(user).cancel();
+            table.players.getPlayerByPlayerName(user).cancel();
         }
     }
     

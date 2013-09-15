@@ -46,14 +46,14 @@ public class CutCard implements ScheduledCallback {
         //TODO 给每个人手里都减少一张牌
         //TODO 发给client id list
         Map<String, Integer> cutCards = table.showingCards();
-        List<Player> pl = table.getPlayers().getPlayerList();
+        List<Player> pl = table.players.getPlayerList();
         List<Integer> cards = new ArrayList<Integer>();
         for (int i = 0; i < cutCards.size(); i++) {
             Player p = pl.get(i);
             l.logger().d(tag, "cutCards, " + cutCards.toString());
-            int card = cutCards.get(p.getUserName());
+            int card = cutCards.get(p.userName);
             cards.add(card);
-            p.getHandCards().remove(card, autoDesided);
+            p.handCards.remove(card, autoDesided);
         }
         
         //TODO 先拼点, 
@@ -65,7 +65,7 @@ public class CutCard implements ScheduledCallback {
             if (c.getFaceNumber() > biggestFaceNumber) {
                 biggestFaceNumber = c.getFaceNumber();
                 biggestCardId = c.getId();
-                biggestPlayer = pl.get(i).getUserName();
+                biggestPlayer = pl.get(i).userName;
                 l.logger().d(tag, "changing biggest to " + biggestPlayer + " with card " + c.getName());
             }
         }
@@ -75,7 +75,7 @@ public class CutCard implements ScheduledCallback {
         data.setAction(c.action.cutted);
         data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cards.toArray(new Integer[cards.size()])));
         data.setInteger(c.param_key.biggist_card_id, biggestCardId);
-        data.setInteger(c.param_key.hand_card_count, pl.get(0).getHandCards().getCards().size());
+        data.setInteger(c.param_key.hand_card_count, pl.get(0).handCards.getCards().size());
         //  TODO  scheduler里不该有这么实际的逻辑, 要通过调用table等的行为实现. 所以这里不需要依赖messenger
         table.getMessenger().sendMessageToAll(data);
         
@@ -86,8 +86,10 @@ public class CutCard implements ScheduledCallback {
     
     private boolean checkWaitingState() {
     
-        if (table.showingCards().size() == table.getPlayers().getCount()) {
+        l.logger().d(tag, "decided: " + table.showingCards().size() + "/" + table.players.getCount());
+        if (table.showingCards().size() == table.players.getCount()) {
             
+            table.tableState.setState(c.game_state.none);
             table.cancelScheduledExecution();
             return true;
         } else {
@@ -101,7 +103,7 @@ public class CutCard implements ScheduledCallback {
             table.cancelScheduledExecution();
         } else if (tickCounter < 1) {
             boolean autoDesided = false;
-            if (table.getState().getState() == c.game_state.not_started.cutting) {
+            if (table.tableState.getState() == c.game_state.not_started.cutting) {
                 autoDesideCutting();
                 autoDesided = true;
             }
@@ -116,8 +118,8 @@ public class CutCard implements ScheduledCallback {
     
     private void autoDesideCutting() {
     
-        for (Player p : table.getPlayers().getPlayerList()) {
-            if (!table.showingCards().keySet().contains(p.getUserName())) {
+        for (Player p : table.players.getPlayerList()) {
+            if (!table.showingCards().keySet().contains(p.userName)) {
                 p.performSimplestChoice();
             }
         }

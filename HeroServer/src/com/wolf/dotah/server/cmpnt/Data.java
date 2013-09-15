@@ -10,37 +10,12 @@ public class Data extends EsObject {
     
     private static final long serialVersionUID = -1791116800338703971L;
     
-    /* 
-     * TODO 介于player state info里有一些数据要放, 所以不太适合用EsObject来做.
-     * 得把 player state相关的域分离出去
-     */
-    private String actionReason = "";
     
     public Data() {
     
         super();
     }
     
-    public Data setActionReason(String reason) {
-    
-        this.actionReason = reason;
-        return this;
-    }
-    
-    public String getActionReason() {
-    
-        return this.actionReason;
-    }
-    
-    public Data setReason(String reason) {
-    
-        return this.setActionReason(reason);
-    }
-    
-    public String getReason() {
-    
-        return this.getActionReason();
-    }
     
     public Data addBoolean(String name, boolean value) {
     

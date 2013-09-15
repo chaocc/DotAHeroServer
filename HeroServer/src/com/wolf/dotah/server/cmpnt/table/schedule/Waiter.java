@@ -26,7 +26,7 @@ public class Waiter {
     
     public Waiter waitForSingleChoosing(Player player, int sec) {
     
-        l.logger().d(tag, "start waiting for ==> " + player.getUserName());
+        l.logger().d(tag, "start waiting for ==> " + player.userName);
         waitingType = c.game_state.waiting_type.single;
         this.execution_id = messenger.scheduleExecution(1000, sec * 1000, new SinglePlayerChoosing(messenger.getTable(), player));
         return this;

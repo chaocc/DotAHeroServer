@@ -32,7 +32,12 @@ public class SinglePlayerChoosing implements ScheduledCallback {
     
     private boolean stillWaiting() {
     
-        return !player.getAction().equals(c.action.none);
+        if (player.stateAction.equals(c.action.none)) {
+            return false;
+        } else if (player.stateAction.equals(c.action.choosing_from_hand)) {
+            return true;
+        } else if (player.stateAction.equals(c.action.choosing_from_showing)) { return true; }
+        return false;
     }
     
     public void tick() {

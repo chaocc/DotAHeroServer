@@ -7,8 +7,8 @@ import com.wolf.dotah.server.MessageCenter;
 import com.wolf.dotah.server.cmpnt.cardandskill.Card;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
 import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
-import com.wolf.dotah.server.cmpnt.table.PlayerList;
-import com.wolf.dotah.server.cmpnt.table.PlayerList.PlayerListListener;
+import com.wolf.dotah.server.cmpnt.table.Players;
+import com.wolf.dotah.server.cmpnt.table.Players.PlayerListListener;
 import com.wolf.dotah.server.cmpnt.table.TableShowingCards;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.schedule.Waiter;
@@ -47,16 +47,16 @@ public class TableModel implements PlayerListListener {
      *                   specific player action 交给player list, 由player list 交给指定player 来处理
      */
     
-    TableState tableState; //TODO define states
-    PlayerList players;
-    DeckModel deck;
+    public TableState tableState; //TODO define states
+    public Players players;
+    public DeckModel deck;
     private TableShowingCards showingCards;
     MessageCenter disp;
     Waiter waiter;
     
     final String tag = "====>> TableModel: ";
     
-    public TableModel(PlayerList playerList, MessageCenter dispatcher) {
+    public TableModel(Players playerList, MessageCenter dispatcher) {
     
         tableState = new TableState(c.game_state.none);
         players = playerList;
@@ -87,13 +87,13 @@ public class TableModel implements PlayerListListener {
             Player single = players.getPlayerByIndex(i);
             
             Data state = new Data().addIntegerArray(c.playercon.state.param_key.general.id_list, u.intArrayMapping(candidatesForSingle));
-            single.setAction(c.playercon.state.choosing.choosing_hero);
-            single.setState(state);
+            single.stateAction = c.playercon.state.choosing.choosing_hero;
+            single.stateInfo = state;
             state.setAction(c.playercon.state.choosing.choosing_hero);
             if (single.isAi()) {
                 single.performAiAction(c.param_key.hero_candidates);
             } else {
-                disp.sendMessageToSingleUser(single.getUserName(), state);
+                disp.sendMessageToSingleUser(single.userName, state);
             }
             //            updateSequence.submitServerUpdateByTable(this);
         }
@@ -122,23 +122,13 @@ public class TableModel implements PlayerListListener {
         disp.broadcastMessage(data);
     }
     
-    public PlayerList getPlayers() {
-    
-        return players;
-    }
-    
-    public void setPlayers(PlayerList players) {
-    
-        this.players = players;
-    }
-    
     
     public void broadcastHeroInited() {
     
         Data data = new Data();
         data.setAction(c.action.update_player_list_info);//kActionInitPlayerHero = 1004
         //TODO 先只加hero, 以后再改;
-        data.addAll(this.getPlayers().toSubtleData());
+        data.addAll(this.players.toSubtleData());
         disp.broadcastMessage(data);
     }
     
@@ -152,7 +142,7 @@ public class TableModel implements PlayerListListener {
     public void dispatchHandcards() {
     
         // TODO 给每个人发手牌, 每发1个, 就发2个plugin message
-        for (Player p : this.getPlayers().getPlayerList()) {
+        for (Player p : this.players.getPlayerList()) {
             List<Integer> cards = this.getCardsFromRemainStack(c.default_draw_count);
             p.getHandcards(cards);
         }
@@ -165,22 +155,12 @@ public class TableModel implements PlayerListListener {
     
         this.tableState.setState(c.game_state.not_started.cutting);
         showingCards.startUsing(1);
-        for (Player p : this.getPlayers().getPlayerList()) {
+        for (Player p : this.players.getPlayerList()) {
             p.cutting();
         }
         waiter.waitingForEverybody().becauseOf(c.action.choosing);
     }
     
-    
-    public TableState getState() {
-    
-        return tableState;
-    }
-    
-    public void setState(TableState state) {
-    
-        this.tableState = state;
-    }
     
     public Map<String, Integer> showingCards() {
     
@@ -195,7 +175,7 @@ public class TableModel implements PlayerListListener {
     public void startTurn(String biggestPlayer, int delaySec) {
     
         //TODO waiter.waitingForEverybody().becauseOf(c.reason.animating, 2);
-        this.setState(new TableState(c.game_state.not_started.can_start_turn));
+        this.tableState = new TableState(c.game_state.not_started.can_start_turn);
         //        startTurn(biggestPlayer);
     }
     
@@ -208,17 +188,20 @@ public class TableModel implements PlayerListListener {
             data.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
             data.addString(c.param_key.player_name, playerName);
             data.addBoolean(c.param_key.clear_showing_cards, true);
+            data.addIntegerArray(c.param_key.available_id_list, new int[] {});
             //TODO table 里要保存current player, 
             disp.sendMessageToAllWithoutSpecificUser(data, playerName);
             
             
             Player pp = players.getPlayerByPlayerName(playerName);
-            if (pp.getAi() != null && pp.isAi()) {
-                pp.getAi().startTurn();
+            players.turnHolder = pp;
+            if (pp.isAi()) {
+                pp.ai.startTurn();
             } else {
                 pp.startTurn();
                 
             }
+            
         }
         
         //        data = new Data();
@@ -236,15 +219,6 @@ public class TableModel implements PlayerListListener {
         
     }
     
-    public DeckModel getDeck() {
-    
-        return deck;
-    }
-    
-    public void setDeck(DeckModel deck) {
-    
-        this.deck = deck;
-    }
     
     public int getRemainCardCount() {
     
@@ -273,20 +247,13 @@ public class TableModel implements PlayerListListener {
         int[] id = msg.getIntegerArray(c.param_key.id_list, new int[] {});
         l.logger().d(user, "table.getState().getState() :  " + tableState.getState());
         if (tableState.isEqualToState(c.game_state.not_started.cutting)) {
-            tableState.setState(c.game_state.none);
             this.addResultForShowing(user, id[0]);
         } else if (tableState.isEqualToState(c.game_state.started.somebody_attacking)) {
             String player = tableState.getSubject();
-            if(user.equals(player)){
+            if (user.equals(player)) {
                 
                 
-                
-                sldfkldsl;
-                
-                
-                
-                
-                
+                //                sldfkldsl;
                 
                 
             }
@@ -305,6 +272,11 @@ public class TableModel implements PlayerListListener {
     
         disp.sendMessageToAllWithoutSpecificUser(customData, userName);
         
+    }
+    
+    public void sendMessageToAll(Data msg) {
+    
+        disp.sendMessageToAll(msg);
     }
     
     public List<Integer> drawCardsFromDeck(int i) {
@@ -352,6 +324,14 @@ public class TableModel implements PlayerListListener {
     public Waiter getWaiter() {
     
         return waiter;
+    }
+    
+    public void turnBackToTurnHolder() {
+    
+        Data data = new Data();
+        data.setAction(c.action.free_play);
+        this.sendMessageToSingleUser(players.turnHolder.userName, data);
+        
     }
     
 }

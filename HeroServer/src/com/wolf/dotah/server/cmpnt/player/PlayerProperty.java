@@ -57,4 +57,16 @@ public class PlayerProperty {
     
         return "PlayerProperty [hero=" + hero + ", hp=" + hp + ", sp=" + sp + ", equips=" + equips + ", force=" + force + "]";
     }
+    
+    public void hpDown(int i) {
+    
+        this.hp -= i;
+        
+    }
+    
+    public void spUp(int i) {
+    
+        this.sp += i;
+        
+    }
 }

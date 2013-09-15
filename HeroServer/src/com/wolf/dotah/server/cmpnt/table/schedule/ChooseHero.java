@@ -38,13 +38,13 @@ public class ChooseHero implements ScheduledCallback {
     private boolean checkWaitingState() {
     
         int confirmed = 0;
-        for (Player player : table.getPlayers().getPlayerList()) {
-            String action = player.getAction();
+        for (Player player : table.players.getPlayerList()) {
+            String action = player.stateAction;
             if (action.equals(c.playercon.state.confirmed.hero)) {
                 confirmed += 1;
             }
         }
-        if (confirmed >= table.getPlayers().getCount()) {
+        if (confirmed >= table.players.getCount()) {
             table.cancelScheduledExecution();
             return true;
         } else {
@@ -72,7 +72,7 @@ public class ChooseHero implements ScheduledCallback {
     private void autoDesideHero() {
     
         tickCounter = -1;
-        for (Player player : table.getPlayers().getPlayerList()) {
+        for (Player player : table.players.getPlayerList()) {
             player.performSimplestChoice();
         }
     }
