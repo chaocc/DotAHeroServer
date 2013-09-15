@@ -16,6 +16,7 @@ public class Players {
     private List<Player> playerList = new ArrayList<Player>();
     private List<String> userList;
     public Player turnHolder;
+    public Player actingPlayer;
     private List<PlayerListListener> listeners = new ArrayList<PlayerListListener>();
     final String tag = "====>> PlayerList: ";
     private TableModel table;

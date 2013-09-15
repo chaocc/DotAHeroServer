@@ -108,6 +108,7 @@ public class Player implements HandCardsChangeListener {
     
     public void updateMyStateToClient(Data msg) {
     
+        l.logger().d(tag, "updateMyStateToClient, stateInfo=" + msg);
         table.sendMessageToSingleUser(userName, msg);
         
     }
@@ -222,8 +223,10 @@ public class Player implements HandCardsChangeListener {
                 
                 String targetName = info.getStringArray(c.param_key.target_player_list)[0];
                 Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
+                l.logger().d(tag, targetName);
                 String action = c.action.choosing_from_hand;
                 String reason = c.reason.normal_attacked;
+                l.logger().d(tag + userName, "turn to player: " + targetPlayer.userName);
                 targetPlayer.updateState(action, reason, info);
                 
                 
@@ -233,6 +236,7 @@ public class Player implements HandCardsChangeListener {
                 
                 String targetName = info.getStringArray(c.param_key.target_player_list)[0];
                 Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
+                l.logger().d(tag, "targetPlayer= " + targetPlayer.toString());
                 String action = c.action.choosing_from_hand;
                 String reason = c.reason.chaos_attacked;
                 targetPlayer.updateState(action, reason, info);
@@ -327,11 +331,12 @@ public class Player implements HandCardsChangeListener {
          * 别忘了更新table state
          * 
          */
-        
+        l.logger().d(tag, "stateAction=" + stateAction + "stateAction, stateReason=" + stateReason);
         if (stateReason.equals(c.reason.normal_attacked)
             || stateReason.equals(c.reason.chaos_attacked)
         
         ) {
+            l.logger().d(tag, "attacked");
             table.tableState = new TableState(c.game_state.started.somebody_attacking, new String[] { userName });
             stateInfo.setAction(c.action.choosing_to_evade);
             Integer[] evasions = this.handCards.getCardsByFunction(functioncon.b_normal_attack).toArray(new Integer[] {});

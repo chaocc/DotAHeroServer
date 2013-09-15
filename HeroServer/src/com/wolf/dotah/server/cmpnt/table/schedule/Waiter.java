@@ -34,6 +34,7 @@ public class Waiter {
     
     public void becauseOf(String reason) {
     
+        // TODO 要查这个必须得+1的问题, 与fish server对比看看该怎么写.
         int waitTime = c.default_wait_time + 1;
         becauseOf(reason, waitTime);
         
@@ -50,8 +51,8 @@ public class Waiter {
             CutCard cc = new CutCard(messenger.getTable(), waitingType);
             this.execution_id = messenger.scheduleExecution(1000, waitTime, cc);
         } else if (waitReason.equals(c.reason.animating)) {
-            Animating cc = new Animating(messenger.getTable(), waitingType);
-            this.execution_id = messenger.scheduleExecution(1000, waitTime, cc);
+            StartTurn st = new StartTurn(messenger.getTable(), waitTime);
+            this.execution_id = messenger.scheduleExecution(1000, waitTime + 1, st);
         }
         
     }

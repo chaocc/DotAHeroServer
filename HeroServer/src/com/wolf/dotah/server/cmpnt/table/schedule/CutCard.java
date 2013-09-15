@@ -81,6 +81,7 @@ public class CutCard implements ScheduledCallback {
         
         
         l.logger().d(tag, "starting turn to player " + biggestPlayer);
+        table.tableState.setState(c.game_state.not_started.can_start_turn);
         table.startTurn(biggestPlayer, 2);
     }
     
