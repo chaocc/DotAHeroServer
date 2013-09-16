@@ -39,6 +39,7 @@ public interface c {
         //        public String normal_attack = "normal_attack";
         String animating = "animating";
         String chaos_attacked = "chaos_attacked";
+        String flame_attacked = "flame_attacked";
     }
     
     

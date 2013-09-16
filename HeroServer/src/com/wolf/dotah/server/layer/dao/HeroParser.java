@@ -48,12 +48,12 @@ public class HeroParser {
     
     public List<Integer> getHeroIdList() {
     
-        List<Integer> heroIdList = new ArrayList<Integer>();
-        int size = getNSHeroArray().length;
-        for (int i = 0; i < size; i++) {
-            heroIdList.add(i);
-        }
-        //        return heroIdList;
+//        List<Integer> heroIdList = new ArrayList<Integer>();
+//        int size = getNSHeroArray().length;
+//        for (int i = 0; i < size; i++) {
+//            heroIdList.add(i);
+//        }
+//                return heroIdList;
         return this.getList(fake_data_hero_ids);
     }
     

@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.wolf.dotah.server.cmpnt.cardandskill.Card;
+import com.wolf.dotah.server.util.l;
 
 public class CardParser {
     
@@ -45,7 +46,7 @@ public class CardParser {
     }
     
     public Card getCardById(int cardId) {
-    
+        l.logger().d(tag, "getCardById, with card id: "+cardId);
         for (Card card : getCardList()) {
             if (card.getId() == cardId) { return card; }
         }

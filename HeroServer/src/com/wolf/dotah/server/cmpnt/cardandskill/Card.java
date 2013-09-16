@@ -124,17 +124,26 @@ public class Card implements card_const {
     
     private void genBinfo() {
     
-        if (name.equals(func_name.normal_attack)) {
+        if (id >= 0 && id < 9) {
             this.function = functioncon.b_normal_attack;
-        } else if (name.equals(func_name.chaos_attack)) {
+        } else if (id > 8 && id < 16) {
             this.function = functioncon.b_chaos_attack;
-        } else if (name.equals(func_name.flame_attack)) {
+        } else if (id > 39 && id < 46) {
             this.function = functioncon.b_flame_attack;
-        } else if (name.equals(func_name.heal)) {
-            this.function = functioncon.b_heal;
-        } else if (name.equals(func_name.evasion)) {
-            this.function = functioncon.b_evasion;
         }
+        
+        
+        //        if (name.equals(func_name.normal_attack)) {
+        //            this.function = functioncon.b_normal_attack;
+        //        } else if (name.equals(func_name.chaos_attack)) {
+        //            this.function = functioncon.b_chaos_attack;
+        //        } else if (name.equals(func_name.flame_attack)) {
+        //            this.function = functioncon.b_flame_attack;
+        //        } else if (name.equals(func_name.heal)) {
+        //            this.function = functioncon.b_heal;
+        //        } else if (name.equals(func_name.evasion)) {
+        //            this.function = functioncon.b_evasion;
+        //        }
     }
     
     
@@ -491,7 +500,7 @@ public class Card implements card_const {
     
     
     public int getFunctionId() {
-        
+    
         return 0;
     }
 }

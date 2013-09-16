@@ -217,13 +217,14 @@ public class Player implements HandCardsChangeListener {
     
     public void useCard(EsObject info, int functionId) {
     
+        l.logger().d(tag, "using card with function " + functionId);
         
         switch (functionId) {//主要是b, s, m三类
             case functioncon.b_normal_attack: {
                 
                 String targetName = info.getStringArray(c.param_key.target_player_list)[0];
                 Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
-                l.logger().d(tag, targetName);
+                l.logger().d(tag, "normal attacking targetName: " + targetName);
                 String action = c.action.choosing_from_hand;
                 String reason = c.reason.normal_attacked;
                 l.logger().d(tag + userName, "turn to player: " + targetPlayer.userName);
@@ -235,6 +236,7 @@ public class Player implements HandCardsChangeListener {
             case functioncon.b_chaos_attack: {
                 
                 String targetName = info.getStringArray(c.param_key.target_player_list)[0];
+                l.logger().d(tag, "chaos attacking targetName: " + targetName);
                 Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
                 l.logger().d(tag, "targetPlayer= " + targetPlayer.toString());
                 String action = c.action.choosing_from_hand;
@@ -245,6 +247,15 @@ public class Player implements HandCardsChangeListener {
                 break;
             }
             case functioncon.b_flame_attack: {
+                
+                String targetName = info.getStringArray(c.param_key.target_player_list)[0];
+                Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
+                l.logger().d(tag, "flame attacking targetName: " + targetName);
+                String action = c.action.choosing_from_hand;
+                String reason = c.reason.flame_attacked;
+                l.logger().d(tag + userName, "turn to player: " + targetPlayer.userName);
+                targetPlayer.updateState(action, reason, info);
+                
                 
                 break;
             }
@@ -423,9 +434,31 @@ public class Player implements HandCardsChangeListener {
     
     public void cancel() {
     
+        l.logger().d(tag, "cancel, stateReason=" + stateReason);
         if (this.stateReason == c.reason.normal_attacked) {
             this.property.hpDown(1);
             this.property.spUp(1);
+            Data result = new Data();
+            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 1);
+            
+            this.updatePropertyToClient(result);
+            
+            turnToTurnHolder();
+        } else if (this.stateReason == c.reason.chaos_attacked) {
+            this.property.hpDown(1);
+            this.property.spUp(1);
+            Data result = new Data();
+            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 1);
+            this.updatePropertyToClient(result);
+            
+            
+            //TODO 要给发杀的人sp+1
+            
+            
+            turnToTurnHolder();
+        } else if (this.stateReason == c.reason.flame_attacked) {
+            this.property.hpDown(1);
+            this.property.spUp(2);
             Data result = new Data();
             result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 1);
             

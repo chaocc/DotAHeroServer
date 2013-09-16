@@ -303,13 +303,18 @@ public class TableModel implements PlayerListListener {
     public void playerUseCard(String user, EsObject msg) {
     
         int cardId = msg.getIntegerArray(c.param_key.id_list)[0];
+        l.logger().d(tag, "playerUseCard, using card: " + cardId);
         // add card to drop card stack
         Card card = CardParser.getParser().getCardById(cardId);
+        l.logger().d(tag, "playerUseCard, card=" + card);
         int functionId = card.getFunction();
         //        updateTableInfoToOtherFromPlayer(user, functionId, msg);
         
+        l.logger().d(tag, "playerUseCard, cardId=" + cardId + ", card=" + card.toString() + ", functionId=" + functionId);
+        Player p = players.getPlayerByUserName(user);
+        l.logger().d(tag, "playerUseCard, Player=" + p.toString());
         
-        players.getPlayerByUserName(user).useCard(msg, functionId);
+        p.useCard(msg, functionId);
         
     }
     

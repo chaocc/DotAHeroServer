@@ -50,6 +50,8 @@ public class u {
             result = client_const.kActionPlayingCard;
         } else if (action.equals(c.action.free_play)) {
             result = client_const.kActionChooseCardToUse;
+        } else if (action.equals(c.action.choosing_to_evade)) {
+            result = client_const.kActionChooseCardToUse;
         }
         
         return result;
