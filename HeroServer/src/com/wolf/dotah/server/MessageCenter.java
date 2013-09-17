@@ -28,19 +28,28 @@ public class MessageCenter {
         this.debug(tag, "sendMessageToAll: " + msg.toString());
         msg.setInteger(c.param_key.kParamRemainingCardCount, table.getRemainCardCount());
         plugin.getApi().sendPluginMessageToRoom(plugin.getApi().getZoneId(), plugin.getApi().getRoomId(), msg);
+        
     }
     
-//    public void sendMessageToAllWithoutSpecificUser(EsObject msg, String exceptionUser) {
-//    
-//        msg.setInteger(c.param_key.kParamRemainingCardCount, table.getRemainCardCount());
-//        this.debug(tag, "sendMessageToAllWithoutSpecificUser: exceptionUser: " + exceptionUser + ",  msg: " + msg.toString());
-//        Collection<UserValue> users = plugin.getApi().getUsersInRoom(plugin.getApi().getZoneId(), plugin.getApi().getRoomId());
-//        for (UserValue userv : users) {
-//            if (!userv.getUserName().equals(exceptionUser)) {
-//                plugin.getApi().sendPluginMessageToUser(userv.getUserName(), msg);
-//            }
-//        }
-//    }
+    public void sendPublicMessage(EsObject msg, String from) {
+    
+        this.debug(tag, "sending public message : " + msg.toString());
+        plugin.getApi().sendPublicMessageToRoomFromPlugin(from, plugin.getApi().getZoneId(), plugin.getApi().getRoomId(), "", msg, false,
+            false);
+    }
+    
+    public void sendMessageToAllWithoutSpecificUser(EsObject msg, String exceptionUser) {
+    
+        msg.setInteger(c.param_key.kParamRemainingCardCount, table.getRemainCardCount());
+        
+        //        this.debug(tag, "sendMessageToAllWithoutSpecificUser: exceptionUser: " + exceptionUser + ",  msg: " + msg.toString());
+        //        Collection<UserValue> users = plugin.getApi().getUsersInRoom(plugin.getApi().getZoneId(), plugin.getApi().getRoomId());
+        //        for (UserValue userv : users) {
+        //            if (!userv.getUserName().equals(exceptionUser)) {
+        //                plugin.getApi().sendPluginMessageToUser(userv.getUserName(), msg);
+        //            }
+        //        }
+    }
     
     public void broadcastMessage(Data data) {
     
@@ -80,11 +89,11 @@ public class MessageCenter {
             table.choseCard(user, msg);
         } else if (client_const.kActionUseHandCard == client_message) {
             table.playerUseCard(user, msg);
-        } 
+        }
         
         else if (client_const.kActionStartRound == client_message) {
             // TODO   table.startTurn(user);
-        } 
+        }
         
         else if (client_const.kActionCancel == client_message) {
             table.players.getPlayerByPlayerName(user).cancel();
@@ -114,7 +123,7 @@ public class MessageCenter {
     }
     
     public void cancelScheduledExecution(int callback_id) {
-    
+        l.logger().d(tag, "cancelling schedule execution ... ");
         plugin.getApi().cancelScheduledExecution(callback_id);
         
     }

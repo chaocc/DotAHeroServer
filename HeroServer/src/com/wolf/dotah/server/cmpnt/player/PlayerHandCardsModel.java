@@ -59,11 +59,12 @@ public class PlayerHandCardsModel {
             player.updateMyStateToClient(data);
         }
         //send update player handcard count to other players
-//        data = new Data();
-//        data.setAction(c.action.update_hand_cards);
-//        data.setInteger(c.param_key.hand_card_count, cards.size());
-//        data.setString(c.param_key.who, player.userName);
+        data = new Data();
+        data.setAction(c.action.update_hand_cards);
+        data.setInteger(c.param_key.hand_card_count, cards.size());
+        data.setString(c.param_key.who, player.userName);
 //        player.getTable().getMessenger().sendMessageToAllWithoutSpecificUser(data, player.userName);
+        player.getTable().sendPublicMessage(data, player.userName);
     }
     
     

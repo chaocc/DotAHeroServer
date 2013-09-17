@@ -26,8 +26,10 @@ public class Player implements HandCardsChangeListener {
     
     public void updatePropertyToClient(Data result) {
     
+        result.addString(c.param_key.player_name, userName);
         result.setAction(c.action.update_player_property);
-        this.table.sendMessageToAll(result);
+        //        this.table.sendMessageToAll(result);
+        table.sendPublicMessage(result, userName);
     }
     
     
@@ -259,6 +261,14 @@ public class Player implements HandCardsChangeListener {
                 
                 break;
             }
+            case functioncon.b_evasion:{
+                
+                int cardId = info.getInteger(c.param_key.id_list);
+                this.handCards.remove(cardId, true);
+                
+                table.turnBackToTurnHolder();
+                break;
+            }
             case functioncon.b_heal: {
                 
                 break;
@@ -345,12 +355,13 @@ public class Player implements HandCardsChangeListener {
         l.logger().d(tag, "stateAction=" + stateAction + "stateAction, stateReason=" + stateReason);
         if (stateReason.equals(c.reason.normal_attacked)
             || stateReason.equals(c.reason.chaos_attacked)
+            || stateReason.equals(c.reason.flame_attacked)
         
         ) {
             l.logger().d(tag, "attacked");
             table.tableState = new TableState(c.game_state.started.somebody_attacking, new String[] { userName });
             stateInfo.setAction(c.action.choosing_to_evade);
-            Integer[] evasions = this.handCards.getCardsByFunction(functioncon.b_normal_attack).toArray(new Integer[] {});
+            Integer[] evasions = this.handCards.getCardsByFunction(functioncon.b_evasion).toArray(new Integer[] {});
             stateInfo.setIntegerArray(c.param_key.available_id_list, u.intArrayMapping(evasions));
             this.updateMyStateToClient(stateInfo);
             table.getWaiter().waitForSingleChoosing(this, c.default_wait_time);
@@ -433,7 +444,7 @@ public class Player implements HandCardsChangeListener {
     
     
     public void cancel() {
-    
+        table.cancelScheduledExecution();
         l.logger().d(tag, "cancel, stateReason=" + stateReason);
         if (this.stateReason == c.reason.normal_attacked) {
             this.property.hpDown(1);
@@ -452,7 +463,9 @@ public class Player implements HandCardsChangeListener {
             this.updatePropertyToClient(result);
             
             
-            //TODO 要给发杀的人sp+1
+            Data spUpData = new Data();
+            spUpData.addInteger(c.param_key.sp_changed, 1);
+            table.players.turnHolder.updatePropertyToClient(spUpData);
             
             
             turnToTurnHolder();
@@ -460,7 +473,7 @@ public class Player implements HandCardsChangeListener {
             this.property.hpDown(1);
             this.property.spUp(2);
             Data result = new Data();
-            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 1);
+            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 2);
             
             this.updatePropertyToClient(result);
             

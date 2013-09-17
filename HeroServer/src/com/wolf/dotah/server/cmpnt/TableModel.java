@@ -187,6 +187,17 @@ public class TableModel implements PlayerListListener {
         if (tableState.isEqualToState(c.game_state.not_started.can_start_turn)) {
             this.cancelScheduledExecution();
             
+            
+            Data data = new Data();
+            data.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
+            data.addString(c.param_key.player_name, playerName);
+            data.addBoolean(c.param_key.clear_showing_cards, true);
+            data.addIntegerArray(c.param_key.available_id_list, new int[] {});
+            //TODO table 里要保存current player, 
+//            disp.sendMessageToAllWithoutSpecificUser(data, playerName);
+            this.sendPublicMessage(data, playerName);
+            
+            
             Player pp = players.getPlayerByPlayerName(playerName);
             players.turnHolder = pp;
             if (pp.isAi()) {
@@ -206,7 +217,7 @@ public class TableModel implements PlayerListListener {
     }
     
     public void cancelScheduledExecution() {
-    
+        
         disp.cancelScheduledExecution(waiter.execution_id);
         
     }
@@ -253,18 +264,20 @@ public class TableModel implements PlayerListListener {
         
     }
     
+    //    
     public void playerUpdateInfo(String userName, Data customData) {
     
         //        this.sendMessageToAllWithoutSpecificUser(customData, userName);
+        this.sendPublicMessage(customData, userName);
         
         
     }
     
-    //    private void sendMessageToAllWithoutSpecificUser(Data customData, String userName) {
-    //    
-    //        disp.sendMessageToAllWithoutSpecificUser(customData, userName);
-    //        
-    //    }
+    private void sendMessageToAllWithoutSpecificUser(Data customData, String userName) {
+    
+        disp.sendMessageToAllWithoutSpecificUser(customData, userName);
+        
+    }
     
     public void sendMessageToAll(Data msg) {
     
@@ -277,28 +290,29 @@ public class TableModel implements PlayerListListener {
         return deck.fetchCards(2);
     }
     
-    //    public void updateTableInfoToOtherFromPlayer(String userName, int action, EsObject msg) {
-    //    
-    //        /*
-    //         * 其实就是转发广播
-    //         * 可能有目标, 
-    //         * 也可能有card id
-    //         * 之类的信息
-    //         */
-    //        Data data = new Data();
-    //        data.addAll(msg);
-    //        
-    //        /*
-    //         * 但是加工一下
-    //         * 设上正确的action
-    //         * 设上source
-    //         */
-    //        data.setAction(action);
-    //        String source = userName;
-    //        data.addString(c.param_key.player_name, source);
-    //        
-    //        this.sendMessageToAllWithoutSpecificUser(data, userName);
-    //    }
+    public void updateTableInfoToOtherFromPlayer(String userName, int action, EsObject msg) {
+    
+        /*
+         * 其实就是转发广播
+         * 可能有目标, 
+         * 也可能有card id
+         * 之类的信息
+         */
+        Data data = new Data();
+        data.addAll(msg);
+        
+        /*
+         * 但是加工一下
+         * 设上正确的action
+         * 设上source
+         */
+        data.setAction(action);
+        String source = userName;
+        data.addString(c.param_key.player_name, source);
+        
+        //            this.sendMessageToAllWithoutSpecificUser(data, userName);
+        this.sendPublicMessage(data, userName);
+    }
     
     public void playerUseCard(String user, EsObject msg) {
     
@@ -308,7 +322,7 @@ public class TableModel implements PlayerListListener {
         Card card = CardParser.getParser().getCardById(cardId);
         l.logger().d(tag, "playerUseCard, card=" + card);
         int functionId = card.getFunction();
-        //        updateTableInfoToOtherFromPlayer(user, functionId, msg);
+        updateTableInfoToOtherFromPlayer(user, functionId, msg);
         
         l.logger().d(tag, "playerUseCard, cardId=" + cardId + ", card=" + card.toString() + ", functionId=" + functionId);
         Player p = players.getPlayerByUserName(user);
@@ -328,6 +342,13 @@ public class TableModel implements PlayerListListener {
         Data data = new Data();
         data.setAction(c.action.free_play);
         this.sendMessageToSingleUser(players.turnHolder.userName, data);
+        
+    }
+    
+    public void sendPublicMessage(Data msg, String from) {
+    
+        msg.setInteger(c.param_key.kParamRemainingCardCount, this.getRemainCardCount());
+        disp.sendPublicMessage(msg, from);
         
     }
     
