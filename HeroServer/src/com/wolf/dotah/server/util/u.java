@@ -49,9 +49,11 @@ public class u {
         } else if (action.equals(c.action.turn_to_player)) {
             result = client_const.kActionPlayingCard;
         } else if (action.equals(c.action.free_play)) {
-            result = client_const.kActionChooseCardToUse;
+            result = client_const.kActionPlayingCard;
         } else if (action.equals(c.action.choosing_to_evade)) {
             result = client_const.kActionChooseCardToUse;
+        } else if (action.equals(c.action.update_player_property)) {
+            result = client_const.kActionUpdatePlayerHero;
         }
         
         return result;
