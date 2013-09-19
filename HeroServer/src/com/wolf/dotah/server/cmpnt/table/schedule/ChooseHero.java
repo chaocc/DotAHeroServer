@@ -32,7 +32,7 @@ public class ChooseHero implements ScheduledCallback {
     
         waitingType = c.game_state.waiting_type.none;
         table.broadcastHeroInited();
-        table.dispatchHandcards();
+        table.initHandcards();
     }
     
     private boolean checkWaitingState() {

@@ -4,7 +4,6 @@ public interface c {
     
     public String a = "action";
     public String action_description = "action_description";
-    public String action_category = "action_category";
     public int action_user_ready = 1;
     public int default_player_count = 2;
     public int default_wait_time = 10;
@@ -25,6 +24,7 @@ public interface c {
         public String chose_hero = "chose_hero";
         public String init_hand_cards = "init_player_info_hand_cards";
         public String update_hand_cards = "update_player_info_hand_cards";
+        public String update_hand_cards_count = "update_hand_cards_count";
         public String choosing_from_hand = "choosing_from_hand";
         public String choosing_to_evade = "choosing_to_evade";
         public String cutted = "update_table_cutted";
@@ -69,7 +69,8 @@ public interface c {
             target_player_list = "target_player_list",// 目标玩家列表
             index_list = "index_list",// 选中的哪几张牌
             hand_card_count = "hand_card_count",// 玩家手牌数量
-            kParamSelectableCardCount = "selectable_count",// 可选择的卡牌数量
+            hand_card_change_amount = "hand_card_change_amount",
+            available_count = "selectable_count",// 可选择的卡牌数量
             //                selectable_ids = "selectable_ids",
             kParamExtractedCardCount = "extracted_count",// 可抽取目标的卡牌数量
             kParamSelectedHeroId = "id",// 选中的英雄
@@ -89,6 +90,8 @@ public interface c {
             
             ;
         public String single_result = "single_result";
+        public String hand_card_to_be_change = "hand_card_to_be_change";
+        public String hand_card_after_change = "hand_card_to_be_change";
     }
     
     interface playercon {

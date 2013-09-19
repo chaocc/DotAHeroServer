@@ -46,6 +46,8 @@ public class u {
             result = client_const.action_cutted;
         } else if (action.equals(c.action.update_hand_cards)) {
             result = client_const.kActionUpdatePlayerHand;
+        } else if (action.equals(c.action.update_hand_cards_count)) {
+            result = client_const.kActionUpdatePlayerHand;
         } else if (action.equals(c.action.turn_to_player)) {
             result = client_const.kActionPlayingCard;
         } else if (action.equals(c.action.free_play)) {

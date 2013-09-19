@@ -38,6 +38,7 @@ public class MessageCenter {
             false);
     }
     
+    
     public void sendMessageToAllWithoutSpecificUser(EsObject msg, String exceptionUser) {
     
         msg.setInteger(c.param_key.kParamRemainingCardCount, table.getRemainCardCount());
@@ -123,6 +124,7 @@ public class MessageCenter {
     }
     
     public void cancelScheduledExecution(int callback_id) {
+    
         l.logger().d(tag, "cancelling schedule execution ... ");
         plugin.getApi().cancelScheduledExecution(callback_id);
         

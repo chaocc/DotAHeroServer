@@ -10,6 +10,11 @@
 
 
 
+
+
+
+
+
 delay task
 2, (之后再解)  在schedule中, 如果收到client的结果需要立刻cancel schedule
 
@@ -21,4 +26,12 @@ delay task
 done
 5, 整理常量
 3, 改成带个clearTable参数, 客户端去检查true就clear
+
+刘兵 9/18/2013 8:40:42 AM
+昨天不能出闪的问题是因为参数selectable_count没传过来
+刘兵  3:19:44 PM
+关于手牌参数也要改一下了，逻辑类似血和怒气，把更改的数发过来，不是总的手牌数。
+
+刘兵  3:32:16 PM
+发送3001时，也要发个public。
 

@@ -8,21 +8,23 @@ import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel.HandCardsChangeListener;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
+import com.wolf.dotah.server.cmpnt.player.PlayerProperty.PlayerPropertyChangedListener;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.layer.dao.HeroParser;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
-public class Player implements HandCardsChangeListener {
+public class Player implements HandCardsChangeListener, PlayerPropertyChangedListener {
     
     private String tag = "Player ==>> ";
     public String stateAction;
     public String stateReason;
+    public boolean godStrength = false;
     public Data stateInfo;
     public PlayerProperty property;//player 属性的状态
     public PlayerHandCardsModel handCards;
-    private TableModel table;
+    public TableModel table;
     
     public void updatePropertyToClient(Data result) {
     
@@ -85,7 +87,7 @@ public class Player implements HandCardsChangeListener {
     private void initPropertyWithHeroId(int heroId) {
     
         HeroInfo heroInfo = HeroParser.getParser().getHeroInfoById(heroId);
-        property = new PlayerProperty(heroInfo);
+        property = new PlayerProperty(heroInfo, this);
         handCards = new PlayerHandCardsModel(this, heroInfo.getHandcardLimit());
         handCards.registerHandcardChangeListener(this);
         //TODO 不是在这里, 而是在全都收到选择了英雄后broadcast chose property
@@ -115,15 +117,10 @@ public class Player implements HandCardsChangeListener {
         
     }
     
+    public void updateMyHandCardsToClient(Data handcardsData) {
     
-    public void getHandcards(List<Integer> cards) {
-    
-        addHandcards(cards);
-        if (this.ai == null || !this.ai.isAi()) {
-            sendPrivateMessage(c.action.init_hand_cards);
-        }
-        //        this.sendPublicMessage(c.ac.init_hand_cards);
-        
+        l.logger().d(tag, "updateMyHandCardsToClient, handcardsData=" + handcardsData);
+        table.sendMessageToSingleUser(userName, handcardsData);
     }
     
     private void sendPrivateMessage(String string_action) {
@@ -134,6 +131,7 @@ public class Player implements HandCardsChangeListener {
         table.getMessenger().sendMessageToSingleUser(userName, data);
     }
     
+    //TODO should deprecate, no need 不需要使用类似的操作
     private void addPrivateData(Data data, String string_action) {
     
         if (c.action.init_hand_cards.equals(string_action)) {
@@ -143,7 +141,7 @@ public class Player implements HandCardsChangeListener {
             List<Integer> cardList = this.handCards.getCards();
             int[] cardArray = u.intArrayMapping(cardList.toArray(new Integer[] {}));
             data.setIntegerArray(c.param_key.id_list, cardArray);
-            data.setInteger(c.param_key.kParamSelectableCardCount, 1);
+            data.setInteger(c.param_key.available_count, 1);
         }
     }
     
@@ -173,7 +171,16 @@ public class Player implements HandCardsChangeListener {
     
     public void addHandcards(List<Integer> cards) {
     
-        this.handCards.add(cards);
+        this.handCards.add(cards, true);
+        
+    }
+    
+    public void initHandCards(List<Integer> cards) {
+    
+        this.handCards.add(cards, false);
+        if (this.ai == null || !this.ai.isAi()) {
+            sendPrivateMessage(c.action.init_hand_cards);
+        }
         
     }
     
@@ -194,11 +201,6 @@ public class Player implements HandCardsChangeListener {
         return ai.isAi();
     }
     
-    
-    public TableModel getTable() {
-    
-        return table;
-    }
     
     private void debug(String tag, String log) {
     
@@ -261,19 +263,32 @@ public class Player implements HandCardsChangeListener {
                 
                 break;
             }
-            case functioncon.b_evasion:{
+            case functioncon.b_evasion: {
                 
-                int cardId = info.getInteger(c.param_key.id_list);
+                int cardId = info.getIntegerArray(c.param_key.id_list)[0];
                 this.handCards.remove(cardId, true);
                 
-                table.turnBackToTurnHolder();
+                table.turnBackToTurnHolder(userName);
                 break;
             }
             case functioncon.b_heal: {
                 
+                int cardId = info.getIntegerArray(c.param_key.id_list)[0];
+                this.handCards.remove(cardId, true);
+                
+                String targetName = info.getStringArray(c.param_key.target_player_list)[0];
+                if (userName.equals(targetName)) {
+                    this.property.hpUp(1);
+                }
+                
+                
                 break;
             }
             case functioncon.s_GodsStrength: {
+                this.godStrength = true;
+                
+                
+                
                 
                 break;
             }
@@ -317,22 +332,6 @@ public class Player implements HandCardsChangeListener {
                 
                 break;
             }
-            case functioncon.m_enhanced_Disarm: {
-                
-                break;
-            }
-            case functioncon.m_enhanced_ElunesArrow: {
-                
-                break;
-            }
-            case functioncon.m_enhanced_EnergyTransport: {
-                
-                break;
-            }
-            case functioncon.m_enhanced_Greed: {
-                
-                break;
-            }
         }
         
         
@@ -362,6 +361,7 @@ public class Player implements HandCardsChangeListener {
             table.tableState = new TableState(c.game_state.started.somebody_attacking, new String[] { userName });
             stateInfo.setAction(c.action.choosing_to_evade);
             Integer[] evasions = this.handCards.getCardsByFunction(functioncon.b_evasion).toArray(new Integer[] {});
+            stateInfo.setInteger(c.param_key.available_count, 1);
             stateInfo.setIntegerArray(c.param_key.available_id_list, u.intArrayMapping(evasions));
             this.updateMyStateToClient(stateInfo);
             table.getWaiter().waitForSingleChoosing(this, c.default_wait_time);
@@ -385,10 +385,10 @@ public class Player implements HandCardsChangeListener {
         Data obj = new Data();
         obj.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
         obj.addString(c.param_key.player_name, userName);
-        obj.addBoolean(c.param_key.clear_showing_cards, true);
+        //        obj.addBoolean(c.param_key.clear_showing_cards, true);
         int[] availableHandCards = this.getAvailableHandCards();
         obj.addIntegerArray(c.param_key.available_id_list, availableHandCards);
-        obj.addInteger(c.param_key.kParamSelectableCardCount, c.selectable_count.default_value);
+        obj.addInteger(c.param_key.available_count, c.selectable_count.default_value);
         
         
         table.sendMessageToSingleUser(userName, obj);
@@ -404,7 +404,7 @@ public class Player implements HandCardsChangeListener {
     private void drawHandCards(int i) {
     
         List<Integer> cards = table.drawCardsFromDeck(2);
-        this.handCards.add(cards);
+        this.handCards.add(cards, true);
         
     }
     
@@ -444,55 +444,87 @@ public class Player implements HandCardsChangeListener {
     
     
     public void cancel() {
+    
         table.cancelScheduledExecution();
         l.logger().d(tag, "cancel, stateReason=" + stateReason);
         if (this.stateReason == c.reason.normal_attacked) {
             this.property.hpDown(1);
             this.property.spUp(1);
-            Data result = new Data();
-            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 1);
             
-            this.updatePropertyToClient(result);
+            //            Data result = new Data();
+            //            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 1);
+            //            this.updatePropertyToClient(result);
+            
             
             turnToTurnHolder();
         } else if (this.stateReason == c.reason.chaos_attacked) {
             this.property.hpDown(1);
             this.property.spUp(1);
-            Data result = new Data();
-            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 1);
-            this.updatePropertyToClient(result);
             
+            //            Data result = new Data();
+            //            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 1);
+            //            this.updatePropertyToClient(result);
+            //            
+            //            Data spUpData = new Data();
+            //            spUpData.addInteger(c.param_key.sp_changed, 1);
+            //            table.players.turnHolder.updatePropertyToClient(spUpData);
             
-            Data spUpData = new Data();
-            spUpData.addInteger(c.param_key.sp_changed, 1);
-            table.players.turnHolder.updatePropertyToClient(spUpData);
+            table.players.turnHolder.property.spUp(1);
             
             
             turnToTurnHolder();
         } else if (this.stateReason == c.reason.flame_attacked) {
             this.property.hpDown(1);
             this.property.spUp(2);
-            Data result = new Data();
-            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 2);
-            
-            this.updatePropertyToClient(result);
+            //            Data result = new Data();
+            //            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 2);
+            //            this.updatePropertyToClient(result);
             
             turnToTurnHolder();
         } else if (this.stateAction.equals(c.action.free_play)) {
             //TODO 弃牌
+            godStrength = false;
         }
     }
     
     
     private void turnToTurnHolder() {
     
-        table.turnBackToTurnHolder();
+        table.turnBackToTurnHolder(userName);
         
     }
     
     
     @Override
     public void onHandCardsDropped(List<Integer> droppedCards) {
+    
+        // TODO Auto-generated method stub
+        
+    }
+    
+    
+    @Override
+    public void onHpChanged(String playerName, int amount) {
+    
+        Data data = new Data();
+        data.addInteger(c.param_key.hp_changed, amount);
+        this.updatePropertyToClient(data);
+        
+    }
+    
+    
+    @Override
+    public void onSpChanged(String playerName, int amount) {
+    
+        Data data = new Data();
+        data.addInteger(c.param_key.sp_changed, amount);
+        this.updatePropertyToClient(data);
+        
+    }
+    
+    
+    @Override
+    public void onEquipChanged(String playerName) {
     
         // TODO Auto-generated method stub
         

@@ -91,11 +91,11 @@ public interface card_const {
         final int m_ElunesArrow = function_code_base + 14;//月神之剑
         final int m_EnergyTransport = function_code_base + 15;//能量转移
         final int m_Greed = function_code_base + 16;
-        final int enhanced = 100;
-        final int m_enhanced_Greed = m_Greed + enhanced;
-        final int m_enhanced_ElunesArrow = m_ElunesArrow + enhanced;
-        final int m_enhanced_EnergyTransport = m_EnergyTransport + enhanced;
-        final int m_enhanced_Disarm = m_Disarm + enhanced;//缴械    强化
+//        final int enhanced = 100;
+//        final int m_enhanced_Greed = m_Greed + enhanced;
+//        final int m_enhanced_ElunesArrow = m_ElunesArrow + enhanced;
+//        final int m_enhanced_EnergyTransport = m_EnergyTransport + enhanced;
+//        final int m_enhanced_Disarm = m_Disarm + enhanced;//缴械    强化
         
         
         final int e_BootsOfSpeed = function_code_base + 17;// 速度之靴

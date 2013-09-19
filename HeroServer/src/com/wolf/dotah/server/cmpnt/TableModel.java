@@ -5,6 +5,8 @@ import java.util.Map;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.MessageCenter;
 import com.wolf.dotah.server.cmpnt.cardandskill.Card;
+import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel.HandCardsChangeListener;
+import com.wolf.dotah.server.cmpnt.player.PlayerProperty.PlayerPropertyChangedListener;
 import com.wolf.dotah.server.cmpnt.table.DeckModel;
 import com.wolf.dotah.server.cmpnt.table.HeroCandidateModel;
 import com.wolf.dotah.server.cmpnt.table.Players;
@@ -35,7 +37,7 @@ import com.wolf.dotah.server.util.u;
  * @author Solomon
  *
  */
-public class TableModel implements PlayerListListener {
+public class TableModel implements PlayerListListener, HandCardsChangeListener, PlayerPropertyChangedListener {
     
     /*
      * TODO wait 有几种,  所有人等待特定的人, 所有人等待未知的人, 一个人等待特定的一个人, 一个列表的人等待特定的人
@@ -139,12 +141,12 @@ public class TableModel implements PlayerListListener {
         return cards;
     }
     
-    public void dispatchHandcards() {
+    public void initHandcards() {
     
         // TODO 给每个人发手牌, 每发1个, 就发2个plugin message
         for (Player p : this.players.getPlayerList()) {
             List<Integer> cards = this.getCardsFromRemainStack(c.default_draw_count);
-            p.getHandcards(cards);
+            p.initHandCards(cards);
         }
         
         updatePlayersToCutting();
@@ -191,10 +193,10 @@ public class TableModel implements PlayerListListener {
             Data data = new Data();
             data.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
             data.addString(c.param_key.player_name, playerName);
-            data.addBoolean(c.param_key.clear_showing_cards, true);
+            //            data.addBoolean(c.param_key.clear_showing_cards, true);
             data.addIntegerArray(c.param_key.available_id_list, new int[] {});
             //TODO table 里要保存current player, 
-//            disp.sendMessageToAllWithoutSpecificUser(data, playerName);
+            //            disp.sendMessageToAllWithoutSpecificUser(data, playerName);
             this.sendPublicMessage(data, playerName);
             
             
@@ -207,17 +209,17 @@ public class TableModel implements PlayerListListener {
             }
         }
         
-        //        data = new Data();
-        //        data.setAction(c.server_action.free_play);//3001
-        //        int[] availableHandCards = players.getPlayerByPlayerName(playerName).getAvailableHandCards();
-        //        data.setIntegerArray(client_const.param_key.available_id_list, availableHandCards);
-        //        data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);//selectable count
-        //        this.getTranslator().getDispatcher().sendMessageToSingleUser(playerName, data);
+        //                data = new Data();
+        //                data.setAction(c.action.free_play);//3001
+        //                int[] availableHandCards = players.getPlayerByPlayerName(playerName).getAvailableHandCards();
+        //                data.setIntegerArray(client_const.param_key.available_id_list, availableHandCards);
+        //                data.setInteger(client_const.param_key.kParamSelectableCardCount, 1);//selectable count
+        //                this.getTranslator().getDispatcher().sendMessageToSingleUser(playerName, data);
         
     }
     
     public void cancelScheduledExecution() {
-        
+    
         disp.cancelScheduledExecution(waiter.execution_id);
         
     }
@@ -273,11 +275,11 @@ public class TableModel implements PlayerListListener {
         
     }
     
-    private void sendMessageToAllWithoutSpecificUser(Data customData, String userName) {
-    
-        disp.sendMessageToAllWithoutSpecificUser(customData, userName);
-        
-    }
+    //    private void sendMessageToAllWithoutSpecificUser(Data customData, String userName) {
+    //    
+    //        disp.sendMessageToAllWithoutSpecificUser(customData, userName);
+    //        
+    //    }
     
     public void sendMessageToAll(Data msg) {
     
@@ -337,11 +339,12 @@ public class TableModel implements PlayerListListener {
         return waiter;
     }
     
-    public void turnBackToTurnHolder() {
+    public void turnBackToTurnHolder(String from) {
     
         Data data = new Data();
         data.setAction(c.action.free_play);
         this.sendMessageToSingleUser(players.turnHolder.userName, data);
+        this.sendPublicMessage(data, from);
         
     }
     
@@ -349,6 +352,45 @@ public class TableModel implements PlayerListListener {
     
         msg.setInteger(c.param_key.kParamRemainingCardCount, this.getRemainCardCount());
         disp.sendPublicMessage(msg, from);
+        
+    }
+    
+    @Override
+    public void onHandCardsAdded(List<Integer> newCards) {
+    
+    }
+    
+    @Override
+    public void onHandCardsDropped(List<Integer> droppedCards) {
+    
+    }
+    
+    @Override
+    public void onHpChanged(String playerName, int amount) {
+    
+        Data data = new Data();
+        data.setAction(c.action.update_player_property);
+        data.addInteger(c.param_key.hp_changed, amount);
+        data.addString(c.param_key.player_name, playerName);
+        this.sendPublicMessage(data, playerName);
+        
+    }
+    
+    @Override
+    public void onSpChanged(String playerName, int amount) {
+    
+        Data data = new Data();
+        data.setAction(c.action.update_player_property);
+        data.addInteger(c.param_key.sp_changed, amount);
+        data.addString(c.param_key.player_name, playerName);
+        this.sendPublicMessage(data, playerName);
+        
+    }
+    
+    @Override
+    public void onEquipChanged(String playerName) {
+    
+        // TODO Auto-generated method stub
         
     }
     

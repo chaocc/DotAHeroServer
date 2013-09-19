@@ -22,9 +22,28 @@ public class PlayerHandCardsModel {
     int limit;
     List<Integer> cards = new ArrayList<Integer>();
     
-    public void add(List<Integer> input) {
+    public void add(List<Integer> input, boolean sendUpdateMessage) {
     
+        int original_size = cards.size();
+        
         cards.addAll(input);
+        
+        
+        Data data = new Data();//use to update count
+        data.addHandCardSize(original_size, cards.size());
+        data.setAction(c.action.update_hand_cards_count);
+        player.table.sendPublicMessage(data, player.userName);
+        
+        if(sendUpdateMessage){
+            data=new Data();
+            data.setAction(c.action.update_hand_cards);
+            data.addHandCardSize(original_size, cards.size());
+            data.addHandCardState(input, cards);
+            player.updateMyHandCardsToClient(data);
+        }
+        
+        //TODO 不应该handcards发这些更新通知. 应该桌面发public, player发private
+        
         for (HandCardsChangeListener listener : changeListeners) {
             listener.onHandCardsAdded(input);
         }
@@ -47,8 +66,9 @@ public class PlayerHandCardsModel {
     
     public void remove(int card, boolean sendPrivateMessage) {
     
-        this.getCards().remove(this.getCards().indexOf(card));
+        int origin_size = cards.size();
         
+        this.getCards().remove(this.getCards().indexOf(card));
         
         
         Data data = new Data();
@@ -62,9 +82,10 @@ public class PlayerHandCardsModel {
         data = new Data();
         data.setAction(c.action.update_hand_cards);
         data.setInteger(c.param_key.hand_card_count, cards.size());
+        data.setInteger(c.param_key.hand_card_change_amount, cards.size() - origin_size);
         data.setString(c.param_key.who, player.userName);
-//        player.getTable().getMessenger().sendMessageToAllWithoutSpecificUser(data, player.userName);
-        player.getTable().sendPublicMessage(data, player.userName);
+        //        player.getTable().getMessenger().sendMessageToAllWithoutSpecificUser(data, player.userName);
+        player.table.sendPublicMessage(data, player.userName);
     }
     
     

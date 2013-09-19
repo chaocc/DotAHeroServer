@@ -93,20 +93,20 @@ public class Card implements card_const {
             this.function = functioncon.m_Dispel;
         }
         
-        // enhancable magics 
-        else if (name.equals(func_name.Disarm)) {
-            this.function = functioncon.m_Disarm;
-            this.enhancedFunction = functioncon.m_enhanced_Disarm;
-        } else if (name.equals(func_name.ElunesArrow)) {
-            this.function = functioncon.m_ElunesArrow;
-            this.enhancedFunction = functioncon.m_enhanced_ElunesArrow;
-        } else if (name.equals(func_name.EnergyTransport)) {
-            this.function = functioncon.m_EnergyTransport;
-            this.enhancedFunction = functioncon.m_enhanced_EnergyTransport;
-        } else if (name.equals(func_name.Greed)) {
-            this.function = functioncon.m_Greed;
-            this.enhancedFunction = functioncon.m_enhanced_Greed;
-        }
+//        // enhancable magics 
+//        else if (name.equals(func_name.Disarm)) {
+//            this.function = functioncon.m_Disarm;
+//            this.enhancedFunction = functioncon.m_enhanced_Disarm;
+//        } else if (name.equals(func_name.ElunesArrow)) {
+//            this.function = functioncon.m_ElunesArrow;
+//            this.enhancedFunction = functioncon.m_enhanced_ElunesArrow;
+//        } else if (name.equals(func_name.EnergyTransport)) {
+//            this.function = functioncon.m_EnergyTransport;
+//            this.enhancedFunction = functioncon.m_enhanced_EnergyTransport;
+//        } else if (name.equals(func_name.Greed)) {
+//            this.function = functioncon.m_Greed;
+//            this.enhancedFunction = functioncon.m_enhanced_Greed;
+//        }
     }
     
     

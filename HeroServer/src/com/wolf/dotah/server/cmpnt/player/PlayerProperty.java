@@ -1,5 +1,9 @@
 package com.wolf.dotah.server.cmpnt.player;
 
+import java.util.ArrayList;
+import java.util.List;
+import com.wolf.dotah.server.cmpnt.Player;
+
 
 public class PlayerProperty {
     HeroInfo hero;
@@ -11,13 +15,18 @@ public class PlayerProperty {
     PlayerEquipments equips;
     String force;
     
-    public PlayerProperty(HeroInfo heroInfo) {
+    Player player;
+    List<PlayerPropertyChangedListener> listeners;
+    
+    public PlayerProperty(HeroInfo heroInfo, Player inputPlayer) {
     
         hero = heroInfo;
         
         hpLimit = hero.getHpLimit();
         spLimit = hero.getSpLimit();
         equips = new PlayerEquipments();
+        this.player = inputPlayer;
+        this.listeners = new ArrayList<PlayerPropertyChangedListener>();
         
         this.refresh();
     }
@@ -58,15 +67,43 @@ public class PlayerProperty {
         return "PlayerProperty [hero=" + hero + ", hp=" + hp + ", sp=" + sp + ", equips=" + equips + ", force=" + force + "]";
     }
     
+    public void hpUp(int i) {
+    
+        this.hp += i;
+        for (PlayerPropertyChangedListener listener : listeners) {
+            listener.onHpChanged(player.userName, i);
+        }
+    }
+    
     public void hpDown(int i) {
     
         this.hp -= i;
-        
+        for (PlayerPropertyChangedListener listener : listeners) {
+            listener.onHpChanged(player.userName, -i);
+        }
     }
+    
     
     public void spUp(int i) {
     
         this.sp += i;
+        for (PlayerPropertyChangedListener listener : listeners) {
+            listener.onSpChanged(player.userName, i);
+        }
+    }
+    
+    public void spDown(int i) {
+    
+        this.sp -= i;
+        for (PlayerPropertyChangedListener listener : listeners) {
+            listener.onSpChanged(player.userName, -i);
+        }
+    }
+    public interface PlayerPropertyChangedListener {
+        void onHpChanged(String playerName, int amount);
         
+        void onSpChanged(String playerName, int amount);
+        
+        void onEquipChanged(String playerName);
     }
 }
