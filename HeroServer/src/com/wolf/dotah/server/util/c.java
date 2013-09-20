@@ -24,7 +24,7 @@ public interface c {
         public String chose_hero = "chose_hero";
         public String init_hand_cards = "init_player_info_hand_cards";
         public String update_hand_cards = "update_player_info_hand_cards";
-        public String update_hand_cards_count = "update_hand_cards_count";
+//        public String update_hand_cards_count = "update_hand_cards_count";
         public String choosing_from_hand = "choosing_from_hand";
         public String choosing_to_evade = "choosing_to_evade";
         public String cutted = "update_table_cutted";
@@ -32,6 +32,7 @@ public interface c {
         public String normal_attack = "normal_attack";
         public String decided = "decided";
         public Object choosing_from_showing = "choosing_from_showing";
+        public String choosing_to_drop = "choosing_to_drop";
     }
     public interface reason {
         
@@ -40,6 +41,8 @@ public interface c {
         String animating = "animating";
         String chaos_attacked = "chaos_attacked";
         String flame_attacked = "flame_attacked";
+        String s_LagunaBladed = "s_LagunaBladed";
+        String s_viper_raided = "s_viper_raided";
     }
     
     
@@ -68,7 +71,7 @@ public interface c {
             player_name = "player_name",// 回合开始/伤害来源/出牌的玩家
             target_player_list = "target_player_list",// 目标玩家列表
             index_list = "index_list",// 选中的哪几张牌
-            hand_card_count = "hand_card_count",// 玩家手牌数量
+//            hand_card_count = "hand_card_count",// 玩家手牌数量
             hand_card_change_amount = "hand_card_change_amount",
             available_count = "selectable_count",// 可选择的卡牌数量
             //                selectable_ids = "selectable_ids",
@@ -90,8 +93,8 @@ public interface c {
             
             ;
         public String single_result = "single_result";
-        public String hand_card_to_be_change = "hand_card_to_be_change";
-        public String hand_card_after_change = "hand_card_to_be_change";
+//        public String hand_card_to_be_change = "hand_card_to_be_change";
+//        public String hand_card_after_change = "hand_card_to_be_change";
     }
     
     interface playercon {
@@ -150,6 +153,8 @@ public interface c {
             int free_playing = 3;
             int deciding = 4;
             int somebody_attacking = 10;
+            int somebody_s_LagunaingBlade = 11;
+            int somebody_is_s_viper_raiding = 12;
         }
         
         int ended = 5;

@@ -40,15 +40,17 @@ public class u {
             result = client_const.kActionInitPlayerHero;
         } else if (action.equals(c.action.init_hand_cards)) {
             result = client_const.kActionInitPlayerCard;
-        } else if (action.equals(c.action.choosing_from_hand)) {
+        } else if (action.equals(c.action.choosing_from_hand)) {//TODO 这个要改
             result = client_const.kActionChooseCardToCompare;
         } else if (action.equals(c.action.cutted)) {
             result = client_const.action_cutted;
         } else if (action.equals(c.action.update_hand_cards)) {
-            result = client_const.kActionUpdatePlayerHand;
-        } else if (action.equals(c.action.update_hand_cards_count)) {
-            result = client_const.kActionUpdatePlayerHand;
-        } else if (action.equals(c.action.turn_to_player)) {
+            result = client_const.kActionPlayerUpdateHand;
+        } 
+//        else if (action.equals(c.action.update_hand_cards_count)) {
+//            result = client_const.kActionUpdatePlayerHand;
+//        } 
+        else if (action.equals(c.action.turn_to_player)) {
             result = client_const.kActionPlayingCard;
         } else if (action.equals(c.action.free_play)) {
             result = client_const.kActionPlayingCard;
@@ -56,6 +58,8 @@ public class u {
             result = client_const.kActionChooseCardToUse;
         } else if (action.equals(c.action.update_player_property)) {
             result = client_const.kActionUpdatePlayerHero;
+        }else if(action.equals(c.action.choosing_to_drop)){
+            result = client_const.kActionChooseCardToDiscard;
         }
         
         return result;

@@ -41,8 +41,6 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
     
     /*
      * TODO wait 有几种,  所有人等待特定的人, 所有人等待未知的人, 一个人等待特定的一个人, 一个列表的人等待特定的人
-     * TODO 发message有几种: 发给一个人, 发给几个人, 发给所有人, 还要区分是否只有自己可见的(好像不发给所有人的都是只有自己可见)
-     * TODO decision 有几种
      * TODO action分成3种, table action, all player action, 和 specific player action
      *                   table action 直接给table处理.
      *                   all player action 交给 player list,  由player list交给每个player 来处理
@@ -99,7 +97,6 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
             }
             //            updateSequence.submitServerUpdateByTable(this);
         }
-        //TODO waiting for everybody to choose
         waiter.waitingForEverybody().becauseOf(c.playercon.state.choosing.choosing_hero);
     }
     
@@ -176,9 +173,6 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
     
     public void startTurn(String biggestPlayer, int delaySec) {
     
-        //TODO waiter.waitingForEverybody().becauseOf(c.reason.animating, 2);
-        // this.tableState = new TableState(c.game_state.not_started.can_start_turn);
-        // startTurn(biggestPlayer);
         this.players.turnHolder = this.players.getPlayerByPlayerName(biggestPlayer);
         waiter.waitingForEverybody().becauseOf(c.reason.animating, delaySec);
     }
@@ -195,8 +189,6 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
             data.addString(c.param_key.player_name, playerName);
             //            data.addBoolean(c.param_key.clear_showing_cards, true);
             data.addIntegerArray(c.param_key.available_id_list, new int[] {});
-            //TODO table 里要保存current player, 
-            //            disp.sendMessageToAllWithoutSpecificUser(data, playerName);
             this.sendPublicMessage(data, playerName);
             
             
@@ -247,33 +239,15 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
         return this.disp;
     }
     
-    public void choseCard(String user, EsObject msg) {
-    
-        int[] id = msg.getIntegerArray(c.param_key.id_list, new int[] {});
-        l.logger().d(user, "table.getState().getState() :  " + tableState.getState());
-        if (tableState.isEqualToState(c.game_state.not_started.cutting)) {
-            this.addResultForShowing(user, id[0]);
-        } else if (tableState.isEqualToState(c.game_state.started.somebody_attacking)) {
-            String player = tableState.getSubject();
-            if (user.equals(player)) {
-                
-                
-                //                sldfkldsl;
-                
-                
-            }
-        }
-        
-    }
     
     //    
-    public void playerUpdateInfo(String userName, Data customData) {
-    
-        //        this.sendMessageToAllWithoutSpecificUser(customData, userName);
-        this.sendPublicMessage(customData, userName);
-        
-        
-    }
+    //    public void playerUpdateInfo(String userName, Data customData) {
+    //    
+    //        //        this.sendMessageToAllWithoutSpecificUser(customData, userName);
+    //        this.sendPublicMessage(customData, userName);
+    //        
+    //        
+    //    }
     
     //    private void sendMessageToAllWithoutSpecificUser(Data customData, String userName) {
     //    
@@ -319,18 +293,31 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
     public void playerUseCard(String user, EsObject msg) {
     
         int cardId = msg.getIntegerArray(c.param_key.id_list)[0];
-        l.logger().d(tag, "playerUseCard, using card: " + cardId);
-        // add card to drop card stack
         Card card = CardParser.getParser().getCardById(cardId);
-        l.logger().d(tag, "playerUseCard, card=" + card);
         int functionId = card.getFunction();
-        updateTableInfoToOtherFromPlayer(user, functionId, msg);
         
         l.logger().d(tag, "playerUseCard, cardId=" + cardId + ", card=" + card.toString() + ", functionId=" + functionId);
         Player p = players.getPlayerByUserName(user);
         l.logger().d(tag, "playerUseCard, Player=" + p.toString());
         
         p.useCard(msg, functionId);
+        
+    }
+    
+    public void choseCard(String user, EsObject msg) {
+    
+        int[] id = msg.getIntegerArray(c.param_key.id_list, new int[] {});
+        l.logger().d(user, "table.getState().getState() :  " + tableState.getState());
+        if (tableState.isEqualToState(c.game_state.not_started.cutting)) {
+            this.addResultForShowing(user, id[0]);
+        } else if (tableState.isEqualToState(c.game_state.started.somebody_attacking)) {
+            playerUseCard(user, msg);
+        }else if(tableState.isEqualToState(c.game_state.started.somebody_is_s_viper_raiding)){
+            Player p = players.getPlayerByUserName(user);
+            if(p.stateReason.equals(c.reason.s_viper_raided)){
+                p.respondAsTarget(msg);
+            }
+        }
         
     }
     
@@ -343,8 +330,12 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
     
         Data data = new Data();
         data.setAction(c.action.free_play);
+        this.sendPublicMessage(data, players.turnHolder.userName);
+        
+
+        data.addIntegerArray(c.param_key.available_id_list, players.turnHolder.getAvailableHandCards());
+        data.addInteger(c.param_key.available_count, 1);
         this.sendMessageToSingleUser(players.turnHolder.userName, data);
-        this.sendPublicMessage(data, from);
         
     }
     
@@ -355,43 +346,53 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
         
     }
     
-    @Override
-    public void onHandCardsAdded(List<Integer> newCards) {
+    //    public void broadcastCachedMessage(Data msg, String from) {
+    //    
+    //        msg.setInteger(c.param_key.kParamRemainingCardCount, this.getRemainCardCount());
+    //        disp.broadcastCachedMessage(msg, from);
+    //    }
     
+    @Override
+    public void onHandCardsAdded(List<Integer> newCards, String playerName, boolean sendPrivate) {
+    
+        Data obj = new Data();
+        obj.setAction(c.action.update_hand_cards);
+        obj.setInteger(c.param_key.hand_card_change_amount, newCards.size());
+        this.sendPublicMessage(obj, playerName);
     }
     
     @Override
-    public void onHandCardsDropped(List<Integer> droppedCards) {
+    public void onHandCardsDropped(int[] droppedCards, String playerName, boolean sendPrivate) {
     
+        Data obj = new Data();
+        obj.setAction(c.action.update_hand_cards);
+        obj.setInteger(c.param_key.hand_card_change_amount, -droppedCards.length);
+        this.sendPublicMessage(obj, playerName);
     }
     
     @Override
     public void onHpChanged(String playerName, int amount) {
     
         Data data = new Data();
-        data.setAction(c.action.update_player_property);
         data.addInteger(c.param_key.hp_changed, amount);
         data.addString(c.param_key.player_name, playerName);
+        data.setAction(c.action.update_player_property);
         this.sendPublicMessage(data, playerName);
-        
     }
     
     @Override
     public void onSpChanged(String playerName, int amount) {
     
         Data data = new Data();
-        data.setAction(c.action.update_player_property);
         data.addInteger(c.param_key.sp_changed, amount);
         data.addString(c.param_key.player_name, playerName);
+        data.setAction(c.action.update_player_property);
         this.sendPublicMessage(data, playerName);
-        
     }
     
     @Override
     public void onEquipChanged(String playerName) {
     
-        // TODO Auto-generated method stub
-        
     }
     
 }

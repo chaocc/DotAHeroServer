@@ -226,7 +226,7 @@ public class Data extends EsObject {
     public Data addHandCardSize(int original_size, int new_size) {
     
         this.setInteger(c.param_key.hand_card_change_amount, new_size - original_size);
-        this.setInteger(c.param_key.hand_card_count, new_size);
+//        this.setInteger(c.param_key.hand_card_count, new_size);
         return this;
     }
     
@@ -235,8 +235,8 @@ public class Data extends EsObject {
     
         int[] toBeChange = u.intArrayMapping(input.toArray(new Integer[] {}));
         this.setIntegerArray(c.param_key.id_list, toBeChange);
-        this.setIntegerArray(c.param_key.hand_card_to_be_change, toBeChange);
-        this.setIntegerArray(c.param_key.hand_card_after_change, u.intArrayMapping(cards.toArray(new Integer[] {})));
+//        this.setIntegerArray(c.param_key.hand_card_to_be_change, toBeChange);
+//        this.setIntegerArray(c.param_key.hand_card_after_change, u.intArrayMapping(cards.toArray(new Integer[] {})));
         return this;
     }
     

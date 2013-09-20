@@ -20,12 +20,19 @@ public interface client_const {
         kActionUseHeroSkill = 101, // 使用英雄技能
         kActionCancel = 102, // 取消
         kActionDiscard = 103, // 确定弃牌
+        kActionOkay = 104, // 确定
+        kActionClearDeckCard = 105, // 清空桌面
         
-        kActionChooseHeroId = 200, // 选择英雄
-        kActionChooseCard = 201, // 选择卡牌Id/Idx, 闪
-        kActionChooseColor = 202, // 选择卡牌颜色
-        kActionChooseSuits = 203, // 选择卡牌花色
-        kActionArrangeCardId = 204; // 重新排列卡牌(如能量转移)
+        kActionChoseHero = 200, // 选择了英雄
+        kActionChoseCardToUse = 201, // 选择了卡牌Id/Idx: 使用
+        kActionChoseCardToCut = 202, // 选择了卡牌: 切牌
+        kActionChoseCardToGet = 203, // 选择了目标卡牌: 抽取获得
+        kActionChoseCardToDrop = 204, // 先择了卡牌: 丢掉
+        kActionChoseCardToGive = 205, // 选择了卡牌: 交给其他玩家
+        kActionChoseCardToDiscard = 206, // 选择了卡牌: 弃置
+        kActionChoseColor = 207, // 选择了卡牌颜色
+        kActionChoseSuits = 208, // 选择了卡牌花色
+        kActionAssignCard = 209; // 分配了卡牌(如能量转移)
         
     // 1000 开始是server的 action
     public int
@@ -40,10 +47,10 @@ public interface client_const {
         kActionInitPlayerHero = 2000, // 初始化玩家: 选中的英雄
         kActionInitPlayerCard = 2001, // 初始化玩家: 发初始手牌
         kActionUpdatePlayerHero = 2002, // 更新玩家: 英雄的血量/怒气等信息
-        kActionUpdatePlayerHand = 2003, // 更新玩家: 手牌
-        kActionUpdatePlayerHandExtracted = 2004, // 更新玩家: 手牌被抽取
-        kActionUpdatePlayerEquipment = 2005, // 更新玩家: 装备区的牌
-        kActionUpdatePlayerEquipmentExtracted = 2006, // 更新玩家: 装备去的牌被抽取
+        kActionPlayerUpdateHand = 2003, // 更新手牌
+        kActionPlayerUpdateHandGetting = 2005, // 更新手牌: 获得
+        kActionPlayerUpdateEquipment = 2006, // 更新装备区的牌
+        kActionUpdatePlayerEquipmentExtracted = 2007, // 更新玩家: 装备去的牌被抽取
         
         kActionPlayingCard = 3000, // 出牌阶段
         kActionChooseCardToUse = 3001, // 选择卡牌: 被动使用
@@ -53,8 +60,13 @@ public interface client_const {
         kActionChooseCardToGive = 3004, // 选择卡牌: 交给其他玩家
         kActionChooseCardToDiscard = 3005, // 选择卡牌: 弃置
         kActionChoosingColor = 3006, // 选择颜色阶段
-        kActionChoosingSuits = 3007; // 选择花色阶段
+        kActionChoosingSuits = 3007, // 选择花色阶段
         
+        kActionPlayerUpdateHandDrawing = 4000  // 播放动画: 从牌堆摸牌
+        
+        
+        ;
+    
     //    typedef NS_ENUM(NSInteger, BGCardColor) {
     //        kCardColorInvalid = 0,
     //        kCardColorRed = 1,                  // 红色

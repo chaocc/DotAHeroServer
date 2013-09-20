@@ -53,7 +53,7 @@ public class CutCard implements ScheduledCallback {
             l.logger().d(tag, "cutCards, " + cutCards.toString());
             int card = cutCards.get(p.userName);
             cards.add(card);
-            p.handCards.remove(card, autoDesided);
+            p.handCards.remove(card, false);
         }
         
         //TODO 先拼点, 
@@ -75,7 +75,7 @@ public class CutCard implements ScheduledCallback {
         data.setAction(c.action.cutted);
         data.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cards.toArray(new Integer[cards.size()])));
         data.setInteger(c.param_key.biggist_card_id, biggestCardId);
-        data.setInteger(c.param_key.hand_card_count, pl.get(0).handCards.getCards().size());
+//        data.setInteger(c.param_key.hand_card_change_amount, 1);
         //  TODO  scheduler里不该有这么实际的逻辑, 要通过调用table等的行为实现. 所以这里不需要依赖messenger
         table.getMessenger().sendMessageToAll(data);
         

@@ -27,7 +27,8 @@ public class PlayerProperty {
         equips = new PlayerEquipments();
         this.player = inputPlayer;
         this.listeners = new ArrayList<PlayerPropertyChangedListener>();
-        
+        listeners.add(inputPlayer.table);
+        listeners.add(inputPlayer);
         this.refresh();
     }
     

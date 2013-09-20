@@ -4,6 +4,8 @@
 
 6, 认真研究fish server的schedule, 看它的schedule是怎么复用的
 7, 解决schedule不能重用的问题. 看FishServer里应该是能重用的? 
+8, free play 时候每次做完一个操作, free play的时间要重算
+
 
 99, 增加一些数据保护, 传来-1什么的要怎么处理, 当cancel或者default之类的
 

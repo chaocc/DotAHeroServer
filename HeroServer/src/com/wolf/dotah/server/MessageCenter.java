@@ -16,6 +16,8 @@ public class MessageCenter {
     private GamePlugin plugin;
     private TableModel table;
     
+    //    public int actionCache = -1;
+    
     public void sendMessageToSingleUser(String user, EsObject msg) {
     
         this.debug(tag, "sendMessageToSingleUser:  user: " + user + ",  msg: " + msg.toString());
@@ -33,11 +35,20 @@ public class MessageCenter {
     
     public void sendPublicMessage(EsObject msg, String from) {
     
-        this.debug(tag, "sending public message : " + msg.toString());
+        this.debug(tag, from + "is sending public message : " + msg.toString());
         plugin.getApi().sendPublicMessageToRoomFromPlugin(from, plugin.getApi().getZoneId(), plugin.getApi().getRoomId(), "", msg, false,
             false);
     }
     
+    //    public void broadcastCachedMessage(Data msg, String from) {
+    //    
+    //        this.debug(tag, "broadcastCachedMessage : " + msg.toString());
+    //        msg.setAction(this.actionCache);
+    //        plugin.getApi().sendPublicMessageToRoomFromPlugin(from,
+    //            plugin.getApi().getZoneId(), plugin.getApi().getRoomId(), "", msg, false, false);
+    //        actionCache = -1;
+    //        
+    //    }
     
     public void sendMessageToAllWithoutSpecificUser(EsObject msg, String exceptionUser) {
     
@@ -82,14 +93,22 @@ public class MessageCenter {
                 }
             }
             table.dispatchHeroCandidates();
-        } else if (client_const.kActionChooseHeroId == client_message) {
+        } else if (client_const.kActionChoseHero == client_message) {
             table.players.getPlayerByUserName(user).pickedHero(msg);
-            
-            
-        } else if (client_const.kActionChooseCard == client_message) {
+        } else if (client_const.kActionChoseCardToCut == client_message) {
+            table.choseCard(user, msg);
+        } else if (client_const.kActionChoseCardToUse == client_message) {
+            table.cancelScheduledExecution();
+            this.sendPublicMessage(msg, user);
             table.choseCard(user, msg);
         } else if (client_const.kActionUseHandCard == client_message) {
+            table.cancelScheduledExecution();
+            this.sendPublicMessage(msg, user);
             table.playerUseCard(user, msg);
+        } else if (client_const.kActionChoseCardToDrop == client_message) {
+            table.cancelScheduledExecution();
+            this.sendPublicMessage(msg, user);
+            table.choseCard(user, msg);
         }
         
         else if (client_const.kActionStartRound == client_message) {
