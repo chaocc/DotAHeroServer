@@ -27,12 +27,11 @@ public interface client_const {
         kActionChoseCardToUse = 201, // 选择了卡牌Id/Idx: 使用
         kActionChoseCardToCut = 202, // 选择了卡牌: 切牌
         kActionChoseCardToGet = 203, // 选择了目标卡牌: 抽取获得
-        kActionChoseCardToDrop = 204, // 先择了卡牌: 丢掉
-        kActionChoseCardToGive = 205, // 选择了卡牌: 交给其他玩家
-        kActionChoseCardToDiscard = 206, // 选择了卡牌: 弃置
-        kActionChoseColor = 207, // 选择了卡牌颜色
-        kActionChoseSuits = 208, // 选择了卡牌花色
-        kActionAssignCard = 209; // 分配了卡牌(如能量转移)
+        kActionChoseCardToGive = 204, // 选择了卡牌: 交给其他玩家
+        kActionChoseCardToDrop = 205, // 先择了卡牌: 丢掉
+        kActionChoseColor = 206, // 选择了卡牌颜色
+        kActionChoseSuits = 207, // 选择了卡牌花色
+        kActionAssignCard = 208; // 分配了卡牌(如能量转移)
         
     // 1000 开始是server的 action
     public int
@@ -62,7 +61,7 @@ public interface client_const {
         kActionChoosingColor = 3006, // 选择颜色阶段
         kActionChoosingSuits = 3007, // 选择花色阶段
         
-        kActionPlayerUpdateHandDrawing = 4000  // 播放动画: 从牌堆摸牌
+        kActionPlayerUpdateHandDrawing = 4000 // 播放动画: 从牌堆摸牌
         
         
         ;

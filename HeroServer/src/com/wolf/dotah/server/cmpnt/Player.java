@@ -16,12 +16,14 @@ import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
+//TODO 在写个on targeted listener, 
 public class Player implements HandCardsChangeListener, PlayerPropertyChangedListener {
     
     private String tag = "Player ==>> ";
     public String stateAction;
     public String stateReason;
     public boolean godStrength = false;
+    public boolean m_Fanaticismed = false;
     public int used_how_many_attacks = 0;
     public Data stateInfo;
     public PlayerProperty property;//player 属性的状态
@@ -162,16 +164,12 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         List<Integer> availableList = this.handCards.getCardsByUsage("active");
         return u.intArrayMapping(availableList.toArray(new Integer[] {}));
     }
-    
-    
-    //    public void addHandcards(List<Integer> cards) {
-    //    
-    //        this.handCards.add(cards, true);
-    //        
-    //    }
+
     
     public void initHandCards(List<Integer> cards) {
     
+        //TODO only for test, need remove when production
+        cards.add(19);
         this.handCards.initPlayerHandcards(cards);
         
         
@@ -291,6 +289,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 this.godStrength = true;
                 this.drawHandCards(1);
                 
+                this.freePlay(false);
                 break;
             }
             case functioncon.s_LagunaBlade: {
@@ -344,6 +343,14 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             }
             case functioncon.m_ElunesArrow: {
                 
+                String targetName = info.getStringArray(c.param_key.target_player_list)[0];
+                Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
+                String action = c.action.choosing_from_hand;
+                String reason = c.reason.m_ElunesArrowed;
+                
+                targetPlayer.updateState(action, reason, info);
+                
+                
                 break;
             }
             case functioncon.m_EnergyTransport: {
@@ -351,7 +358,9 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 break;
             }
             case functioncon.m_Fanaticism: {
-                
+                this.m_Fanaticismed = true;
+                this.property.hpDown(1);
+                this.freePlay(false);
                 break;
             }
             case functioncon.m_Greed: {
@@ -392,7 +401,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         
         ) {
             l.logger().d(tag + this.userName, "under attacking");
-            stateInfo.removeVariable(c.param_key.target_player_list);
             
             table.tableState = new TableState(c.game_state.started.somebody_attacking, new String[] { userName });
             stateInfo.setAction(c.action.choosing_to_evade);
@@ -409,7 +417,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             table.sendPublicMessage(publicData, userName);
         } else if (stateReason.equals(c.reason.s_LagunaBladed)) {
             l.logger().d(tag + this.userName, "s_LagunaBladed");
-            stateInfo.removeVariable(c.param_key.target_player_list);
             
             table.tableState = new TableState(c.game_state.started.somebody_s_LagunaingBlade, new String[] { userName });
             stateInfo.setAction(c.action.choosing_to_evade);
@@ -417,12 +424,13 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             stateInfo.setInteger(c.param_key.available_count, 3);
             stateInfo.setIntegerArray(c.param_key.available_id_list, u.intArrayMapping(evasions));
             this.updateToClient(stateInfo);
-            table.getWaiter().waitForSingleChoosing(this, c.default_wait_time);
+            table.getWaiter().waitForSingleChoosing(this, c.default_wait_time);//.becauseOf(reason);
             
             
             Data publicData = new Data();
             publicData.setAction(c.action.choosing_to_evade);
             table.sendPublicMessage(publicData, userName);
+            this.stateReason = c.reason.s_LagunaBladed;
         } else if (stateReason.equals(c.reason.s_viper_raided)) {
             l.logger().d(tag + this.userName, "s_viper_raided");
             
@@ -440,6 +448,20 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             publicData.setAction(c.action.choosing_to_drop);
             table.sendPublicMessage(publicData, userName);
             
+        } else if (stateReason.equals(c.reason.m_ElunesArrowed)) {
+            boolean strenghened = stateInfo.getBoolean(c.param_key.is_strengthened, false);
+            stateInfo.setInteger(c.param_key.available_count, 1);
+            if (!strenghened) {
+                int color = stateInfo.getInteger(c.param_key.selected_color, 0);
+                stateInfo.setAction(c.action.choosing_from_color);
+                //                                stateInfo.setIntegerArray(c.param_key.available_id_list, );
+            } else {
+                int suit = stateInfo.getInteger(c.param_key.selected_suits, 0);
+                stateInfo.setAction(c.action.choosing_from_suits);
+                //                                stateInfo.setIntegerArray(c.param_key.available_id_list, );
+            }
+            
+            
         }
     }
     
@@ -448,18 +470,18 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
         used_how_many_attacks = 0;
         this.drawHandCards(2);
-        this.freePlay();
         
+        this.freePlay(this.isAi());
         
     }
     
     
-    private void freePlay() {
+    private void freePlay(boolean ai) {
     
         Data obj = new Data();
         obj.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
         obj.addString(c.param_key.player_name, userName);
-        //        obj.addBoolean(c.param_key.clear_showing_cards, true);
+        //  obj.addBoolean(c.param_key.clear_showing_cards, true);
         int[] availableHandCards = this.getAvailableHandCards();
         obj.addIntegerArray(c.param_key.available_id_list, availableHandCards);
         obj.addInteger(c.param_key.available_count, c.selectable_count.default_value);
@@ -472,6 +494,11 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         obj.addString(c.param_key.player_name, userName);
         table.sendPublicMessage(obj, userName);
         
+        if (this.isAi()) {
+            this.cancel();
+        } else {
+            table.waiter.waitForSingleChoosing(this, c.default_wait_time);//.becauseOf(c.action.free_play);
+        }
     }
     
     
@@ -482,6 +509,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         Data animi = new Data();
         animi.setAction(client_const.kActionPlayerUpdateHandDrawing);
         animi.setInteger(c.param_key.hand_card_change_amount, i);
+        
         table.sendPublicMessage(animi, userName);
         
         this.handCards.add(cards, true);
@@ -491,11 +519,20 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     public void autoDecise() {
     
+        l.logger().d(tag, "autoDecise, stateAction=" + stateAction + ", stateReason=" + stateReason);
         if (stateAction.equals(c.action.choosing_from_hand)) {
-            int[] available_id_list = stateInfo.getIntegerArray(c.param_key.available_id_list);
             if (this.isAi()) {
-                int result = this.ai.chooseSingle(available_id_list);
+                int result = -1;
+                if (this.stateReason.equals(c.reason.s_LagunaBladed)) {
+                    int[] id_list = stateInfo.getIntegerArray(c.param_key.id_list);
+                    result = this.ai.chooseSingle(id_list);
+                } else {
+                    int[] available_id_list = stateInfo.getIntegerArray(c.param_key.available_id_list);
+                    result = this.ai.chooseSingle(available_id_list);
+                }
                 this.updateState(c.playercon.state.idle, c.action.decided, new Data().addInteger(c.param_key.single_result, result));
+                l.logger().d(tag, "clearing stateInfo");
+                this.stateInfo.removeAll();
             } else {
                 this.cancel();
             }
@@ -514,28 +551,17 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         if (this.stateReason == c.reason.normal_attacked) {
             int god_helped = table.players.turnHolder.godStrength ? 1 : 0;
             
-            
-            this.property.hpDown(1 + god_helped);
-            this.property.spUp(1);
-            
-            //            Data result = new Data();
-            //            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 1);
-            //            this.updatePropertyToClient(result);
+            int hit_amount = 1 + god_helped;
+            this.property.hpDown(hit_amount);
+            this.property.spUp(hit_amount);
             
             
             turnToTurnHolder();
         } else if (this.stateReason == c.reason.chaos_attacked) {
             int god_helped = table.players.turnHolder.godStrength ? 1 : 0;
-            this.property.hpDown(1 + god_helped);
-            this.property.spUp(1);
-            
-            //            Data result = new Data();
-            //            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 1);
-            //            this.updatePropertyToClient(result);
-            //            
-            //            Data spUpData = new Data();
-            //            spUpData.addInteger(c.param_key.sp_changed, 1);
-            //            table.players.turnHolder.updatePropertyToClient(spUpData);
+            int hit_amount = 1 + god_helped;
+            this.property.hpDown(hit_amount);
+            this.property.spUp(hit_amount);
             
             table.players.turnHolder.property.spUp(1);
             
@@ -544,10 +570,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         } else if (this.stateReason == c.reason.flame_attacked) {
             int god_helped = table.players.turnHolder.godStrength ? 1 : 0;
             this.property.hpDown(1 + god_helped);
-            this.property.spUp(2);
-            //            Data result = new Data();
-            //            result.addInteger(c.param_key.hp_changed, -1).addInteger(c.param_key.sp_changed, 2);
-            //            this.updatePropertyToClient(result);
+            this.property.spUp(2 + god_helped);
             
             turnToTurnHolder();
         } else if (this.stateReason == c.reason.s_LagunaBladed) {
@@ -561,6 +584,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         else if (this.stateAction.equals(c.action.free_play)) {
             //TODO 弃牌
             godStrength = false;
+            m_Fanaticismed = false;
         }
     }
     

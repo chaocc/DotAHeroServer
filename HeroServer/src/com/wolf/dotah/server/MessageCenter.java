@@ -116,6 +116,7 @@ public class MessageCenter {
         }
         
         else if (client_const.kActionCancel == client_message) {
+            //            table.cancelScheduledExecution();
             table.players.getPlayerByPlayerName(user).cancel();
         }
     }
@@ -143,7 +144,8 @@ public class MessageCenter {
     }
     
     public void cancelScheduledExecution(int callback_id) {
-    
+
+        table.waiter.execution_id = -1;
         l.logger().d(tag, "cancelling schedule execution ... ");
         plugin.getApi().cancelScheduledExecution(callback_id);
         

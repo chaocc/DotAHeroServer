@@ -24,7 +24,7 @@ public interface c {
         public String chose_hero = "chose_hero";
         public String init_hand_cards = "init_player_info_hand_cards";
         public String update_hand_cards = "update_player_info_hand_cards";
-//        public String update_hand_cards_count = "update_hand_cards_count";
+        //        public String update_hand_cards_count = "update_hand_cards_count";
         public String choosing_from_hand = "choosing_from_hand";
         public String choosing_to_evade = "choosing_to_evade";
         public String cutted = "update_table_cutted";
@@ -33,6 +33,8 @@ public interface c {
         public String decided = "decided";
         public Object choosing_from_showing = "choosing_from_showing";
         public String choosing_to_drop = "choosing_to_drop";
+        public String choosing_from_color = "choosing_from_color";
+        public String choosing_from_suits = "choosing_from_suits";
     }
     public interface reason {
         
@@ -43,6 +45,7 @@ public interface c {
         String flame_attacked = "flame_attacked";
         String s_LagunaBladed = "s_LagunaBladed";
         String s_viper_raided = "s_viper_raided";
+        String m_ElunesArrowed = "m_ElunesArrowed";
     }
     
     
@@ -71,16 +74,16 @@ public interface c {
             player_name = "player_name",// 回合开始/伤害来源/出牌的玩家
             target_player_list = "target_player_list",// 目标玩家列表
             index_list = "index_list",// 选中的哪几张牌
-//            hand_card_count = "hand_card_count",// 玩家手牌数量
+            //            hand_card_count = "hand_card_count",// 玩家手牌数量
             hand_card_change_amount = "hand_card_change_amount",
             available_count = "selectable_count",// 可选择的卡牌数量
             //                selectable_ids = "selectable_ids",
             kParamExtractedCardCount = "extracted_count",// 可抽取目标的卡牌数量
             kParamSelectedHeroId = "id",// 选中的英雄
             kParamSelectedSkillId = "selected_skill_id",// 选中的英雄技能
-            kParamSelectedColor = "selected_color",// 选中的颜色
-            kParamSelectedSuits = "selected_suits",// 选中的花色
-            kParamIsStrengthened = "is_strengthened",// 是否被强化
+            selected_color = "selected_color",// 选中的颜色
+            selected_suits = "selected_suits",// 选中的花色
+            is_strengthened = "is_strengthened",// 是否被强化
             kParamHeroBloodPoint = "hp",// 血量值
             hp_changed = "hp_changed",
             kParamHeroAngerPoint = "sp", // 怒气值
@@ -93,8 +96,8 @@ public interface c {
             
             ;
         public String single_result = "single_result";
-//        public String hand_card_to_be_change = "hand_card_to_be_change";
-//        public String hand_card_after_change = "hand_card_to_be_change";
+        //        public String hand_card_to_be_change = "hand_card_to_be_change";
+        //        public String hand_card_after_change = "hand_card_to_be_change";
     }
     
     interface playercon {

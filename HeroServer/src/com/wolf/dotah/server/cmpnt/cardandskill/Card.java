@@ -83,40 +83,40 @@ public class Card implements card_const {
     
         this.dispellable = true;
         
-        if (name.equals(func_name.Fanaticism)) {
+        if (id == 35 || id == 36) {
             this.function = functioncon.m_Fanaticism;
-        } else if (name.equals(func_name.Mislead)) {
+        } else if (id == 20 || id == 21) {
             this.function = functioncon.m_Mislead;
-        } else if (name.equals(func_name.Chakra)) {
+        } else if (id == 29 || id == 30) {
             this.function = functioncon.m_Chakra;
-        } else if (name.equals(func_name.Dispel)) {
+        } else if (id > 49 && id < 55) {
             this.function = functioncon.m_Dispel;
         }
         
-        //        // enhancable magics 
-        //        else if (name.equals(func_name.Disarm)) {
-        //            this.function = functioncon.m_Disarm;
-        //            this.enhancedFunction = functioncon.m_enhanced_Disarm;
-        //        } else if (name.equals(func_name.ElunesArrow)) {
-        //            this.function = functioncon.m_ElunesArrow;
-        //            this.enhancedFunction = functioncon.m_enhanced_ElunesArrow;
-        //        } else if (name.equals(func_name.EnergyTransport)) {
-        //            this.function = functioncon.m_EnergyTransport;
-        //            this.enhancedFunction = functioncon.m_enhanced_EnergyTransport;
-        //        } else if (name.equals(func_name.Greed)) {
-        //            this.function = functioncon.m_Greed;
-        //            this.enhancedFunction = functioncon.m_enhanced_Greed;
-        //        }
+        // enhancable magics 
+        else if (name.equals(func_name.Disarm)) {
+            this.function = functioncon.m_Disarm;
+            //  this.enhancedFunction = functioncon.m_enhanced_Disarm;
+        } else if (name.equals(func_name.ElunesArrow)) {
+            this.function = functioncon.m_ElunesArrow;
+            //  this.enhancedFunction = functioncon.m_enhanced_ElunesArrow;
+        } else if (name.equals(func_name.EnergyTransport)) {
+            this.function = functioncon.m_EnergyTransport;
+            //  this.enhancedFunction = functioncon.m_enhanced_EnergyTransport;
+        } else if (name.equals(func_name.Greed)) {
+            this.function = functioncon.m_Greed;
+            //  this.enhancedFunction = functioncon.m_enhanced_Greed;
+        }
     }
     
     
     private void genSinfo() {
     
-        if (name.equals(func_name.laguna_blade)) {
+        if (id == 17 || id == 16) {
             this.function = functioncon.s_LagunaBlade;
-        } else if (name.equals(func_name.god_strength)) {
+        } else if (id == 58 || id == 59) {
             this.function = functioncon.s_GodsStrength;
-        } else if (name.equals(func_name.viper_raid)) {
+        } else if (id == 19 || id == 18) {
             this.function = functioncon.s_viper_raid;
         }
     }

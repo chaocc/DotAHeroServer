@@ -148,27 +148,34 @@ public class PlayerHandCardsModel {
         List<Integer> result = new ArrayList<Integer>();
         if (usage.equals("active")) {
             for (int card : getCards()) {
-                boolean firstCase = card > 45 && card < 57;
-                boolean secondCase = card > 59 && card < 70;
-                boolean thirdCase = card == 79;
                 
-                
-                if (firstCase || secondCase || thirdCase) {
+                if (negativeCard(card) || attach_and_can_NOT_use(card)) {
                     continue;
                 } else {
-                    if (player.used_how_many_attacks > 0) {
-                        int function = CardParser.getParser().getCardById(card).getFunction();
-                        if (function == functioncon.b_chaos_attack
-                            || function == functioncon.b_flame_attack
-                            || function == functioncon.b_normal_attack) {
-                            continue;
-                        }
-                    }
                     result.add(card);
                 }
             }
         }
         return result;
+    }
+    
+    private boolean attach_and_can_NOT_use(int card) {
+    
+        if (!player.m_Fanaticismed && player.used_how_many_attacks > 0) {
+            int function = CardParser.getParser().getCardById(card).getFunction();
+            if (function == functioncon.b_chaos_attack
+                || function == functioncon.b_flame_attack
+                || function == functioncon.b_normal_attack) { return true; }
+        }
+        return false;
+    }
+    
+    private boolean negativeCard(int card) {
+    
+        boolean firstCase = card > 45 && card < 57;
+        boolean secondCase = card > 59 && card < 70;
+        boolean thirdCase = card == 79;
+        return firstCase || secondCase || thirdCase;
     }
     public interface HandCardsChangeListener {
         public void onHandCardsAdded(List<Integer> newCards, String playerName, boolean sendPrivate);

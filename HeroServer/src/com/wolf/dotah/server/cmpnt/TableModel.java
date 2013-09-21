@@ -52,7 +52,7 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
     public DeckModel deck;
     private TableShowingCards showingCards;
     MessageCenter disp;
-    Waiter waiter;
+    public Waiter waiter;
     
     final String tag = "====>> TableModel: ";
     
@@ -194,11 +194,8 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
             
             Player pp = players.getPlayerByPlayerName(playerName);
             players.turnHolder = pp;
-            if (pp.isAi()) {
-                pp.ai.startTurn();
-            } else {
-                pp.startTurn();
-            }
+            pp.startTurn();
+            
         }
         
         //                data = new Data();
@@ -212,7 +209,8 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
     
     public void cancelScheduledExecution() {
     
-        disp.cancelScheduledExecution(waiter.execution_id);
+        l.logger().d(tag, "cancel from id=" + waiter.execution_id);
+        waiter.cancelScheduledExecution();
         
     }
     
@@ -262,8 +260,7 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
     
     public List<Integer> drawCardsFromDeck(int i) {
     
-        
-        return deck.fetchCards(2);
+        return deck.fetchCards(i);
     }
     
     public void updateTableInfoToOtherFromPlayer(String userName, int action, EsObject msg) {
@@ -312,11 +309,13 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
             this.addResultForShowing(user, id[0]);
         } else if (tableState.isEqualToState(c.game_state.started.somebody_attacking)) {
             playerUseCard(user, msg);
-        }else if(tableState.isEqualToState(c.game_state.started.somebody_is_s_viper_raiding)){
+        } else if (tableState.isEqualToState(c.game_state.started.somebody_is_s_viper_raiding)) {
             Player p = players.getPlayerByUserName(user);
-            if(p.stateReason.equals(c.reason.s_viper_raided)){
+            if (p.stateReason.equals(c.reason.s_viper_raided)) {
                 p.respondAsTarget(msg);
             }
+        }else if(tableState.isEqualToState(c.game_state.started.somebody_s_LagunaingBlade)){
+            playerUseCard(user, msg);
         }
         
     }
@@ -332,7 +331,7 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
         data.setAction(c.action.free_play);
         this.sendPublicMessage(data, players.turnHolder.userName);
         
-
+        
         data.addIntegerArray(c.param_key.available_id_list, players.turnHolder.getAvailableHandCards());
         data.addInteger(c.param_key.available_count, 1);
         this.sendMessageToSingleUser(players.turnHolder.userName, data);
@@ -345,12 +344,6 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
         disp.sendPublicMessage(msg, from);
         
     }
-    
-    //    public void broadcastCachedMessage(Data msg, String from) {
-    //    
-    //        msg.setInteger(c.param_key.kParamRemainingCardCount, this.getRemainCardCount());
-    //        disp.broadcastCachedMessage(msg, from);
-    //    }
     
     @Override
     public void onHandCardsAdded(List<Integer> newCards, String playerName, boolean sendPrivate) {

@@ -29,11 +29,13 @@ public class Waiter {
         l.logger().d(tag, "start waiting for ==> " + player.userName);
         waitingType = c.game_state.waiting_type.single;
         this.execution_id = messenger.scheduleExecution(1000, sec * 1000, new SinglePlayerChoosing(messenger.getTable(), player));
+        l.logger().d(tag + " waitForSingleChoosing", "waiting with id=" + this.execution_id);
         return this;
     }
     
     public void becauseOf(String reason) {
     
+        if (waitingType == c.game_state.waiting_type.single) { return; }
         // TODO 要查这个必须得+1的问题, 与fish server对比看看该怎么写.
         int waitTime = c.default_wait_time + 1;
         becauseOf(reason, waitTime);
@@ -42,6 +44,7 @@ public class Waiter {
     
     public void becauseOf(String reason, int waitTime) {
     
+        if (waitingType == c.game_state.waiting_type.single) { return; }
         
         l.logger().d(tag, "because of " + reason);
         waitReason = reason;
@@ -53,7 +56,11 @@ public class Waiter {
         } else if (waitReason.equals(c.reason.animating)) {
             StartTurn st = new StartTurn(messenger.getTable(), waitTime);
             this.execution_id = messenger.scheduleExecution(1000, waitTime + 1, st);
+        } else if (waitReason.equals(c.action.free_play)) {
+            FreePlay fp = new FreePlay(messenger.getTable(), waitTime);
+            this.execution_id = messenger.scheduleExecution(1000, waitTime + 1, fp);
         }
+        l.logger().d(tag + " becauseOf", "waiting with id=" + this.execution_id);
         
     }
     

@@ -63,10 +63,10 @@ public interface card_const {
         String Mislead = "误导";
         String Chakra = "查克拉";
         String Dispel = "驱散";
-        String Disarm = "缴械";
-        String ElunesArrow = "月神之剑";
-        String EnergyTransport = "能量转移";
-        String Greed = "贪婪";
+        String Disarm = "Disarm";
+        String ElunesArrow = "ElunesArrow";
+        String EnergyTransport = "EnergyTransport";
+        String Greed = "Greed";
     }
     final int function_code_base = 100000;
     

@@ -38,5 +38,6 @@ public class Ai {
         //TODO 告诉玩家可以开始玩牌了, 
         //TODO 摸2张牌
         
+        
     }
 }

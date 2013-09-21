@@ -7,6 +7,8 @@
 8, free play 时候每次做完一个操作, free play的时间要重算
 
 
+
+90, 认真写available id list返回的结果, 比如没怒气时候不能出s技能牌等等
 99, 增加一些数据保护, 传来-1什么的要怎么处理, 当cancel或者default之类的
 
 
