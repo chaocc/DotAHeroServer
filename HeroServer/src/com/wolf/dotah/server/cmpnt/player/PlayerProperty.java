@@ -76,20 +76,30 @@ public class PlayerProperty {
         }
     }
     
-    public void hpDown(int i) {
+    public void hpDown(int i, boolean spUp) {
     
         this.hp -= i;
         for (PlayerPropertyChangedListener listener : listeners) {
             listener.onHpChanged(player.userName, -i);
+        }
+        
+        if (spUp) {
+            spUp(i);
         }
     }
     
     
     public void spUp(int i) {
     
+        int spChanged = i;
         this.sp += i;
+        if (sp >= spLimit) {
+            spChanged = i - (sp - spLimit);
+            sp = spLimit;
+        }
+        
         for (PlayerPropertyChangedListener listener : listeners) {
-            listener.onSpChanged(player.userName, i);
+            listener.onSpChanged(player.userName, spChanged);
         }
     }
     

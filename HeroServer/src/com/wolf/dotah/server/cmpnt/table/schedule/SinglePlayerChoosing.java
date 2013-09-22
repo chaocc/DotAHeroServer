@@ -36,7 +36,11 @@ public class SinglePlayerChoosing implements ScheduledCallback {
             return false;
         } else if (player.stateAction.equals(c.action.choosing_from_hand)) {
             return true;
-        } else if (player.stateAction.equals(c.action.choosing_from_showing)) { return true; }
+        } else if (player.stateAction.equals(c.action.choosing_from_showing)) {
+            return true;
+        } else if (player.stateAction.equals(c.action.choosing_from_color)) {
+            return true;
+        } else if (player.stateAction.equals(c.action.choosing_from_suits)) { return true; }
         return false;
     }
     

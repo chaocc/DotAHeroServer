@@ -314,8 +314,18 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
             if (p.stateReason.equals(c.reason.s_viper_raided)) {
                 p.respondAsTarget(msg);
             }
-        }else if(tableState.isEqualToState(c.game_state.started.somebody_s_LagunaingBlade)){
+        } else if (tableState.isEqualToState(c.game_state.started.somebody_s_LagunaingBlade)) {
             playerUseCard(user, msg);
+        } else if (tableState.isEqualToState(c.game_state.started.somebody_is_m_ElunesArrowing)) {
+            Player p = players.getPlayerByUserName(user);
+            if (p.stateReason.equals(c.reason.m_ElunesArrowing)) {
+                String targetName = msg.getStringArray(c.param_key.target_player_list)[0];
+                Player targetPlayer = players.getPlayerByPlayerName(targetName);
+                String action = c.action.choosing_from_hand;
+                String reason = c.reason.m_ElunesArrowed;
+                p.stateInfo.addIntegerArray(c.param_key.id_list, msg.getIntegerArray(c.param_key.id_list));
+                targetPlayer.updateState(action, reason, p.stateInfo);
+            }
         }
         
     }
@@ -360,6 +370,7 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
         Data obj = new Data();
         obj.setAction(c.action.update_hand_cards);
         obj.setInteger(c.param_key.hand_card_change_amount, -droppedCards.length);
+        obj.setIntegerArray(c.param_key.id_list, droppedCards);
         this.sendPublicMessage(obj, playerName);
     }
     

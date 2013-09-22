@@ -46,10 +46,10 @@ public class u {
             result = client_const.action_cutted;
         } else if (action.equals(c.action.update_hand_cards)) {
             result = client_const.kActionPlayerUpdateHand;
-        } 
-//        else if (action.equals(c.action.update_hand_cards_count)) {
-//            result = client_const.kActionUpdatePlayerHand;
-//        } 
+        }
+        //        else if (action.equals(c.action.update_hand_cards_count)) {
+        //            result = client_const.kActionUpdatePlayerHand;
+        //        } 
         else if (action.equals(c.action.turn_to_player)) {
             result = client_const.kActionPlayingCard;
         } else if (action.equals(c.action.free_play)) {
@@ -58,8 +58,12 @@ public class u {
             result = client_const.kActionChooseCardToUse;
         } else if (action.equals(c.action.update_player_property)) {
             result = client_const.kActionUpdatePlayerHero;
-        }else if(action.equals(c.action.choosing_to_drop)){
+        } else if (action.equals(c.action.choosing_to_drop)) {
             result = client_const.kActionChooseCardToDiscard;
+        } else if (action.equals(c.action.choosing_from_color)) {
+            result = client_const.kActionChoosingColor;
+        } else if (action.equals(c.action.choosing_from_suits)) {
+            result = client_const.kActionChoosingSuits;
         }
         
         return result;

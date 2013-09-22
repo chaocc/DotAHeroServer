@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import com.wolf.dotah.server.cmpnt.Data;
 import com.wolf.dotah.server.cmpnt.Player;
+import com.wolf.dotah.server.cmpnt.cardandskill.Card;
+import com.wolf.dotah.server.cmpnt.cardandskill.card_const;
 import com.wolf.dotah.server.cmpnt.cardandskill.card_const.functioncon;
 import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.util.c;
@@ -29,20 +31,6 @@ public class PlayerHandCardsModel {
         //        int original_size = cards.size();
         
         cards.addAll(input);
-        
-        
-        //        Data data = new Data();//use to update count
-        //        data.addHandCardSize(original_size, cards.size());
-        //        data.setAction(c.action.update_hand_cards);
-        //        player.table.sendPublicMessage(data, player.userName);
-        //        
-        //        if(sendUpdateMessage){
-        //            data=new Data();
-        //            data.setAction(c.action.update_hand_cards);
-        //            data.addHandCardSize(original_size, cards.size());
-        //            data.addHandCardState(input, cards);
-        //            player.updateMyHandCardsToClient(data);
-        //        }
         
         
         for (HandCardsChangeListener listener : changeListeners) {
@@ -109,19 +97,6 @@ public class PlayerHandCardsModel {
             this.getCards().remove(this.getCards().indexOf(usedCard));
         }
         
-        //        Data data = new Data();
-        //        if (sendPrivateMessage) {
-        //            // send update player handcards to self
-        //            data.setAction(c.action.update_hand_cards);
-        //            data.setIntegerArray(c.param_key.id_list, usedCards);
-        //            player.updateMyStateToClient(data);
-        //        }
-        //        //send update player handcard count to other players
-        //        data = new Data();
-        //        data.setAction(c.action.update_hand_cards);
-        //        data.setInteger(c.param_key.hand_card_change_amount, cards.size() - origin_size);
-        //        player.table.sendPublicMessage(data, player.userName);
-        
         for (HandCardsChangeListener listener : changeListeners) {
             listener.onHandCardsDropped(usedCards, player.userName, sendPrivate);
         }
@@ -143,6 +118,27 @@ public class PlayerHandCardsModel {
         return result;
     }
     
+    public List<Integer> getCardsByProperty(String property, int value) {
+    
+        List<Integer> result = new ArrayList<Integer>();
+        if (property.equals(card_const.color)) {
+            for (int card : getCards()) {
+              Card c=  CardParser.getParser().getCardById(card);
+                if(c.getColorCode()==value){
+                    result.add(card);
+                }
+            }
+        } else if (property.equals(card_const.suits)) {
+            for (int card : getCards()) {
+                Card c=  CardParser.getParser().getCardById(card);
+                  if(c.getSuitsCode()==value){
+                      result.add(card);
+                  }
+              }
+        }
+        return result;
+    }
+    
     public List<Integer> getCardsByUsage(String usage) {
     
         List<Integer> result = new ArrayList<Integer>();
@@ -155,6 +151,17 @@ public class PlayerHandCardsModel {
                     result.add(card);
                 }
             }
+        } else if (usage.equals(card_const.color)) {
+            for (int card : getCards()) {
+                
+                if (negativeCard(card) || attach_and_can_NOT_use(card)) {
+                    continue;
+                } else {
+                    result.add(card);
+                }
+            }
+        } else if (usage.equals(card_const.suits)) {
+            
         }
         return result;
     }

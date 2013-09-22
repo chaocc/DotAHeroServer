@@ -2,7 +2,10 @@ package com.wolf.dotah.server.cmpnt;
 
 import java.util.List;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
+import com.wolf.dotah.server.cmpnt.cardandskill.card_const;
+import com.wolf.dotah.server.cmpnt.cardandskill.card_const.colorcon;
 import com.wolf.dotah.server.cmpnt.cardandskill.card_const.functioncon;
+import com.wolf.dotah.server.cmpnt.cardandskill.card_const.suitscon;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
@@ -164,12 +167,15 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         List<Integer> availableList = this.handCards.getCardsByUsage("active");
         return u.intArrayMapping(availableList.toArray(new Integer[] {}));
     }
-
+    
     
     public void initHandCards(List<Integer> cards) {
     
-        //TODO only for test, need remove when production
-        cards.add(19);
+        //TODO TODO only for test, need remove when production
+        //        cards.clear();
+        cards.add(33);
+        
+        
         this.handCards.initPlayerHandcards(cards);
         
         
@@ -265,8 +271,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 if (this.stateReason == c.reason.s_LagunaBladed) {
                     int hitted = 3 - usedCards.length;
                     if (hitted > 0) {
-                        this.property.hpDown(hitted);
-                        this.property.spUp(hitted);
+                        this.property.hpDown(hitted, true);
                     }
                 }
                 turnToTurnHolder();
@@ -316,9 +321,19 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 PlayerHandCardsModel handcards = targetPlayer.handCards;
                 if (handcards.getCardArray().length < 4) {
                     if (handcards.getCardArray().length < 2) {
-                        targetPlayer.property.hpDown(1);
+                        targetPlayer.property.hpDown(1, true);
                     }
+                    
+                    
+                    Data animiData = new Data();
+                    animiData.setAction(client_const.kActionChoseCardToDrop);
+                    animiData.setInteger(c.param_key.hand_card_change_amount, handcards.getCardArray().length);
+                    animiData.setIntegerArray(c.param_key.id_list, u.intArrayMapping(handcards.getCardArray()));
+                    table.sendPublicMessage(animiData, targetPlayer.userName);
+                    
+                    
                     handcards.removeAll(u.intArrayMapping(handcards.getCardArray()), true);
+                    this.turnToTurnHolder();
                 } else {
                     String action = c.action.choosing_from_hand;
                     String reason = c.reason.s_viper_raided;
@@ -343,13 +358,12 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             }
             case functioncon.m_ElunesArrow: {
                 
-                String targetName = info.getStringArray(c.param_key.target_player_list)[0];
-                Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
-                String action = c.action.choosing_from_hand;
-                String reason = c.reason.m_ElunesArrowed;
-                
-                targetPlayer.updateState(action, reason, info);
-                
+                //                String targetName = info.getStringArray(c.param_key.target_player_list)[0];
+                //                Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
+                String action = c.action.choosing_from_showing;
+                //                String reason = c.reason.m_ElunesArrowed;
+                String reason = c.reason.m_ElunesArrowing;
+                this.updateState(action, reason, info);
                 
                 break;
             }
@@ -359,7 +373,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             }
             case functioncon.m_Fanaticism: {
                 this.m_Fanaticismed = true;
-                this.property.hpDown(1);
+                this.property.hpDown(1, true);
                 this.freePlay(false);
                 break;
             }
@@ -381,11 +395,14 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             int[] cardsToBeDrop = msg.getIntegerArray(c.param_key.id_list);
             this.handCards.removeAll(cardsToBeDrop, false);
             this.turnToTurnHolder();
+        } else if (stateReason.equals(c.reason.m_ElunesArrowed)) {
+            int[] cardsToBeDrop = msg.getIntegerArray(c.param_key.id_list);
+            this.handCards.removeAll(cardsToBeDrop, false);
+            this.turnToTurnHolder();
         }
-        
     }
     
-    private void updateState(String state, String reason, EsObject inputState) {
+    public void updateState(String state, String reason, EsObject inputState) {
     
         this.stateAction = state;
         this.stateReason = reason;
@@ -449,22 +466,50 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             table.sendPublicMessage(publicData, userName);
             
         } else if (stateReason.equals(c.reason.m_ElunesArrowed)) {
+            table.tableState = new TableState(c.game_state.started.somebody_is_m_ElunesArrowing, new String[] { userName });
             boolean strenghened = stateInfo.getBoolean(c.param_key.is_strengthened, false);
             stateInfo.setInteger(c.param_key.available_count, 1);
-            if (!strenghened) {
-                int color = stateInfo.getInteger(c.param_key.selected_color, 0);
-                stateInfo.setAction(c.action.choosing_from_color);
-                //                                stateInfo.setIntegerArray(c.param_key.available_id_list, );
+            stateInfo.setAction(c.action.choosing_from_hand);
+            Integer[] availableList = null;
+            if (strenghened) {
+                availableList = this.handCards.getCardsByUsage(card_const.suits).toArray(new Integer[] {});
             } else {
-                int suit = stateInfo.getInteger(c.param_key.selected_suits, 0);
-                stateInfo.setAction(c.action.choosing_from_suits);
-                //                                stateInfo.setIntegerArray(c.param_key.available_id_list, );
+                availableList = this.handCards.getCardsByUsage(card_const.color).toArray(new Integer[] {});
             }
+            stateInfo.setIntegerArray(c.param_key.available_id_list, u.intArrayMapping(availableList));
+            this.updateToClient(stateInfo);
             
             
+            Data publicData = new Data();
+            publicData.setAction(c.action.choosing_from_hand);
+            table.waiter.waitForSingleChoosing(this, c.default_wait_time);
+            
+            
+            table.sendPublicMessage(publicData, userName);
+        } else if (stateReason.equals(c.reason.m_ElunesArrowing)) {
+            table.tableState = new TableState(c.game_state.started.somebody_is_m_ElunesArrowing, new String[] { userName });
+            boolean strenghened = stateInfo.getBoolean(c.param_key.is_strengthened, false);
+            stateInfo.setInteger(c.param_key.available_count, 1);
+            Data publicData = new Data();
+            
+            if (!strenghened) {
+                stateInfo.setAction(c.action.choosing_from_color);
+                stateInfo.setIntegerArray(c.param_key.available_id_list, colorcon.color_array);
+                
+                publicData.setAction(c.action.choosing_from_color);
+            } else {
+                stateInfo.setAction(c.action.choosing_from_suits);
+                stateInfo.setIntegerArray(c.param_key.available_id_list, suitscon.suits_array);
+                
+                publicData.setAction(c.action.choosing_from_suits);
+            }
+            this.updateToClient(stateInfo);
+            table.waiter.waitForSingleChoosing(this, c.default_wait_time);
+            
+            
+            table.sendPublicMessage(publicData, userName);
         }
     }
-    
     
     public void startTurn() {
     
@@ -537,6 +582,9 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 this.cancel();
             }
             
+        } else if (stateAction.equals(c.action.choosing_from_color) || stateAction.equals(c.action.choosing_from_suits)) {
+            
+            this.cancel();
         }
         this.stateAction = c.action.none;
     }
@@ -552,16 +600,14 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             int god_helped = table.players.turnHolder.godStrength ? 1 : 0;
             
             int hit_amount = 1 + god_helped;
-            this.property.hpDown(hit_amount);
-            this.property.spUp(hit_amount);
+            this.property.hpDown(hit_amount, true);
             
             
             turnToTurnHolder();
         } else if (this.stateReason == c.reason.chaos_attacked) {
             int god_helped = table.players.turnHolder.godStrength ? 1 : 0;
             int hit_amount = 1 + god_helped;
-            this.property.hpDown(hit_amount);
-            this.property.spUp(hit_amount);
+            this.property.hpDown(hit_amount, true);
             
             table.players.turnHolder.property.spUp(1);
             
@@ -569,15 +615,26 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             turnToTurnHolder();
         } else if (this.stateReason == c.reason.flame_attacked) {
             int god_helped = table.players.turnHolder.godStrength ? 1 : 0;
-            this.property.hpDown(1 + god_helped);
+            this.property.hpDown(1 + god_helped, false);
             this.property.spUp(2 + god_helped);
             
             turnToTurnHolder();
         } else if (this.stateReason == c.reason.s_LagunaBladed) {
-            this.property.hpDown(3);
-            this.property.spUp(3);
+            this.property.hpDown(3, true);
             
             turnToTurnHolder();
+        } else if (this.stateReason == c.reason.m_ElunesArrowed) {
+            this.property.hpDown(1, true);
+            turnToTurnHolder();
+        } else if (this.stateReason == c.reason.m_ElunesArrowing) {
+            int result = 1;// auto chose suits or color
+            
+            String targetName = stateInfo.getStringArray(c.param_key.target_player_list)[0];
+            Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
+            String action = c.action.choosing_from_hand;
+            String reason = c.reason.m_ElunesArrowed;
+            stateInfo.addIntegerArray(c.param_key.id_list, new int[] { result });
+            targetPlayer.updateState(action, reason, stateInfo);
         }
         
         

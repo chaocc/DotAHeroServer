@@ -31,7 +31,7 @@ public interface c {
         public String turn_to_player = "turn_to_player";
         public String normal_attack = "normal_attack";
         public String decided = "decided";
-        public Object choosing_from_showing = "choosing_from_showing";
+        public String choosing_from_showing = "choosing_from_showing";
         public String choosing_to_drop = "choosing_to_drop";
         public String choosing_from_color = "choosing_from_color";
         public String choosing_from_suits = "choosing_from_suits";
@@ -46,6 +46,7 @@ public interface c {
         String s_LagunaBladed = "s_LagunaBladed";
         String s_viper_raided = "s_viper_raided";
         String m_ElunesArrowed = "m_ElunesArrowed";
+        String m_ElunesArrowing = "m_ElunesArrowing";
     }
     
     
@@ -158,6 +159,7 @@ public interface c {
             int somebody_attacking = 10;
             int somebody_s_LagunaingBlade = 11;
             int somebody_is_s_viper_raiding = 12;
+            int somebody_is_m_ElunesArrowing = 13;
         }
         
         int ended = 5;

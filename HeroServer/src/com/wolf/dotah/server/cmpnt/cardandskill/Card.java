@@ -97,13 +97,13 @@ public class Card implements card_const {
         else if (name.equals(func_name.Disarm)) {
             this.function = functioncon.m_Disarm;
             //  this.enhancedFunction = functioncon.m_enhanced_Disarm;
-        } else if (name.equals(func_name.ElunesArrow)) {
+        } else if (id == 33 || id == 34) {
             this.function = functioncon.m_ElunesArrow;
             //  this.enhancedFunction = functioncon.m_enhanced_ElunesArrow;
         } else if (name.equals(func_name.EnergyTransport)) {
             this.function = functioncon.m_EnergyTransport;
             //  this.enhancedFunction = functioncon.m_enhanced_EnergyTransport;
-        } else if (name.equals(func_name.Greed)) {
+        } else if (id == 22 || id == 23) {
             this.function = functioncon.m_Greed;
             //  this.enhancedFunction = functioncon.m_enhanced_Greed;
         }
@@ -204,13 +204,13 @@ public class Card implements card_const {
     private void genSuitsCode() {
     
         if (suits.equals(suitscon.club)) {
-            suitsCode = suitscon.club_code;
+            suitsCode = suitscon.club_client;
         } else if (suits.equals(suitscon.spade)) {
-            suitsCode = suitscon.spade_code;
+            suitsCode = suitscon.spade_client;
         } else if (suits.equals(suitscon.diamond)) {
-            suitsCode = suitscon.diamond_code;
+            suitsCode = suitscon.diamond_client;
         } else if (suits.equals(suitscon.heart)) {
-            suitsCode = suitscon.heart_code;
+            suitsCode = suitscon.heart_client;
         }
         
     }
@@ -219,13 +219,13 @@ public class Card implements card_const {
     private void genColor() {
     
         switch (this.suitsCode) {
-            case suitscon.heart_code:
-            case suitscon.diamond_code: {
+            case suitscon.heart_client:
+            case suitscon.diamond_client: {
                 this.color = colorcon.red;
                 break;
             }
-            case suitscon.spade_code:
-            case suitscon.club_code: {
+            case suitscon.spade_client:
+            case suitscon.club_client: {
                 this.color = colorcon.black;
                 break;
             }
@@ -236,14 +236,14 @@ public class Card implements card_const {
     private void genColorCode() {
     
         switch (this.suitsCode) {
-            case suitscon.heart_code:
-            case suitscon.diamond_code: {
-                this.colorCode = colorcon.red_code;
+            case suitscon.heart_client:
+            case suitscon.diamond_client: {
+                this.colorCode = colorcon.red_client;
                 break;
             }
-            case suitscon.spade_code:
-            case suitscon.club_code: {
-                this.colorCode = colorcon.black_code;
+            case suitscon.spade_client:
+            case suitscon.club_client: {
+                this.colorCode = colorcon.black_client;
                 break;
             }
         }

@@ -4,7 +4,8 @@ package com.wolf.dotah.server.cmpnt.cardandskill;
 public interface card_const {
     
     final int card_code_base = 10000;
-    
+    String color = "color";
+    String suits = "suits";
     
     public interface card_type {
         
@@ -24,27 +25,42 @@ public interface card_const {
         final int dCode = card_code_base + eCode + 20;
         
     }
-
+    
     public interface colorcon {
         
-        final String red = "red";
-        final String black = "black";
+        String red = "red";
+        String black = "black";
         
-        final int red_code = card_code_base + 50;
-        final int black_code = card_code_base + 60;
+        int red_code = card_code_base + 50;
+        int black_code = card_code_base + 60,
+            
+            invalid_client = 0,
+            red_client = 1, // 红色
+            black_client = 2; // 黑色
+        int[] color_array = { red_client, black_client };
+        
     }
     
     public interface suitscon {
         
-        final String heart = "红桃";
-        final String diamond = "方块";
-        final String spade = "黑桃";
-        final String club = "梅花";
+        String heart = "heart";
+        String diamond = "diamond";
+        String spade = "spade";
+        String club = "club";
         
-        final int heart_code = card_code_base + 10;
-        final int diamond_code = card_code_base + 20;
-        final int spade_code = card_code_base + 30;
-        final int club_code = card_code_base + 40;
+        int heart_code = card_code_base + 10;
+        int diamond_code = card_code_base + 20;
+        int spade_code = card_code_base + 30;
+        int club_code = card_code_base + 40,
+            
+            
+            kCardSuitsInvalid = 0,
+            heart_client = 1, // 红桃
+            diamond_client = 2, // 方块
+            spade_client = 3, // 黑桃
+            club_client = 4 // 梅花
+            ;
+        int[] suits_array = { heart_client, diamond_client, spade_client, club_client };
     }
     
     public interface func_name {
@@ -91,11 +107,11 @@ public interface card_const {
         final int m_ElunesArrow = function_code_base + 14;//月神之剑
         final int m_EnergyTransport = function_code_base + 15;//能量转移
         final int m_Greed = function_code_base + 16;
-//        final int enhanced = 100;
-//        final int m_enhanced_Greed = m_Greed + enhanced;
-//        final int m_enhanced_ElunesArrow = m_ElunesArrow + enhanced;
-//        final int m_enhanced_EnergyTransport = m_EnergyTransport + enhanced;
-//        final int m_enhanced_Disarm = m_Disarm + enhanced;//缴械    强化
+        //        final int enhanced = 100;
+        //        final int m_enhanced_Greed = m_Greed + enhanced;
+        //        final int m_enhanced_ElunesArrow = m_ElunesArrow + enhanced;
+        //        final int m_enhanced_EnergyTransport = m_EnergyTransport + enhanced;
+        //        final int m_enhanced_Disarm = m_Disarm + enhanced;//缴械    强化
         
         
         final int e_BootsOfSpeed = function_code_base + 17;// 速度之靴
