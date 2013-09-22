@@ -22,32 +22,31 @@ import com.wolf.dotah.server.util.u;
 //TODO 在写个on targeted listener, 
 public class Player implements HandCardsChangeListener, PlayerPropertyChangedListener {
     
-    private String tag = "Player ==>> ";
-    public String stateAction;
-    public String stateReason;
-    public boolean godStrength = false;
-    public boolean m_Fanaticismed = false;
-    public int used_how_many_attacks = 0;
-    public Data stateInfo;
-    public PlayerProperty property;//player 属性的状态
+    private String              tag                   = "Player ==>> ";
+    public String               stateAction;
+    public String               stateReason;
+    public boolean              godStrength           = false;
+    public boolean              m_Fanaticismed        = false;
+    public int                  used_how_many_attacks = 0;
+    public Data                 stateInfo;
+    public PlayerProperty       property;                              // player
+                                                                        // 属性的状态
     public PlayerHandCardsModel handCards;
-    public TableModel table;
+    public TableModel           table;
     
     public void updatePropertyToClient(Data result) {
-    
+        
         result.addString(c.param_key.player_name, userName);
         result.setAction(c.action.update_player_property);
-        //        this.table.sendMessageToAll(result);
+        // this.table.sendMessageToAll(result);
         table.sendMessageToSingleUser(userName, result);
     }
     
-    
     /**
-     * 相当于客户端拿来了新消息, 在做判断
-     * TODO 这个方法应并进auto decide里
+     * 相当于客户端拿来了新消息, 在做判断 TODO 这个方法应并进auto decide里
      */
     public void performAiAction(String fromParamKey) {
-    
+        
         if (stateAction.equals(c.playercon.state.choosing.choosing_hero)) {
             int[] pickResult = stateInfo.getIntegerArray(c.playercon.state.param_key.general.id_list, new int[] {});
             int heroId = ai.chooseSingle(pickResult);
@@ -60,8 +59,8 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void performSimplestChoice() {
-    
-        if (table.tableState.getState() == c.game_state.not_started.cutting) {//cutting
+        
+        if (table.tableState.getState() == c.game_state.not_started.cutting) {// cutting
             int id = this.handCards.getCards().get(0);
             
             table.addResultForShowing(this.userName, id);
@@ -76,12 +75,11 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         }
     }
     
-    
     /*
-     * TODO  要并到choose from showing里
+     * TODO 要并到choose from showing里
      */
     public void pickedHero(EsObject msg) {
-    
+        
         l.logger().d(tag, "picking hero, stateAction = " + stateAction);
         if (stateAction.equals(c.playercon.state.choosing.choosing_hero)) {
             int[] pickResult = msg.getIntegerArray(c.param_key.id_list, new int[] {});
@@ -90,15 +88,14 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         }
     }
     
-    
     private void initPropertyWithHeroId(int heroId) {
-    
+        
         HeroInfo heroInfo = HeroParser.getParser().getHeroInfoById(heroId);
         property = new PlayerProperty(heroInfo, this);
         handCards = new PlayerHandCardsModel(this, heroInfo.getHandcardLimit());
         handCards.registerHandcardChangeListener(table);
         handCards.registerHandcardChangeListener(this);
-        //TODO 不是在这里, 而是在全都收到选择了英雄后broadcast chose property
+        // TODO 不是在这里, 而是在全都收到选择了英雄后broadcast chose property
         stateAction = c.playercon.state.confirmed.hero;
         if (!this.isAi()) {
             String[] keys = { "heroId" };
@@ -112,31 +109,30 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                     msg.setInteger("id", values[0]);
                 }
             } else if (keys.length > 1) {
-                //TODO action可以直接设成update xxx
+                // TODO action可以直接设成update xxx
             }
             updateToClient(msg);
         }
     }
     
     public void updateToClient(Data msg) {
-    
+        
         l.logger().d(tag, "updateToClient, stateInfo=");
         table.sendMessageToSingleUser(userName, msg);
         
     }
     
-    
     public void sendPrivateMessage(String string_action) {
-    
+        
         Data data = new Data();
         data.setAction(string_action);
         addPrivateData(data, string_action);
         table.getMessenger().sendMessageToSingleUser(userName, data);
     }
     
-    //TODO should deprecate, no need 不需要使用类似的操作
+    // TODO should deprecate, no need 不需要使用类似的操作
     private void addPrivateData(Data data, String string_action) {
-    
+        
         if (c.action.choosing_from_hand.equals(string_action)) {
             List<Integer> cardList = this.handCards.getCards();
             int[] cardArray = u.intArrayMapping(cardList.toArray(new Integer[] {}));
@@ -146,7 +142,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void cutting() {
-    
+        
         stateAction = c.action.choosing_from_hand;
         if (ai != null && ai.isAi()) {
             performAiAction(c.param_key.id_list);
@@ -156,51 +152,44 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public int[] getAvailableHandCards() {
-    
+        
         debug(tag, "getAvailableHandCards()");
-        //TODO 判断哪些available
+        // TODO 判断哪些available
         /*
-         * 1, 根据当前round的player, 是自己还是被人target等
-         * 2, 根据当前的技能或者其他context, 
-         * 3, 
+         * 1, 根据当前round的player, 是自己还是被人target等 2, 根据当前的技能或者其他context, 3,
          */
         List<Integer> availableList = this.handCards.getCardsByUsage("active");
         return u.intArrayMapping(availableList.toArray(new Integer[] {}));
     }
     
-    
     public void initHandCards(List<Integer> cards) {
-    
-        //TODO TODO only for test, need remove when production
-        //        cards.clear();
+        
+        // TODO TODO only for test, need remove when production
+        // cards.clear();
         cards.add(33);
         
-        
         this.handCards.initPlayerHandcards(cards);
-        
         
     }
     
     public Player(String name, TableModel inputTable) {
-    
+        
         this.table = inputTable;
         this.userName = name;
         this.tag += name + ", ";
     }
     
-    
     public String userName;
-    public Ai ai;
+    public Ai     ai;
     
     public boolean isAi() {
-    
+        
         if (ai == null) { return false; }
         return ai.isAi();
     }
     
-    
     private void debug(String tag, String log) {
-    
+        
         if (table != null) {
             l.logger().d(tag, log);
         }
@@ -208,23 +197,24 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     @Override
     public String toString() {
-    
+        
         return "Player [userName=" + userName + "]";
     }
+    
     public interface playerListener {
         public void usedCard();
         
     }
     
     public void useCard(EsObject info, int functionId) {
-    
+        
         l.logger().d(tag, "using card with function " + functionId);
         
         int[] usedCards = info.getIntegerArray(c.param_key.id_list);
-        //        this.handCards.remove(cardId, true);
+        // this.handCards.remove(cardId, true);
         this.handCards.removeAll(usedCards, false);
         
-        switch (functionId) {//主要是b, s, m三类
+        switch (functionId) {// 主要是b, s, m三类
             case functioncon.b_normal_attack: {
                 used_how_many_attacks++;
                 
@@ -235,7 +225,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 String reason = c.reason.normal_attacked;
                 l.logger().d(tag + userName, "turn to player: " + targetPlayer.userName);
                 targetPlayer.updateState(action, reason, info);
-                
                 
                 break;
             }
@@ -250,7 +239,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 String reason = c.reason.chaos_attacked;
                 targetPlayer.updateState(action, reason, info);
                 
-                
                 break;
             }
             case functioncon.b_flame_attack: {
@@ -263,7 +251,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 String reason = c.reason.flame_attacked;
                 l.logger().d(tag + userName, "turn to player: " + targetPlayer.userName);
                 targetPlayer.updateState(action, reason, info);
-                
                 
                 break;
             }
@@ -283,7 +270,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 if (userName.equals(targetName)) {
                     this.property.hpUp(1);
                 }
-                
                 
                 break;
             }
@@ -313,7 +299,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             case functioncon.s_viper_raid: {
                 this.property.spDown(2);
                 
-                
                 String targetName = info.getStringArray(c.param_key.target_player_list)[0];
                 Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
                 l.logger().d(tag, "s_Lagunaing Blade targetName: " + targetName);
@@ -324,13 +309,11 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                         targetPlayer.property.hpDown(1, true);
                     }
                     
-                    
                     Data animiData = new Data();
                     animiData.setAction(client_const.kActionChoseCardToDrop);
                     animiData.setInteger(c.param_key.hand_card_change_amount, handcards.getCardArray().length);
                     animiData.setIntegerArray(c.param_key.id_list, u.intArrayMapping(handcards.getCardArray()));
                     table.sendPublicMessage(animiData, targetPlayer.userName);
-                    
                     
                     handcards.removeAll(u.intArrayMapping(handcards.getCardArray()), true);
                     this.turnToTurnHolder();
@@ -340,7 +323,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                     l.logger().d(tag + userName, "turn to player: " + targetPlayer.userName + " for s_viper_raid");
                     targetPlayer.updateState(action, reason, info);
                 }
-                
                 
                 break;
             }
@@ -358,10 +340,12 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             }
             case functioncon.m_ElunesArrow: {
                 
-                //                String targetName = info.getStringArray(c.param_key.target_player_list)[0];
-                //                Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
+                // String targetName =
+                // info.getStringArray(c.param_key.target_player_list)[0];
+                // Player targetPlayer =
+                // table.players.getPlayerByPlayerName(targetName);
                 String action = c.action.choosing_from_showing;
-                //                String reason = c.reason.m_ElunesArrowed;
+                // String reason = c.reason.m_ElunesArrowed;
                 String reason = c.reason.m_ElunesArrowing;
                 this.updateState(action, reason, info);
                 
@@ -388,9 +372,9 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         }
     }
     
-    //TODO 思考是用chose更好, 还是用respond as target更好, 或者改成chain的某个阶段之类的?
+    // TODO 思考是用chose更好, 还是用respond as target更好, 或者改成chain的某个阶段之类的?
     public void respondAsTarget(EsObject msg) {
-    
+        
         if (stateReason.equals(c.reason.s_viper_raided)) {
             int[] cardsToBeDrop = msg.getIntegerArray(c.param_key.id_list);
             this.handCards.removeAll(cardsToBeDrop, false);
@@ -403,18 +387,17 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void updateState(String state, String reason, EsObject inputState) {
-    
+        
         this.stateAction = state;
         this.stateReason = reason;
         this.stateInfo.addAll(inputState);
-        /* 
+        /*
          * TODO 别忘了更新table state
-         * 
          */
         l.logger().d(tag, "stateAction=" + stateAction + "stateAction, stateReason=" + stateReason);
         if (stateReason.equals(c.reason.normal_attacked)
-            || stateReason.equals(c.reason.chaos_attacked)
-            || stateReason.equals(c.reason.flame_attacked)
+                || stateReason.equals(c.reason.chaos_attacked)
+                || stateReason.equals(c.reason.flame_attacked)
         
         ) {
             l.logger().d(tag + this.userName, "under attacking");
@@ -426,7 +409,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             stateInfo.setIntegerArray(c.param_key.available_id_list, u.intArrayMapping(evasions));
             this.updateToClient(stateInfo);
             table.getWaiter().waitForSingleChoosing(this, c.default_wait_time);
-            
             
             Data publicData = new Data();
             publicData.setAction(c.action.choosing_to_evade);
@@ -441,8 +423,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             stateInfo.setInteger(c.param_key.available_count, 3);
             stateInfo.setIntegerArray(c.param_key.available_id_list, u.intArrayMapping(evasions));
             this.updateToClient(stateInfo);
-            table.getWaiter().waitForSingleChoosing(this, c.default_wait_time);//.becauseOf(reason);
-            
+            table.getWaiter().waitForSingleChoosing(this, c.default_wait_time);// .becauseOf(reason);
             
             Data publicData = new Data();
             publicData.setAction(c.action.choosing_to_evade);
@@ -450,7 +431,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             this.stateReason = c.reason.s_LagunaBladed;
         } else if (stateReason.equals(c.reason.s_viper_raided)) {
             l.logger().d(tag + this.userName, "s_viper_raided");
-            
             
             table.tableState = new TableState(c.game_state.started.somebody_is_s_viper_raiding, new String[] { userName });
             stateInfo.setAction(c.action.choosing_to_drop);
@@ -460,7 +440,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             this.updateToClient(stateInfo);
             table.getWaiter().waitForSingleChoosing(this, c.default_wait_time);
             
-            
             Data publicData = new Data();
             publicData.setAction(c.action.choosing_to_drop);
             table.sendPublicMessage(publicData, userName);
@@ -469,21 +448,20 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             table.tableState = new TableState(c.game_state.started.somebody_is_m_ElunesArrowing, new String[] { userName });
             boolean strenghened = stateInfo.getBoolean(c.param_key.is_strengthened, false);
             stateInfo.setInteger(c.param_key.available_count, 1);
-            stateInfo.setAction(c.action.choosing_from_hand);
+            stateInfo.setAction(c.action.choosing_to_drop);
             Integer[] availableList = null;
+            int select_result = stateInfo.getIntegerArray(c.param_key.id_list)[0];
             if (strenghened) {
-                availableList = this.handCards.getCardsByUsage(card_const.suits).toArray(new Integer[] {});
+                availableList = this.handCards.getCardsByProperty(card_const.suits, select_result).toArray(new Integer[] {});
             } else {
-                availableList = this.handCards.getCardsByUsage(card_const.color).toArray(new Integer[] {});
+                availableList = this.handCards.getCardsByProperty(card_const.color, select_result).toArray(new Integer[] {});
             }
             stateInfo.setIntegerArray(c.param_key.available_id_list, u.intArrayMapping(availableList));
             this.updateToClient(stateInfo);
             
-            
             Data publicData = new Data();
-            publicData.setAction(c.action.choosing_from_hand);
+            publicData.setAction(c.action.choosing_to_drop);
             table.waiter.waitForSingleChoosing(this, c.default_wait_time);
-            
             
             table.sendPublicMessage(publicData, userName);
         } else if (stateReason.equals(c.reason.m_ElunesArrowing)) {
@@ -506,13 +484,12 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             this.updateToClient(stateInfo);
             table.waiter.waitForSingleChoosing(this, c.default_wait_time);
             
-            
             table.sendPublicMessage(publicData, userName);
         }
     }
     
     public void startTurn() {
-    
+        
         used_how_many_attacks = 0;
         this.drawHandCards(2);
         
@@ -520,35 +497,32 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         
     }
     
-    
     private void freePlay(boolean ai) {
-    
+        
         Data obj = new Data();
-        obj.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
+        obj.setAction(c.action.turn_to_player);// kActionPlayingCard 出牌阶段
         obj.addString(c.param_key.player_name, userName);
-        //  obj.addBoolean(c.param_key.clear_showing_cards, true);
+        // obj.addBoolean(c.param_key.clear_showing_cards, true);
         int[] availableHandCards = this.getAvailableHandCards();
         obj.addIntegerArray(c.param_key.available_id_list, availableHandCards);
         obj.addInteger(c.param_key.available_count, c.selectable_count.default_value);
         
-        
         table.sendMessageToSingleUser(userName, obj);
         
         obj = new Data();
-        obj.setAction(c.action.turn_to_player);//kActionPlayingCard 出牌阶段
+        obj.setAction(c.action.turn_to_player);// kActionPlayingCard 出牌阶段
         obj.addString(c.param_key.player_name, userName);
         table.sendPublicMessage(obj, userName);
         
         if (this.isAi()) {
             this.cancel();
         } else {
-            table.waiter.waitForSingleChoosing(this, c.default_wait_time);//.becauseOf(c.action.free_play);
+            table.waiter.waitForSingleChoosing(this, c.default_wait_time);// .becauseOf(c.action.free_play);
         }
     }
     
-    
     private void drawHandCards(int i) {
-    
+        
         List<Integer> cards = table.drawCardsFromDeck(i);
         
         Data animi = new Data();
@@ -561,9 +535,8 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         
     }
     
-    
     public void autoDecise() {
-    
+        
         l.logger().d(tag, "autoDecise, stateAction=" + stateAction + ", stateReason=" + stateReason);
         if (stateAction.equals(c.action.choosing_from_hand)) {
             if (this.isAi()) {
@@ -589,11 +562,9 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         this.stateAction = c.action.none;
     }
     
-    
     public void cancel() {
-    
-        table.cancelScheduledExecution();
         
+        table.cancelScheduledExecution();
         
         l.logger().d(tag, "cancel, stateReason=" + stateReason);
         if (this.stateReason == c.reason.normal_attacked) {
@@ -602,7 +573,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             int hit_amount = 1 + god_helped;
             this.property.hpDown(hit_amount, true);
             
-            
             turnToTurnHolder();
         } else if (this.stateReason == c.reason.chaos_attacked) {
             int god_helped = table.players.turnHolder.godStrength ? 1 : 0;
@@ -610,7 +580,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             this.property.hpDown(hit_amount, true);
             
             table.players.turnHolder.property.spUp(1);
-            
             
             turnToTurnHolder();
         } else if (this.stateReason == c.reason.flame_attacked) {
@@ -637,27 +606,26 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             targetPlayer.updateState(action, reason, stateInfo);
         }
         
-        
         else if (this.stateAction.equals(c.action.free_play)) {
-            //TODO 弃牌
+            // TODO 弃牌
             godStrength = false;
             m_Fanaticismed = false;
         }
     }
     
-    
     private void turnToTurnHolder() {
-    
+        
         table.turnBackToTurnHolder(userName);
         
     }
     
     @Override
     public void onHandCardsAdded(List<Integer> newCards, String playerName, boolean updateToClient) {
-    
+        
         if (updateToClient && !this.isAi()) {
             Data obj = new Data();
-            obj.setAction(c.action.update_hand_cards);//kActionUpdatePlayerHand,  2003
+            obj.setAction(c.action.update_hand_cards);// kActionUpdatePlayerHand,
+                                                      // 2003
             obj.setIntegerArray(c.param_key.id_list, u.intArrayMapping(newCards.toArray(new Integer[] {})));
             this.updateToClient(obj);
         }
@@ -665,41 +633,38 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     @Override
     public void onHandCardsDropped(int[] droppedCards, String playerName, boolean updateToClient) {
-    
+        
         if (updateToClient && !this.isAi()) {
             Data obj = new Data();
-            obj.setAction(c.action.update_hand_cards);//kActionUpdatePlayerHand,  2003
+            obj.setAction(c.action.update_hand_cards);// kActionUpdatePlayerHand,
+                                                      // 2003
             obj.setIntegerArray(c.param_key.id_list, droppedCards);
             this.updateToClient(obj);
         }
     }
     
-    
     @Override
     public void onHpChanged(String playerName, int amount) {
-    
-        //        Data data = new Data();
-        //        data.addInteger(c.param_key.hp_changed, amount);
-        //        this.updatePropertyToClient(data);
+        
+        // Data data = new Data();
+        // data.addInteger(c.param_key.hp_changed, amount);
+        // this.updatePropertyToClient(data);
         
     }
-    
     
     @Override
     public void onSpChanged(String playerName, int amount) {
-    
-        //    
-        //        Data data = new Data();
-        //        data.addInteger(c.param_key.sp_changed, amount);
-        //        this.updatePropertyToClient(data);
+        
+        //
+        // Data data = new Data();
+        // data.addInteger(c.param_key.sp_changed, amount);
+        // this.updatePropertyToClient(data);
         
     }
     
-    
     @Override
     public void onEquipChanged(String playerName) {
-    
+        
     }
-    
     
 }
