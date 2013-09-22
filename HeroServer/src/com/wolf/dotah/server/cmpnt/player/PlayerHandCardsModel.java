@@ -9,6 +9,7 @@ import com.wolf.dotah.server.cmpnt.cardandskill.card_const;
 import com.wolf.dotah.server.cmpnt.cardandskill.card_const.functioncon;
 import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.util.c;
+import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
 public class PlayerHandCardsModel {
@@ -122,19 +123,20 @@ public class PlayerHandCardsModel {
     
         List<Integer> result = new ArrayList<Integer>();
         if (property.equals(card_const.color)) {
-            for (int card : getCards()) {
-              Card c=  CardParser.getParser().getCardById(card);
-                if(c.getColorCode()==value){
+            for (int card : cards) {
+                Card c = CardParser.getParser().getCardById(card);
+                l.logger().d("playerHandCards ===>> ", "getCardsByProperty, card=" + c.toString());
+                if (c.getColorCode() == value) {
                     result.add(card);
                 }
             }
         } else if (property.equals(card_const.suits)) {
-            for (int card : getCards()) {
-                Card c=  CardParser.getParser().getCardById(card);
-                  if(c.getSuitsCode()==value){
-                      result.add(card);
-                  }
-              }
+            for (int card : cards) {
+                Card c = CardParser.getParser().getCardById(card);
+                if (c.getSuitsCode() == value) {
+                    result.add(card);
+                }
+            }
         }
         return result;
     }

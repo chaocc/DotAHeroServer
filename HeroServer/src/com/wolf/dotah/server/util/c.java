@@ -35,6 +35,7 @@ public interface c {
         public String choosing_to_drop = "choosing_to_drop";
         public String choosing_from_color = "choosing_from_color";
         public String choosing_from_suits = "choosing_from_suits";
+        public String drop_card_stage = "drop_card_stage";
     }
     public interface reason {
         
@@ -47,6 +48,7 @@ public interface c {
         String s_viper_raided = "s_viper_raided";
         String m_ElunesArrowed = "m_ElunesArrowed";
         String m_ElunesArrowing = "m_ElunesArrowing";
+        String m_Chakraing = "m_Chakraing";
     }
     
     
@@ -68,6 +70,8 @@ public interface c {
         public String who = "who";
         public String biggist_card_id = "biggest_card_id";
         public String clear_showing_cards = "clear_showing";
+        String is_optional_discard = "is_optional_discard";
+        String id = "id";
         
         final String
             kParamUserList = "player_list",// 所有玩家列表
@@ -99,6 +103,7 @@ public interface c {
         public String single_result = "single_result";
         //        public String hand_card_to_be_change = "hand_card_to_be_change";
         //        public String hand_card_after_change = "hand_card_to_be_change";
+        public String reason = "reason";
     }
     
     interface playercon {

@@ -60,6 +60,7 @@ public interface client_const {
         kActionChooseCardToDiscard = 3005, // 选择卡牌: 弃置
         kActionChoosingColor = 3006, // 选择颜色阶段
         kActionChoosingSuits = 3007, // 选择花色阶段
+        drop_card_stage = 3008,
         
         kActionPlayerUpdateHandDrawing = 4000 // 播放动画: 从牌堆摸牌
         
