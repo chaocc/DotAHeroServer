@@ -15,7 +15,7 @@ public interface c {
         public String start_game              = "start_game";
         public String free_play               = "free_play";
         public String update_table_info       = "update_table_info";
-        public String update_player_property  = "update_player_info";            // update
+        public String update_player_property  = "update_player_info";           // update
                                                                                  // player
                                                                                  // property
         public String choosing                = "choosing";
@@ -39,6 +39,7 @@ public interface c {
         public String drop_card_stage         = "drop_card_stage";
         
         public String table_card_to_get       = "table_card_to_get";
+        public String choosing_from_another   = "choosing_from_another";
     }
     
     public interface reason {
@@ -53,6 +54,8 @@ public interface c {
         String m_ElunesArrowed  = "m_ElunesArrowed";
         String m_ElunesArrowing = "m_ElunesArrowing";
         String m_Chakraing      = "m_Chakraing";
+        String m_greeding       = "m_greeding";
+        String m_greeded        = "m_greeded";
     }
     
     public interface player_action {
@@ -67,7 +70,7 @@ public interface c {
         
         public String left                = "left";
         String        player_count        = "player_count";
-        String        id_list             = "id_list";             // 卡牌列表(英雄牌/摸的牌/获得的牌/使用的牌/弃置的牌)
+        String        id_list             = "id_list";            // 卡牌列表(英雄牌/摸的牌/获得的牌/使用的牌/弃置的牌)
         public String how_many            = "how_many";
         public String hero_candidates     = "hero_candidates";
         public String who                 = "who";
@@ -121,7 +124,7 @@ public interface c {
         interface state {
             String unavailable = "unavailable";
             String free_play   = "free_play";
-            String idle        = "idle";        // 没进度条, 什么都没做, 比如有人在free_play
+            String idle        = "idle";       // 没进度条, 什么都没做, 比如有人在free_play
             String waiting     = "waiting";    // 有进度条, 比如等待某人的驱散
                                                 
             interface choosing {

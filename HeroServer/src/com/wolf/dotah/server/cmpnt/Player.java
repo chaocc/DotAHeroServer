@@ -217,6 +217,13 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         // this.handCards.remove(cardId, true);
         this.handCards.removeAll(usedCards, false);
         
+        
+        
+        // 驱散要在这之前
+        boolean isStrengthened = info.getBoolean(c.param_key.is_strengthened, false);
+        if (isStrengthened) {
+            this.property.spDown(1);
+        }
         switch (functionId) {// 主要是b, s, m三类
             case functioncon.b_normal_attack: {
                 used_how_many_attacks++;
@@ -374,7 +381,27 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 break;
             }
             case functioncon.m_Greed: {
-                
+                if(isStrengthened){
+
+                    /*
+                     * 如果强化了就直接让他选
+                     * 等待选完
+                     * 如果超时了就帮他选
+                     * 然后俩人都得到牌.
+                     */
+                    
+                }else{
+                this.stateAction = c.action.choosing_from_another;
+                this.stateReason = c.reason.m_greeding;
+                /*
+                 * 两个人同时做的效果
+                 * 发起人先设置state, reason什么的, 
+                 * 然后updateState给target, target设置state和reason什么的, 
+                 * 然后等待2个人选
+                 * 都选完的话就互相得到牌.
+                 * 有人超时了就帮他选
+                 * 
+                */}
                 break;
             }
             case functioncon.m_Mislead: {
@@ -495,7 +522,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             Data publicData = new Data();
             
             if (strenghened) {
-                this.property.spDown(1);
                 stateInfo.setAction(c.action.choosing_from_suits);
                 publicData.setAction(c.action.choosing_from_suits);
             } else {
