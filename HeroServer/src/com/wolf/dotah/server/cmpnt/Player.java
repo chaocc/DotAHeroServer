@@ -1,11 +1,12 @@
 package com.wolf.dotah.server.cmpnt;
 
 import java.util.List;
+
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
+import com.wolf.dotah.server.cmpnt.cardandskill.Card;
 import com.wolf.dotah.server.cmpnt.cardandskill.card_const;
 import com.wolf.dotah.server.cmpnt.cardandskill.card_const.colorcon;
 import com.wolf.dotah.server.cmpnt.cardandskill.card_const.functioncon;
-import com.wolf.dotah.server.cmpnt.cardandskill.card_const.suitscon;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
@@ -13,6 +14,7 @@ import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel.HandCardsChangeLi
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty.PlayerPropertyChangedListener;
 import com.wolf.dotah.server.cmpnt.table.TableState;
+import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.layer.dao.HeroParser;
 import com.wolf.dotah.server.util.c;
 import com.wolf.dotah.server.util.client_const;
@@ -22,20 +24,20 @@ import com.wolf.dotah.server.util.u;
 //TODO 在写个on targeted listener, 
 public class Player implements HandCardsChangeListener, PlayerPropertyChangedListener {
     
-    private String tag = "Player ==>> ";
-    public String stateAction;
-    public String stateReason;
-    public boolean godStrength = false;
-    public boolean m_Fanaticismed = false;
-    public int used_how_many_attacks = 0;
-    public Data stateInfo;
-    public PlayerProperty property; // player
-                                    // 属性的状态
+    private String              tag                   = "Player ==>> ";
+    public String               stateAction;
+    public String               stateReason;
+    public boolean              godStrength           = false;
+    public boolean              m_Fanaticismed        = false;
+    public int                  used_how_many_attacks = 0;
+    public Data                 stateInfo;
+    public PlayerProperty       property;                              // player
+                                                                        // 属性的状态
     public PlayerHandCardsModel handCards;
-    public TableModel table;
+    public TableModel           table;
     
     public void updatePropertyToClient(Data result) {
-    
+        
         result.addString(c.param_key.player_name, userName);
         result.setAction(c.action.update_player_property);
         // this.table.sendMessageToAll(result);
@@ -46,7 +48,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
      * 相当于客户端拿来了新消息, 在做判断 TODO 这个方法应并进auto decide里
      */
     public void performAiAction(String fromParamKey) {
-    
+        
         if (stateAction.equals(c.playercon.state.choosing.choosing_hero)) {
             int[] pickResult = stateInfo.getIntegerArray(c.playercon.state.param_key.general.id_list, new int[] {});
             int heroId = ai.chooseSingle(pickResult);
@@ -59,7 +61,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void performSimplestChoice() {
-    
+        
         if (table.tableState.getState() == c.game_state.not_started.cutting) {// cutting
             int id = this.handCards.getCards().get(0);
             
@@ -79,7 +81,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
      * TODO 要并到choose from showing里
      */
     public void pickedHero(EsObject msg) {
-    
+        
         l.logger().d(tag, "picking hero, stateAction = " + stateAction);
         if (stateAction.equals(c.playercon.state.choosing.choosing_hero)) {
             int[] pickResult = msg.getIntegerArray(c.param_key.id_list, new int[] {});
@@ -89,7 +91,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     private void initPropertyWithHeroId(int heroId) {
-    
+        
         HeroInfo heroInfo = HeroParser.getParser().getHeroInfoById(heroId);
         property = new PlayerProperty(heroInfo, this);
         handCards = new PlayerHandCardsModel(this, heroInfo.getHandcardLimit());
@@ -116,14 +118,14 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void updateToClient(Data msg) {
-    
+        
         l.logger().d(tag, "updateToClient, stateInfo=");
         table.sendMessageToSingleUser(userName, msg);
         
     }
     
     public void sendPrivateMessage(String string_action) {
-    
+        
         Data data = new Data();
         data.setAction(string_action);
         addPrivateData(data, string_action);
@@ -132,7 +134,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     // TODO should deprecate, no need 不需要使用类似的操作
     private void addPrivateData(Data data, String string_action) {
-    
+        
         if (c.action.choosing_from_hand.equals(string_action)) {
             List<Integer> cardList = this.handCards.getCards();
             int[] cardArray = u.intArrayMapping(cardList.toArray(new Integer[] {}));
@@ -142,7 +144,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void cutting() {
-    
+        
         stateAction = c.action.choosing_from_hand;
         if (ai != null && ai.isAi()) {
             performAiAction(c.param_key.id_list);
@@ -152,7 +154,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public int[] getAvailableHandCards() {
-    
+        
         debug(tag, "getAvailableHandCards()");
         // TODO 判断哪些available
         /*
@@ -163,33 +165,34 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void initHandCards(List<Integer> cards) {
-    
+        
         // TODO TODO only for test, need remove when production
         // cards.clear();
-        cards.add(33);
+        cards.add(20);
+        cards.add(29);
         
         this.handCards.initPlayerHandcards(cards);
         
     }
     
     public Player(String name, TableModel inputTable) {
-    
+        
         this.table = inputTable;
         this.userName = name;
         this.tag += name + ", ";
     }
     
     public String userName;
-    public Ai ai;
+    public Ai     ai;
     
     public boolean isAi() {
-    
+        
         if (ai == null) { return false; }
         return ai.isAi();
     }
     
     private void debug(String tag, String log) {
-    
+        
         if (table != null) {
             l.logger().d(tag, log);
         }
@@ -197,7 +200,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     @Override
     public String toString() {
-    
+        
         return "Player [userName=" + userName + "]";
     }
     
@@ -207,7 +210,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void useCard(EsObject info, int functionId) {
-    
+        
         l.logger().d(tag, "using card with function " + functionId);
         
         int[] usedCards = info.getIntegerArray(c.param_key.id_list);
@@ -328,14 +331,19 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             }
             case functioncon.m_Chakra: {
                 this.drawHandCards(1);
+                
                 int i = table.drawOneCard();
-                if (!(stateAction.equals(c.action.choosing_from_color) && stateReason.equals(c.reason.m_Chakraing))) {
-                    stateAction = c.action.choosing_from_color;
-                    stateReason = c.reason.m_Chakraing;
-                    stateInfo = new Data();
-                    stateInfo.addInteger(c.param_key.id, i);
-                }
-                //                stateInfo = 
+                String action = c.action.choosing_from_color;
+                String reason = c.reason.m_Chakraing;
+                
+                Data publicMessage = new Data();
+                publicMessage.setAction(client_const.kActionGuessCard);
+                publicMessage.setInteger(c.param_key.how_many, 1);
+                table.sendPublicMessage(publicMessage, userName);
+                
+                Data data = new Data();
+                data.addInteger(c.param_key.id, i);
+                this.updateState(action, reason, data);
                 
                 break;
             }
@@ -367,11 +375,21 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             }
             case functioncon.m_Greed: {
                 
-                
                 break;
             }
             case functioncon.m_Mislead: {
+                String[] targetPlayers = info.getStringArray(c.param_key.target_player_list);
+                String spProviderName = targetPlayers[0];
+                String spReceiverName = targetPlayers[1];
                 
+                Player spProvider = table.players.getPlayerByPlayerName(spProviderName);
+                spProvider.property.spDown(1);
+                spProvider.drawHandCards(1);
+                
+                Player spReceiver = table.players.getPlayerByPlayerName(spReceiverName);
+                spReceiver.property.spUp(1);
+                
+                this.turnToTurnHolder();
                 break;
             }
         }
@@ -379,7 +397,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     // TODO 思考是用chose更好, 还是用respond as target更好, 或者改成chain的某个阶段之类的?
     public void respondAsTarget(EsObject msg) {
-    
+        
         if (stateReason.equals(c.reason.s_viper_raided)) {
             int[] cardsToBeDrop = msg.getIntegerArray(c.param_key.id_list);
             this.handCards.removeAll(cardsToBeDrop, false);
@@ -392,7 +410,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void updateState(String state, String reason, EsObject inputState) {
-    
+        
         this.stateAction = state;
         this.stateReason = reason;
         this.stateInfo.addAll(inputState);
@@ -401,8 +419,8 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
          */
         l.logger().d(tag, "stateAction=" + stateAction + "stateAction, stateReason=" + stateReason);
         if (stateReason.equals(c.reason.normal_attacked)
-            || stateReason.equals(c.reason.chaos_attacked)
-            || stateReason.equals(c.reason.flame_attacked)
+                || stateReason.equals(c.reason.chaos_attacked)
+                || stateReason.equals(c.reason.flame_attacked)
         
         ) {
             l.logger().d(tag + this.userName, "under attacking");
@@ -476,35 +494,38 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             stateInfo.setInteger(c.param_key.available_count, 1);
             Data publicData = new Data();
             
-            if (!strenghened) {
-                stateInfo.setAction(c.action.choosing_from_color);
-//                stateInfo.setIntegerArray(c.param_key.available_id_list, colorcon.color_array);
-                
-                publicData.setAction(c.action.choosing_from_color);
-            } else {
+            if (strenghened) {
+                this.property.spDown(1);
                 stateInfo.setAction(c.action.choosing_from_suits);
-//                stateInfo.setIntegerArray(c.param_key.available_id_list, suitscon.suits_array);
-                
                 publicData.setAction(c.action.choosing_from_suits);
+            } else {
+                stateInfo.setAction(c.action.choosing_from_color);
+                publicData.setAction(c.action.choosing_from_color);
             }
             this.updateToClient(stateInfo);
             table.waiter.waitForSingleChoosing(this, c.default_wait_time);
-            
             table.sendPublicMessage(publicData, userName);
+        } else if (stateReason.equals(c.reason.m_Chakraing)) {
+            table.tableState = new TableState(c.game_state.started.somebody_is_m_Chakraing, new String[] { userName });
+            Data data = new Data();
+            data.setAction(c.action.choosing_from_color);
+            data.setInteger(c.param_key.available_count, 1);
+            table.waiter.waitForSingleChoosing(this, c.default_wait_time);
+            table.sendPublicMessage(data, userName);
+            this.updateToClient(data);
         }
     }
     
     public void startTurn() {
-    
+        
         used_how_many_attacks = 0;
         this.drawHandCards(2);
-        
         this.freePlay(this.isAi());
         
     }
     
     private void freePlay(boolean ai) {
-    
+        
         Data obj = new Data();
         obj.setAction(c.action.turn_to_player);// kActionPlayingCard 出牌阶段
         obj.addString(c.param_key.player_name, userName);
@@ -528,13 +549,12 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     private void drawHandCards(int i) {
-    
+        
         List<Integer> cards = table.drawCardsFromDeck(i);
         
         Data animi = new Data();
         animi.setAction(client_const.kActionPlayerUpdateHandDrawing);
         animi.setInteger(c.param_key.hand_card_change_amount, i);
-        
         table.sendPublicMessage(animi, userName);
         
         this.handCards.add(cards, true);
@@ -542,7 +562,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void autoDecise() {
-    
+        
         l.logger().d(tag, "autoDecise, stateAction=" + stateAction + ", stateReason=" + stateReason);
         if (stateAction.equals(c.action.choosing_from_hand)) {
             if (this.isAi()) {
@@ -569,7 +589,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void cancel() {
-    
+        
         table.cancelScheduledExecution();
         
         l.logger().d(tag, "cancel, stateReason=" + stateReason);
@@ -610,6 +630,8 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             String reason = c.reason.m_ElunesArrowed;
             stateInfo.addIntegerArray(c.param_key.id_list, new int[] { result });
             targetPlayer.updateState(action, reason, stateInfo);
+        } else if (this.stateReason.equals(c.reason.m_Chakraing)) {
+            colorResult(colorcon.red_client);
         }
         
         else if (this.stateAction.equals(c.action.free_play) && table.players.turnHolder.equals(this)) {
@@ -619,27 +641,64 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         }
     }
     
-    private void turnToTurnHolder() {
+    public void colorResult(int choseResult) {
+        if (this.stateReason.equals(c.reason.m_Chakraing)) {
+            int realCardId = stateInfo.getInteger(c.param_key.id);
+            Card card = CardParser.getParser().getCardById(realCardId);
+            int realColorId = card.getColorCode();
+            
+            showCoveredCard(realCardId);
+            
+            if (realColorId == choseResult) {
+                this.handCards.add(realCardId, false, new Data().setAction(c.action.table_card_to_get));
+                
+                stateAction = c.action.choosing_from_color;
+                stateReason = c.reason.m_Chakraing;
+                int i = table.drawOneCard();
+                stateInfo.setInteger(c.param_key.id, i);
+                table.tableState = new TableState(c.game_state.started.somebody_is_m_Chakraing, new String[] { userName });
+                
+                Data data = new Data();
+                data.setAction(c.action.choosing_from_color);
+                table.waiter.waitForSingleChoosing(this, c.default_wait_time);
+                table.sendPublicMessage(data, userName);
+                this.updateToClient(data);
+            } else {
+                this.turnToTurnHolder();
+            }
+        }
+    }
     
+    private void showCoveredCard(int realCardId) {
+        // TODO drop stack . add realCardId
+        // table.deck
+        Data data = new Data();
+        data.setAction(client_const.kActionUpdateDeckUsedCard);
+        data.addIntegerArray(c.param_key.id_list, new int[] { realCardId });
+        table.sendPublicMessage(data, userName);
+    }
+    
+    private void turnToTurnHolder() {
+        
         table.turnBackToTurnHolder(userName);
         
     }
     
     @Override
-    public void onHandCardsAdded(List<Integer> newCards, String playerName, boolean updateToClient) {
-    
+    public void onHandCardsAdded(int[] newCards, String playerName, boolean updateToClient) {
+        
         if (updateToClient && !this.isAi()) {
             Data obj = new Data();
             obj.setAction(c.action.update_hand_cards);// kActionUpdatePlayerHand,
                                                       // 2003
-            obj.setIntegerArray(c.param_key.id_list, u.intArrayMapping(newCards.toArray(new Integer[] {})));
+            obj.setIntegerArray(c.param_key.id_list, newCards);
             this.updateToClient(obj);
         }
     }
     
     @Override
     public void onHandCardsDropped(int[] droppedCards, String playerName, boolean updateToClient) {
-    
+        
         if (updateToClient && !this.isAi()) {
             Data obj = new Data();
             obj.setAction(c.action.update_hand_cards);// kActionUpdatePlayerHand,
@@ -651,7 +710,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     @Override
     public void onHpChanged(String playerName, int amount) {
-    
+        
         // Data data = new Data();
         // data.addInteger(c.param_key.hp_changed, amount);
         // this.updatePropertyToClient(data);
@@ -660,7 +719,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     @Override
     public void onSpChanged(String playerName, int amount) {
-    
+        
         //
         // Data data = new Data();
         // data.addInteger(c.param_key.sp_changed, amount);
@@ -670,7 +729,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     @Override
     public void onEquipChanged(String playerName) {
-    
+        
     }
     
 }
