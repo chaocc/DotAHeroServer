@@ -160,7 +160,7 @@ public class PlayerHandCardsModel {
         if (usage.equals("active")) {
             for (int card : getCards()) {
                 
-                if (negativeCard(card) || attach_and_can_NOT_use(card)) {
+                if (negativeCard(card) || attack_and_can_NOT_use(card)) {
                     continue;
                 } else {
                     result.add(card);
@@ -169,7 +169,7 @@ public class PlayerHandCardsModel {
         } else if (usage.equals(card_const.color)) {
             for (int card : getCards()) {
                 
-                if (negativeCard(card) || attach_and_can_NOT_use(card)) {
+                if (negativeCard(card) || attack_and_can_NOT_use(card)) {
                     continue;
                 } else {
                     result.add(card);
@@ -181,7 +181,7 @@ public class PlayerHandCardsModel {
         return result;
     }
     
-    private boolean attach_and_can_NOT_use(int card) {
+    private boolean attack_and_can_NOT_use(int card) {
         
         if (!player.m_Fanaticismed && player.used_how_many_attacks > 0) {
             int function = CardParser.getParser().getCardById(card).getFunction();
@@ -193,8 +193,11 @@ public class PlayerHandCardsModel {
     }
     
     private boolean negativeCard(int card) {
-        
-        boolean firstCase = card > 45 && card < 57;
+        boolean firstCase = card > 49 && card < 55;
+        if (player.property.hp >= player.property.hpLimit) {
+            //heal: 46~49, 55, 56
+            firstCase = card > 45 && card < 57;
+        }
         boolean secondCase = card > 59 && card < 70;
         boolean thirdCase = card == 79;
         return firstCase || secondCase || thirdCase;

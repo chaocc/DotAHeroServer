@@ -70,10 +70,8 @@ public interface c {
         
         public String left                = "left";
         String        player_count        = "player_count";
-        String        id_list             = "id_list";            // 卡牌列表(英雄牌/摸的牌/获得的牌/使用的牌/弃置的牌)
-        public String how_many            = "how_many";
+        String        id_list             = "id_list";
         public String hero_candidates     = "hero_candidates";
-        public String who                 = "who";
         public String biggist_card_id     = "biggest_card_id";
         public String clear_showing_cards = "clear_showing";
         String        is_optional_discard = "is_optional_discard";
@@ -110,6 +108,12 @@ public interface c {
         // public String hand_card_to_be_change = "hand_card_to_be_change";
         // public String hand_card_after_change = "hand_card_to_be_change";
         public String reason              = "reason";
+        
+        interface server_internal {
+            String target_player_name = "target_player_name";
+            String who                = "who";               // 卡牌列表(英雄牌/摸的牌/获得的牌/使用的牌/弃置的牌)
+            String how_many           = "how_many";
+        }
     }
     
     interface playercon {

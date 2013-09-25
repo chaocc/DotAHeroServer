@@ -168,8 +168,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         
         // TODO TODO only for test, need remove when production
         // cards.clear();
-        cards.add(20);
-        cards.add(29);
         
         this.handCards.initPlayerHandcards(cards);
         
@@ -221,6 +219,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         
         // 驱散要在这之前
         boolean isStrengthened = info.getBoolean(c.param_key.is_strengthened, false);
+        l.logger().d(tag, "using card with strengthened=" + isStrengthened);
         if (isStrengthened) {
             this.property.spDown(1);
         }
@@ -276,11 +275,14 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             }
             case functioncon.b_heal: {
                 
-                String targetName = info.getStringArray(c.param_key.target_player_list)[0];
+                String targetName = info.getStringArray(c.param_key.target_player_list, new String[] { userName })[0];
                 if (userName.equals(targetName)) {
                     this.property.hpUp(1);
+                } else {
+                    Player target = table.players.getPlayerByPlayerName(targetName);
+                    target.property.hpUp(1);
                 }
-                
+                this.turnToTurnHolder();
                 break;
             }
             case functioncon.s_GodsStrength: {
@@ -345,7 +347,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 
                 Data publicMessage = new Data();
                 publicMessage.setAction(client_const.kActionGuessCard);
-                publicMessage.setInteger(c.param_key.how_many, 1);
+                publicMessage.setInteger(c.param_key.server_internal.how_many, 1);
                 table.sendPublicMessage(publicMessage, userName);
                 
                 Data data = new Data();
@@ -355,11 +357,17 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 break;
             }
             case functioncon.m_Dispel: {
-                
+                /*
+                 * 驱散：在魔法牌或英雄技能生效前，抵消其全部效果。
+                 */
                 break;
             }
             case functioncon.m_Disarm: {
-                
+                /*
+                 * 缴械：出牌阶段，对任意一名装备区里有装备牌的角色使用。
+                 * 选择目标角色装备区里的一张装备牌弃置。
+                 * 强化：你将目标角色装备区里的装备牌收为自己的手牌。
+                 */
                 break;
             }
             case functioncon.m_ElunesArrow: {
@@ -371,7 +379,12 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 break;
             }
             case functioncon.m_EnergyTransport: {
-                
+                /*
+                 * 能量转移：出牌阶段，你查看牌堆顶的X张牌（X为存活角色的数量），
+                 * 按行动顺序均分给所有角色。
+                 * 强化效果：按行动顺序进行分配，其中一名角色获得两张牌，
+                 * 另一名角色不能获得牌，其他角色各获得一张。
+                 */
                 break;
             }
             case functioncon.m_Fanaticism: {
@@ -381,27 +394,47 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 break;
             }
             case functioncon.m_Greed: {
-                if(isStrengthened){
-
+                /*
+                 * 贪婪：出牌阶段，对另一名角色使用。
+                 * 你抽取并暗置目标角色的两张手牌或一张装备区里的装备牌，
+                 * 然后该角色抽取你的一张手牌，最后你将暗置的牌归入手牌。
+                 * 强化：该角色不能抽取你的一张手牌而是由你交给该角色一张手牌。
+                 */
+                if (isStrengthened) {
+                    
                     /*
-                     * 如果强化了就直接让他选
+                     * 如果强化了
+                     * 先选对方手牌
+                     * 再选自己的
                      * 等待选完
                      * 如果超时了就帮他选
                      * 然后俩人都得到牌.
                      */
+                    stateAction = c.action.choosing_from_another;
+                    stateReason = c.reason.m_greeding;
+                    stateInfo = new Data();
                     
-                }else{
-                this.stateAction = c.action.choosing_from_another;
-                this.stateReason = c.reason.m_greeding;
-                /*
-                 * 两个人同时做的效果
-                 * 发起人先设置state, reason什么的, 
-                 * 然后updateState给target, target设置state和reason什么的, 
-                 * 然后等待2个人选
-                 * 都选完的话就互相得到牌.
-                 * 有人超时了就帮他选
-                 * 
-                */}
+                    Data d = new Data();
+                    d.setAction(c.action.choosing_from_another);
+                    String targetPlayerName = info.getStringArray(c.param_key.target_player_list)[0];
+                    int targetHandcardAmount = table.players.getPlayerByPlayerName(targetPlayerName).handCards.getCardArray().length;
+                    stateInfo.setString(c.param_key.server_internal.target_player_name, targetPlayerName);
+                    
+                    
+                    
+                    
+                } else {
+                    this.stateAction = c.action.choosing_from_another;
+                    this.stateReason = c.reason.m_greeding;
+                    /*
+                     * 两个人同时做的效果
+                     * 发起人先设置state, reason什么的, 
+                     * 然后updateState给target, target设置state和reason什么的, 
+                     * 然后等待2个人选
+                     * 都选完的话就互相得到牌.
+                     * 有人超时了就帮他选
+                     * 
+                    */}
                 break;
             }
             case functioncon.m_Mislead: {
@@ -683,6 +716,12 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 int i = table.drawOneCard();
                 stateInfo.setInteger(c.param_key.id, i);
                 table.tableState = new TableState(c.game_state.started.somebody_is_m_Chakraing, new String[] { userName });
+                
+                Data guessCardAnimi = new Data();
+                guessCardAnimi.setAction(client_const.kActionGuessCard);
+                guessCardAnimi.setInteger(c.param_key.server_internal.how_many, 1);
+                table.sendPublicMessage(guessCardAnimi, userName);
+                
                 
                 Data data = new Data();
                 data.setAction(c.action.choosing_from_color);

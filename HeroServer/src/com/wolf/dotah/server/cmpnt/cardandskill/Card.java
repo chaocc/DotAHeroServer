@@ -132,7 +132,7 @@ public class Card implements card_const {
             this.function = functioncon.b_flame_attack;
         } else if ((id > 59 && id < 70) || id == 79) {
             this.function = functioncon.b_evasion;
-        } else if (id > 45 && id < 50) {
+        } else if ((id > 45 && id < 50)||id==55||id==56) {
             this.function = functioncon.b_heal;
         }
         
