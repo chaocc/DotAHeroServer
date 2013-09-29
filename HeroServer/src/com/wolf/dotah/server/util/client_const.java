@@ -19,7 +19,7 @@ public interface client_const {
                kActionUseHandCard = 100, // 使用卡牌 // 专门用来主动出牌期间选择了一个卡牌来出
             kActionUseHeroSkill = 101, // 使用英雄技能
             kActionCancel = 102, // 取消
-            kActionDiscard = 103, // 确定弃牌
+            kActionDiscard = 103, // 进入弃牌
             kActionOkay = 104, // 确定
             kActionClearDeckCard = 105, // 清空桌面
             

@@ -57,6 +57,7 @@ public interface c {
         String m_greeding       = "m_greeding";
         String m_greeded        = "m_greeded";
         String turn_end         = "turn_end";
+        String none             = "";
     }
     
     public interface player_action {

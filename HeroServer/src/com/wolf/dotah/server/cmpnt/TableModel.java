@@ -360,18 +360,17 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
                     
                     this.sendPublicMessage(chooseFromSelfToGive, p.userName);
                 } else {
-                    if (user.equals(players.turnHolder)) {
+                    if (user.equals(players.turnHolder.userName)) {
                         boolean isEquip = msg.getBoolean(c.param_key.is_equip, false);
-                        int[] choseResult = msg.getIntegerArray(c.param_key.index_list);
-                        p.stateInfo.addIntegerArray(c.param_key.index_list, choseResult);
                         p.stateInfo.addBoolean(c.param_key.is_equip, isEquip);
-                        
+                        p.stateInfo.addIntegerArray(c.param_key.index_list, msg.getIntegerArray(c.param_key.index_list, new int[] {}));
+                        l.logger().d(user, "isEquip=" + isEquip);
                         Player target = players.getPlayerByPlayerName(
                                 p.stateInfo.getString(c.param_key.server_internal.target_player_name));
                         
                         
-                        int[] indexesWillDisappearFromTarget = p.stateInfo.getIntegerArray(c.param_key.index_list);
-                        int[] fetchResult = new int[] {};
+                        int[] indexesWillDisappearFromTarget = msg.getIntegerArray(c.param_key.index_list);
+                        int[] fetchResult = new int[indexesWillDisappearFromTarget.length];
                         if (isEquip) {
                             fetchResult[0] = 77;
                             //TODO 抽象出来 updateEquip
@@ -380,10 +379,12 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
                             this.sendPublicMessage(targetData, target.userName);
                             
                         } else {
+                            l.logger().d(user, "choosing indexes=" + u.printArray(fetchResult) + ", from=" + target.handCards.getCards());
                             for (int i = 0; i < indexesWillDisappearFromTarget.length; i++) {
                                 int cardIndex = indexesWillDisappearFromTarget[i];
                                 fetchResult[i] = target.handCards.getCards().get(cardIndex);
                             }
+                            l.logger().d(tag, "fetchResult=" + u.printArray(fetchResult));
                             target.handCards.removeAll(fetchResult, true);
                         }
                         
@@ -404,14 +405,16 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
                         Player self_greedTarget = players.getPlayerByPlayerName(user);
                         Player turnHolder_greedUser = players.turnHolder;
 //                        self_greedTarget.stateInfo.addIntegerArray(c.param_key.index_list, msg.getIntegerArray(c.param_key.index_list));
-                        
+                        self_greedTarget.stateInfo.addIntegerArray(c.param_key.index_list,
+                                msg.getIntegerArray(c.param_key.index_list, new int[] {}));
                         int[] turnHolderChoseIndexes = players.turnHolder.stateInfo.getIntegerArray(c.param_key.index_list, null);
                         //  looseCardExtracted
                         
                         
                         int indexWillDisappearFromTurnHolder = msg.getIntegerArray(c.param_key.index_list)[0];
                         l.logger().d(tag, "client chose index=" + indexWillDisappearFromTurnHolder);
-                        int cardIdWillDisappearFromTurnHolder = turnHolder_greedUser.handCards.getCards().get(indexWillDisappearFromTurnHolder);
+                        int cardIdWillDisappearFromTurnHolder = turnHolder_greedUser.handCards.getCards().get(
+                                indexWillDisappearFromTurnHolder);
                         l.logger().d(tag, "client chose cardId=" + cardIdWillDisappearFromTurnHolder);
                         turnHolder_greedUser.handCards.remove(cardIdWillDisappearFromTurnHolder, true);
                         
@@ -465,6 +468,7 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
             
         } else if (tableState.isEqualToState(c.game_state.started.somebody_is_ending_turn)) {
             int[] droppedCards = msg.getIntegerArray(c.param_key.id_list);
+            l.logger().d(tag, "dropping cards=" + u.printArray(droppedCards));
             players.turnHolder.handCards.removeAll(droppedCards, false);
             players.turnHolder.startOrContinueTurnEnd();
         }
@@ -513,6 +517,7 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
         
         Data data = new Data();
         data.setAction(c.action.free_play);
+        players.turnHolder.stateAction = c.action.free_play;
         this.sendPublicMessage(data, players.turnHolder.userName);
         
         data.addIntegerArray(c.param_key.available_id_list, players.turnHolder.getAvailableHandCards());

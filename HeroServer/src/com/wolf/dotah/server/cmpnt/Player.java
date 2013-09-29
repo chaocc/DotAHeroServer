@@ -28,7 +28,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     private String                    tag                   = "Player ==>> ";
     public String                     stateAction;
-    public String                     stateReason;
+    public String                     stateReason           = c.reason.none;
     public boolean                    godStrength           = false;
     public boolean                    m_Fanaticismed        = false;
     public int                        used_how_many_attacks = 0;
@@ -622,7 +622,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             this.updateToClient(data);
         } else if (stateReason.equals(c.reason.m_greeded)) {
             
-            
             Data animi = new Data();
             animi.setAction(client_const.kActionUpdateDeckHandCard);
             animi.setInteger(c.param_key.hand_card_count, stateInfo.getInteger(c.param_key.hand_card_count));
@@ -641,7 +640,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void startTurn() {
-        
         used_how_many_attacks = 0;
         this.drawHandCards(2);
         this.freePlay(this.isAi());
@@ -649,6 +647,9 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     private void freePlay(boolean ai) {
+        
+        this.stateAction = c.action.free_play;
+        
         
         Data obj = new Data();
         obj.setAction(c.action.turn_to_player);// kActionPlayingCard 出牌阶段
@@ -716,7 +717,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         
         table.cancelScheduledExecution();
         
-        l.logger().d(tag, "cancel, stateReason=" + stateReason);
+        l.logger().d(tag, "[cancel] stateAction=" + this.stateAction + ", stateReason=" + stateReason);
         if (this.stateReason == c.reason.normal_attacked) {
             int god_helped = table.players.turnHolder.godStrength ? 1 : 0;
             
@@ -754,27 +755,25 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             String reason = c.reason.m_ElunesArrowed;
             stateInfo.addIntegerArray(c.param_key.id_list, new int[] { result });
             targetPlayer.updateState(action, reason, stateInfo);
-        } else if (this.stateReason.equals(c.reason.m_Chakraing)) {
+        } else if (this.stateReason == c.reason.m_Chakraing) {
             colorResult(colorcon.red_client);
         }
         
         
         
-        else if (this.stateAction.equals(c.action.free_play) && table.players.turnHolder.equals(this)) {
+        else if (this.stateReason.equals(c.reason.turn_end)) {
+            int[] removeCandidates = new int[this.handCards.getCardArray().length - this.handCards.limit];
+            for (int i = 0; i < removeCandidates.length; i++) {
+                removeCandidates[i] = this.handCards.getCardArray()[i];
+            }
+            this.handCards.removeAll(removeCandidates, false);
+        } else if (this.stateAction.equals(c.action.free_play) && table.players.turnHolder.equals(this)) {
             
             // TODO 弃牌
             godStrength = false;
             m_Fanaticismed = false;
             this.startOrContinueTurnEnd();
             
-            
-            
-        } else if (this.stateReason.equals(c.reason.turn_end)) {
-            int[] removeCandidates = new int[this.handCards.getCardArray().length - this.handCards.limit];
-            for (int i = 0; i < removeCandidates.length; i++) {
-                removeCandidates[i] = this.handCards.getCardArray()[i];
-            }
-            this.handCards.removeAll(removeCandidates, false);
         }
     }
     
@@ -785,8 +784,9 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
          */
         this.stateAction = c.action.choosing_from_hand;
         this.stateReason = c.reason.turn_end;
-        
-        table.tableState = new TableState(c.game_state.started.somebody_is_ending_turn, new String[] { userName });
+        if (!table.tableState.isEqualToState(c.game_state.started.somebody_is_ending_turn)) {
+            table.tableState = new TableState(c.game_state.started.somebody_is_ending_turn, new String[] { userName });
+        }
         if (this.handCards.getCardArray().length > this.handCards.limit) {
             Data d = new Data();
             d.setAction(c.action.choosing_from_hand, c.reason.turn_end);

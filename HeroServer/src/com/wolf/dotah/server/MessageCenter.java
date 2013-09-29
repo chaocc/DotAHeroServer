@@ -146,7 +146,8 @@ public class MessageCenter {
         } else if (client_const.kActionDiscard == client_message) {
             table.cancelScheduledExecution();
             this.sendPublicMessage(msg, user);
-            table.choseCard(user, msg);
+//            table.choseCard(user, msg);
+            table.players.getPlayerByPlayerName(user).cancel();
         }
         
         
