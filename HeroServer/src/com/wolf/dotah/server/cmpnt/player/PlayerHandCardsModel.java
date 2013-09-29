@@ -24,14 +24,26 @@ public class PlayerHandCardsModel {
     }
     
     private Player player;
-    int            limit;
+    public int     limit;
     List<Integer>  cards = new ArrayList<Integer>();
     
-    public void add(List<Integer> input, boolean sendPrivate) {
+    public void add(int[] input, boolean sendPrivate) {
         
         // int original_size = cards.size();
+        //        Integer[] inputArray = input.toArray(new Integer[] {});
+        for (int i : input) {
+            cards.add(i);
+        }
+        
+        for (HandCardsChangeListener listener : changeListeners) {
+            listener.onHandCardsAdded(input, player.userName, sendPrivate);
+        }
+    }
+    
+    public void add(List<Integer> input, boolean sendPrivate) {
         Integer[] inputArray = input.toArray(new Integer[] {});
         cards.addAll(input);
+        
         for (HandCardsChangeListener listener : changeListeners) {
             listener.onHandCardsAdded(u.intArrayMapping(inputArray), player.userName, sendPrivate);
         }
@@ -78,6 +90,7 @@ public class PlayerHandCardsModel {
     public void remove(int card, boolean sendPrivate) {
         
         // int origin_size = cards.size();
+        l.logger().d("[HandCards, " + player.userName + "] ", "removing card=" + card + " from=" + this.getCards());
         this.getCards().remove(this.getCards().indexOf(card));
         // Data data = new Data();
         // if (sendPrivate) {

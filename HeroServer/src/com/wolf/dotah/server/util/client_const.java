@@ -69,7 +69,8 @@ public interface client_const {
             drop_card_stage = 3008,
             
             kActionPlayerUpdateHandDrawing = 4000, // 播放动画: 从牌堆摸牌
-            kActionGuessCard = 4001
+            kActionGuessCard = 4001,
+            lostCard = 2007     //被抽取之类的
             
             ;
     

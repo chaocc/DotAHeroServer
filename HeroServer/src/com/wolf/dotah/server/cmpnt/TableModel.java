@@ -17,6 +17,7 @@ import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.schedule.Waiter;
 import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.util.c;
+import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
@@ -332,8 +333,175 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
         } else if (tableState.isEqualToState(c.game_state.started.somebody_is_m_Chakraing)) {
             int choseColorId = msg.getInteger(c.param_key.selected_color);
             players.turnHolder.colorResult(choseColorId);
+        } else if (tableState.isEqualToState(c.game_state.started.somebody_is_m_greeding)) {
+            /*
+             * 如果强化了
+             * 先选对方手牌
+             * 再选自己的
+             * 等待选完
+             * 如果超时了就帮他选
+             * 然后俩人都得到牌
+             */
+            Player p = players.turnHolder;
+            if (p.stateAction.equals(c.action.choosing_from_another)) {
+                boolean strengthened = p.stateInfo.getBoolean(c.param_key.is_strengthened, false);
+                if (strengthened) {
+                    p.stateAction = c.action.choosing_from_hand;
+                    
+                    boolean equip = msg.getBoolean(c.param_key.is_equip, false);
+                    int[] choseResult = msg.getIntegerArray(c.param_key.index_list);
+                    p.stateInfo.addIntegerArray(c.param_key.index_list, choseResult);
+                    p.stateInfo.addBoolean(c.param_key.is_equip, equip);
+                    
+                    Data chooseFromSelfToGive = new Data();
+                    chooseFromSelfToGive.setAction(c.action.choosing_from_hand, c.reason.m_greeding);
+                    chooseFromSelfToGive.setIntegerArray(c.param_key.available_id_list, u.intArrayMapping(p.handCards.getCardArray()));
+                    chooseFromSelfToGive.setInteger(c.param_key.available_count, 1);
+                    
+                    this.sendPublicMessage(chooseFromSelfToGive, p.userName);
+                } else {
+                    if (user.equals(players.turnHolder)) {
+                        boolean isEquip = msg.getBoolean(c.param_key.is_equip, false);
+                        int[] choseResult = msg.getIntegerArray(c.param_key.index_list);
+                        p.stateInfo.addIntegerArray(c.param_key.index_list, choseResult);
+                        p.stateInfo.addBoolean(c.param_key.is_equip, isEquip);
+                        
+                        Player target = players.getPlayerByPlayerName(
+                                p.stateInfo.getString(c.param_key.server_internal.target_player_name));
+                        
+                        
+                        int[] indexesWillDisappearFromTarget = p.stateInfo.getIntegerArray(c.param_key.index_list);
+                        int[] fetchResult = new int[] {};
+                        if (isEquip) {
+                            fetchResult[0] = 77;
+                            //TODO 抽象出来 updateEquip
+                            Data targetData = new Data();
+                            targetData.setAction(c.action.update_player_property, c.reason.m_greeded);
+                            this.sendPublicMessage(targetData, target.userName);
+                            
+                        } else {
+                            for (int i = 0; i < indexesWillDisappearFromTarget.length; i++) {
+                                int cardIndex = indexesWillDisappearFromTarget[i];
+                                fetchResult[i] = target.handCards.getCards().get(cardIndex);
+                            }
+                            target.handCards.removeAll(fetchResult, true);
+                        }
+                        
+                        Data lostAnimi = new Data();
+                        lostAnimi.setAction(client_const.lostCard);
+//                        lostAnimi.setInteger(c.param_key.hand_card_count, fetchResult.length);
+                        lostAnimi.setIntegerArray(c.param_key.id_list, fetchResult);
+                        this.sendMessageToSingleUser(target.userName, lostAnimi);
+                        
+                        
+                        p.handCards.add(fetchResult, true);
+                        
+                        if (target.stateInfo.getIntegerArray(c.param_key.index_list, null) != null) {
+                            updateGreedResult();
+                        }
+                    } else {
+                        
+                        Player self_greedTarget = players.getPlayerByPlayerName(user);
+                        Player turnHolder_greedUser = players.turnHolder;
+//                        self_greedTarget.stateInfo.addIntegerArray(c.param_key.index_list, msg.getIntegerArray(c.param_key.index_list));
+                        
+                        int[] turnHolderChoseIndexes = players.turnHolder.stateInfo.getIntegerArray(c.param_key.index_list, null);
+                        //  looseCardExtracted
+                        
+                        
+                        int indexWillDisappearFromTurnHolder = msg.getIntegerArray(c.param_key.index_list)[0];
+                        l.logger().d(tag, "client chose index=" + indexWillDisappearFromTurnHolder);
+                        int cardIdWillDisappearFromTurnHolder = turnHolder_greedUser.handCards.getCards().get(indexWillDisappearFromTurnHolder);
+                        l.logger().d(tag, "client chose cardId=" + cardIdWillDisappearFromTurnHolder);
+                        turnHolder_greedUser.handCards.remove(cardIdWillDisappearFromTurnHolder, true);
+                        
+                        
+                        int[] lostArray = new int[] { cardIdWillDisappearFromTurnHolder };
+                        Data lostAnimi = new Data();
+                        lostAnimi.setAction(client_const.lostCard);
+//                        lostAnimi.setInteger(c.param_key.hand_card_count, 1);
+                        lostAnimi.setIntegerArray(c.param_key.id_list, lostArray);
+                        this.sendMessageToSingleUser(turnHolder_greedUser.userName, lostAnimi);
+                        
+                        
+                        self_greedTarget.handCards.add(lostArray, true);
+                        
+                        
+                        
+                        if (turnHolderChoseIndexes != null && turnHolderChoseIndexes.length > 0) {
+                            updateGreedResult();
+                        }
+                    }
+                }
+            } else if (p.stateAction.equals(c.action.choosing_from_hand) && p.stateInfo.getBoolean(c.param_key.is_strengthened, false)) {
+                int choseResult = msg.getIntegerArray(c.param_key.id_list)[0];
+                Player target = players.getPlayerByPlayerName(p.stateInfo.getString(c.param_key.server_internal.target_player_name));
+                int[] fetchIndexes = p.stateInfo.getIntegerArray(c.param_key.index_list);
+                boolean isEquip = p.stateInfo.getBoolean(c.param_key.is_equip);
+                
+                int[] fetchResult = new int[fetchIndexes.length];
+                Data targetData = new Data();
+                if (isEquip) {
+                    //TODO currently only for test
+                    fetchResult[0] = 77;
+                    //TODO 抽象出来updateEquip
+                    targetData.setAction(c.action.update_player_property, c.reason.m_greeded);
+                    targetData.setIntegerArray(c.param_key.id_list, fetchResult);
+                    this.sendPublicMessage(targetData, target.userName);
+                } else {
+                    //                                            targetData.setAction(c.a);
+                    for (int i = 0; i < fetchIndexes.length; i++) {
+                        int cardIndex = fetchIndexes[i];
+                        fetchResult[i] = target.handCards.getCards().get(cardIndex);
+                    }
+                    target.handCards.removeAll(fetchResult, true);
+                }
+                p.handCards.add(fetchResult, true);
+                p.handCards.remove(choseResult, true);
+                target.handCards.add(new int[] { choseResult }, true);
+                
+                this.turnBackToTurnHolder(p.userName);
+            }
+            
+        } else if (tableState.isEqualToState(c.game_state.started.somebody_is_ending_turn)) {
+            int[] droppedCards = msg.getIntegerArray(c.param_key.id_list);
+            players.turnHolder.handCards.removeAll(droppedCards, false);
+            players.turnHolder.startOrContinueTurnEnd();
         }
         
+    }
+    
+    private void updateGreedResult() {
+        
+        
+        Player p = players.turnHolder;
+//        Player target = players.getPlayerByUserName(p.stateInfo.getString(c.param_key.server_internal.target_player_name));
+//        boolean isEquip = p.stateInfo.getBoolean(c.param_key.is_equip);
+//        int[] indexesWillDisappearFromTarget = p.stateInfo.getIntegerArray(c.param_key.index_list);
+//        int[] fetchResult = new int[] {};
+//        if (isEquip) {
+//            fetchResult[0] = 77;
+//            //TODO 抽象出来 updateEquip
+//            Data targetData = new Data();
+//            targetData.setAction(c.action.update_player_property, c.reason.m_greeded);
+//            this.sendPublicMessage(targetData, target.userName);
+//            
+//        } else {
+//            for (int i = 0; i < indexesWillDisappearFromTarget.length; i++) {
+//                int cardIndex = indexesWillDisappearFromTarget[i];
+//                fetchResult[i] = target.handCards.getCards().get(cardIndex);
+//            }
+//            target.handCards.removeAll(fetchResult, true);
+//        }
+//        p.handCards.add(fetchResult, true);
+        
+        /*  ************************************************   */
+//        int indexWillDisappearFromTurnHolder = target.stateInfo.getIntegerArray(c.param_key.index_list)[0];
+//        int cardIdWillDisappearFromTurnHolder = target.handCards.getCards().get(indexWillDisappearFromTurnHolder);
+//        p.handCards.remove(cardIdWillDisappearFromTurnHolder, true);
+//        target.handCards.add(new int[] { cardIdWillDisappearFromTurnHolder }, true);
+        
+        this.turnBackToTurnHolder(p.userName);
     }
     
     public Waiter getWaiter() {

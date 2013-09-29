@@ -23,6 +23,10 @@ public class u {
         return result;
     }
     
+    /*
+     * use action+reason to check is correct.
+     * only actions have limitations
+     */
     public static int actionMapping(String action) {
         
         int result = -1;
@@ -66,10 +70,30 @@ public class u {
             result = client_const.kActionChoosingSuits;
         } else if (action.equals(c.action.table_card_to_get)) {
             result = client_const.update_player_hand_get_card_from_table;
+        } else if (action.equals(c.action.choosing_from_another)) {
+            
         }
         
         return result;
         
+    }
+    
+    public static int actionMapping(String action, String reason) {
+        int result = -1;
+        if (action.equals(c.action.choosing_from_another)) {
+            if (reason.equals(c.reason.m_greeding)) {
+                result = client_const.kActionChooseCardToExtract;
+            } else if (reason.equals(c.reason.m_greeded)) {
+                result = client_const.kActionChooseCardToExtract;
+            }
+        } else if (action.equals(c.action.choosing_from_hand)) {
+            if (reason.equals(c.reason.m_greeding)) {
+                result = client_const.kActionChooseCardToGive;
+            } else if (reason.equals(c.reason.turn_end)) {
+                result = client_const.kActionChooseCardToDiscard;
+            }
+        }
+        return result;
     }
     
     public static String actionMapping(int action) {
@@ -101,5 +125,13 @@ public class u {
     }
     
     final String tag = "util: ";
+    
+    public static int[] getIndexList(int amount) {
+        int[] result = new int[amount];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = i;
+        }
+        return result;
+    }
     
 }

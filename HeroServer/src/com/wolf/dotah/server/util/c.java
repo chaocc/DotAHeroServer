@@ -56,6 +56,7 @@ public interface c {
         String m_Chakraing      = "m_Chakraing";
         String m_greeding       = "m_greeding";
         String m_greeded        = "m_greeded";
+        String turn_end         = "turn_end";
     }
     
     public interface player_action {
@@ -83,7 +84,7 @@ public interface c {
                 player_name = "player_name",// 回合开始/伤害来源/出牌的玩家
                 target_player_list = "target_player_list",// 目标玩家列表
                 index_list = "index_list",// 选中的哪几张牌
-                // hand_card_count = "hand_card_count",// 玩家手牌数量
+                hand_card_count = "hand_card_count",// 玩家手牌数量/
                 hand_card_change_amount = "hand_card_change_amount",
                 available_count = "selectable_count",// 可选择的卡牌数量
                 // selectable_ids = "selectable_ids",
@@ -108,6 +109,7 @@ public interface c {
         // public String hand_card_to_be_change = "hand_card_to_be_change";
         // public String hand_card_after_change = "hand_card_to_be_change";
         public String reason              = "reason";
+        public String is_equip            = "is_equip";
         
         interface server_internal {
             String target_player_name = "target_player_name";
@@ -172,11 +174,14 @@ public interface c {
             
             int free_playing                 = 3;
             int deciding                     = 4;
+            int somebody_is_ending_turn      = 5;
+            
             int somebody_attacking           = 10;
             int somebody_s_LagunaingBlade    = 11;
             int somebody_is_s_viper_raiding  = 12;
             int somebody_is_m_ElunesArrowing = 13;
             int somebody_is_m_Chakraing      = 14;
+            int somebody_is_m_greeding       = 15;
         }
         
         int ended = 5;

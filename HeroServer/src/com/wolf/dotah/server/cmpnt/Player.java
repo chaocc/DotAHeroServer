@@ -1,5 +1,6 @@
 package com.wolf.dotah.server.cmpnt;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
@@ -13,6 +14,7 @@ import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel.HandCardsChangeListener;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty.PlayerPropertyChangedListener;
+import com.wolf.dotah.server.cmpnt.table.Players;
 import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.layer.dao.HeroParser;
@@ -24,17 +26,19 @@ import com.wolf.dotah.server.util.u;
 //TODO 在写个on targeted listener, 
 public class Player implements HandCardsChangeListener, PlayerPropertyChangedListener {
     
-    private String              tag                   = "Player ==>> ";
-    public String               stateAction;
-    public String               stateReason;
-    public boolean              godStrength           = false;
-    public boolean              m_Fanaticismed        = false;
-    public int                  used_how_many_attacks = 0;
-    public Data                 stateInfo;
-    public PlayerProperty       property;                              // player
-                                                                        // 属性的状态
-    public PlayerHandCardsModel handCards;
-    public TableModel           table;
+    private String                    tag                   = "Player ==>> ";
+    public String                     stateAction;
+    public String                     stateReason;
+    public boolean                    godStrength           = false;
+    public boolean                    m_Fanaticismed        = false;
+    public int                        used_how_many_attacks = 0;
+    public Data                       stateInfo;
+    public PlayerProperty             property;                              // player
+                                                                              // 属性的状态
+    public PlayerHandCardsModel       handCards;
+    public TableModel                 table;
+    private List<PlayerStageListener> stageListeners;
+    
     
     public void updatePropertyToClient(Data result) {
         
@@ -43,6 +47,8 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         // this.table.sendMessageToAll(result);
         table.sendMessageToSingleUser(userName, result);
     }
+    
+    
     
     /**
      * 相当于客户端拿来了新消息, 在做判断 TODO 这个方法应并进auto decide里
@@ -168,6 +174,8 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         
         // TODO TODO only for test, need remove when production
         // cards.clear();
+        cards.add(22);
+        
         
         this.handCards.initPlayerHandcards(cards);
         
@@ -400,6 +408,8 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                  * 然后该角色抽取你的一张手牌，最后你将暗置的牌归入手牌。
                  * 强化：该角色不能抽取你的一张手牌而是由你交给该角色一张手牌。
                  */
+                table.tableState = new TableState(c.game_state.started.somebody_is_m_greeding, new String[] { userName });
+                
                 if (isStrengthened) {
                     
                     /*
@@ -413,19 +423,26 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                     stateAction = c.action.choosing_from_another;
                     stateReason = c.reason.m_greeding;
                     stateInfo = new Data();
+                    stateInfo.setBoolean(c.param_key.is_strengthened, isStrengthened);
+                    
+                    
                     
                     Data d = new Data();
-                    d.setAction(c.action.choosing_from_another);
+                    d.setAction(c.action.choosing_from_another, stateReason);
                     String targetPlayerName = info.getStringArray(c.param_key.target_player_list)[0];
                     int targetHandcardAmount = table.players.getPlayerByPlayerName(targetPlayerName).handCards.getCardArray().length;
+                    d.setInteger(c.param_key.available_count, 2);
+                    d.setInteger(c.param_key.hand_card_count, targetHandcardAmount);
                     stateInfo.setString(c.param_key.server_internal.target_player_name, targetPlayerName);
-                    
+//                    table.sendPublicMessage(d, userName);
+                    this.updateToClient(d);
                     
                     
                     
                 } else {
                     this.stateAction = c.action.choosing_from_another;
                     this.stateReason = c.reason.m_greeding;
+                    stateInfo = new Data();
                     /*
                      * 两个人同时做的效果
                      * 发起人先设置state, reason什么的, 
@@ -434,7 +451,38 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                      * 都选完的话就互相得到牌.
                      * 有人超时了就帮他选
                      * 
-                    */}
+                     */
+                    
+                    String targetPlayerName = info.getStringArray(c.param_key.target_player_list)[0];
+                    int targetHandcardAmount = table.players.getPlayerByPlayerName(targetPlayerName).handCards.getCardArray().length;
+                    
+                    Data animi = new Data();
+                    animi.setAction(client_const.kActionUpdateDeckHandCard);
+                    animi.setInteger(c.param_key.hand_card_count, targetHandcardAmount);
+//                    table.sendPublicMessage(animi, userName);
+                    table.sendMessageToSingleUser(userName, animi);
+                    
+                    
+                    Data d = new Data();
+                    d.setAction(c.action.choosing_from_another, stateReason);
+                    d.setInteger(c.param_key.available_count, 2);
+                    d.setInteger(c.param_key.hand_card_count, targetHandcardAmount);
+                    stateInfo.setString(c.param_key.server_internal.target_player_name, targetPlayerName);
+                    this.updateToClient(d);
+                    d.setStringArray(c.param_key.target_player_list, new String[] { targetPlayerName });
+                    table.sendPublicMessage(d, userName);
+                    
+                    
+                    
+                    Player target = table.players.getPlayerByPlayerName(targetPlayerName);
+                    
+                    Data targetState = new Data();
+                    targetState.setInteger(c.param_key.hand_card_count, handCards.getCardArray().length);
+                    targetState.setInteger(c.param_key.available_count, 1);
+                    
+                    target.updateState(c.action.choosing_from_another, c.reason.m_greeded, targetState);
+                    
+                }
                 break;
             }
             case functioncon.m_Mislead: {
@@ -572,6 +620,23 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             table.waiter.waitForSingleChoosing(this, c.default_wait_time);
             table.sendPublicMessage(data, userName);
             this.updateToClient(data);
+        } else if (stateReason.equals(c.reason.m_greeded)) {
+            
+            
+            Data animi = new Data();
+            animi.setAction(client_const.kActionUpdateDeckHandCard);
+            animi.setInteger(c.param_key.hand_card_count, stateInfo.getInteger(c.param_key.hand_card_count));
+//            table.sendPublicMessage(animi, userName);
+            table.sendMessageToSingleUser(userName, animi);
+            
+            
+            Data d = new Data();
+            d.setAction(c.action.choosing_from_another, c.reason.m_greeded);
+            d.setInteger(c.param_key.hand_card_count, stateInfo.getInteger(c.param_key.hand_card_count));
+            d.setInteger(c.param_key.available_count, stateInfo.getInteger(c.param_key.available_count));
+            table.sendMessageToSingleUser(userName, d);
+            d.setStringArray(c.param_key.target_player_list, new String[] { userName });
+            table.sendPublicMessage(d, userName);
         }
     }
     
@@ -693,10 +758,62 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             colorResult(colorcon.red_client);
         }
         
+        
+        
         else if (this.stateAction.equals(c.action.free_play) && table.players.turnHolder.equals(this)) {
+            
             // TODO 弃牌
             godStrength = false;
             m_Fanaticismed = false;
+            this.startOrContinueTurnEnd();
+            
+            
+            
+        } else if (this.stateReason.equals(c.reason.turn_end)) {
+            int[] removeCandidates = new int[this.handCards.getCardArray().length - this.handCards.limit];
+            for (int i = 0; i < removeCandidates.length; i++) {
+                removeCandidates[i] = this.handCards.getCardArray()[i];
+            }
+            this.handCards.removeAll(removeCandidates, false);
+        }
+    }
+    
+    public void startOrContinueTurnEnd() {
+        
+        /*
+         * 如果本来就<=手牌上限则不弃任何牌. 否则不停的让玩家弃牌, 直到=手牌上限. 
+         */
+        this.stateAction = c.action.choosing_from_hand;
+        this.stateReason = c.reason.turn_end;
+        
+        table.tableState = new TableState(c.game_state.started.somebody_is_ending_turn, new String[] { userName });
+        if (this.handCards.getCardArray().length > this.handCards.limit) {
+            Data d = new Data();
+            d.setAction(c.action.choosing_from_hand, c.reason.turn_end);
+            d.addInteger(c.param_key.available_count, handCards.getCardArray().length - this.handCards.limit);
+            
+            table.sendPublicMessage(d, userName);
+            
+            d.addIntegerArray(c.param_key.id_list, u.intArrayMapping(this.handCards.getCardArray()));
+            table.sendMessageToSingleUser(userName, d);
+            
+        } else {
+            turnEnded();
+        }
+        
+        
+    }
+    
+    private void turnEnded() {
+        
+        Players players = table.players;
+        
+        players.turnHolder = players.getPlayerByIndex(players.getPlayerList().indexOf(this) + 1);
+        players.turnHolder.startTurn();
+        
+        
+        for (PlayerStageListener listener : stageListeners) {
+            listener.onTurnEnded();
         }
     }
     
@@ -797,4 +914,25 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         
     }
     
+    public interface PlayerStageListener {
+        void onTurnEnded();
+    }
+    
+    public int registerPlayerStageListener(PlayerStageListener listener) {
+        if (stageListeners == null) {
+            stageListeners = new ArrayList<PlayerStageListener>();
+        }
+        if (!stageListeners.contains(listener)) {
+            stageListeners.add(listener);
+        }
+        return stageListeners.indexOf(listener);
+    }
+    
+    public boolean unregisterPlayerStageListener(PlayerStageListener listener) {
+        if (stageListeners != null && stageListeners.contains(listener)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
