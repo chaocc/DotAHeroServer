@@ -17,7 +17,6 @@ import com.wolf.dotah.server.cmpnt.table.TableState;
 import com.wolf.dotah.server.cmpnt.table.schedule.Waiter;
 import com.wolf.dotah.server.layer.dao.CardParser;
 import com.wolf.dotah.server.util.c;
-import com.wolf.dotah.server.util.client_const;
 import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
@@ -299,17 +298,22 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
         int[] id = msg.getIntegerArray(c.param_key.id_list, new int[] {});
         l.logger().d(user, "table.getState().getState() :  " + tableState.getState());
         if (tableState.isEqualToState(c.game_state.not_started.cutting)) {
+            l.logger().d(tag, "cutting");
             this.addResultForShowing(user, id[0]);
         } else if (tableState.isEqualToState(c.game_state.started.somebody_attacking)) {
+            l.logger().d(tag, "somebody_attacking");
             playerUseCard(user, msg);
         } else if (tableState.isEqualToState(c.game_state.started.somebody_is_s_viper_raiding)) {
+            l.logger().d(tag, "somebody_is_s_viper_raiding");
             Player p = players.getPlayerByUserName(user);
             if (p.stateReason.equals(c.reason.s_viper_raided)) {
                 p.respondAsTarget(msg);
             }
         } else if (tableState.isEqualToState(c.game_state.started.somebody_s_LagunaingBlade)) {
+            l.logger().d(tag, "somebody_s_LagunaingBlade");
             playerUseCard(user, msg);
         } else if (tableState.isEqualToState(c.game_state.started.somebody_is_m_ElunesArrowing)) {
+            l.logger().d(tag, "somebody_is_m_ElunesArrowing");
             Player p = players.getPlayerByUserName(user);
             if (p.stateReason.equals(c.reason.m_ElunesArrowing)) {
                 String targetName = p.stateInfo.getStringArray(c.param_key.target_player_list)[0];
@@ -327,13 +331,15 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
                 targetPlayer.updateState(action, reason, p.stateInfo);
             } else if (p.stateReason.equals(c.reason.m_ElunesArrowed)) {
                 int card = msg.getIntegerArray(c.param_key.id_list)[0];
-                p.handCards.remove(card, false);
+                p.handCards.remove(card, false, c.reason.m_ElunesArrowed);
                 this.turnBackToTurnHolder(this.players.turnHolder.userName);
             }
         } else if (tableState.isEqualToState(c.game_state.started.somebody_is_m_Chakraing)) {
+            l.logger().d(tag, "somebody_is_m_Chakraing");
             int choseColorId = msg.getInteger(c.param_key.selected_color);
             players.turnHolder.colorResult(choseColorId);
         } else if (tableState.isEqualToState(c.game_state.started.somebody_is_m_greeding)) {
+            l.logger().d(tag, "somebody_is_m_greeding");
             /*
              * 如果强化了
              * 先选对方手牌
@@ -385,14 +391,14 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
                                 fetchResult[i] = target.handCards.getCards().get(cardIndex);
                             }
                             l.logger().d(tag, "fetchResult=" + u.printArray(fetchResult));
-                            target.handCards.removeAll(fetchResult, true);
+                            target.handCards.removeAll(fetchResult, true, c.reason.m_greeded);
                         }
                         
-                        Data lostAnimi = new Data();
-                        lostAnimi.setAction(client_const.lostCard);
+//                        Data lostAnimi = new Data();
+//                        lostAnimi.setAction(client_const.lostCard);
 //                        lostAnimi.setInteger(c.param_key.hand_card_count, fetchResult.length);
-                        lostAnimi.setIntegerArray(c.param_key.id_list, fetchResult);
-                        this.sendMessageToSingleUser(target.userName, lostAnimi);
+//                        lostAnimi.setIntegerArray(c.param_key.id_list, fetchResult);
+//                        this.sendMessageToSingleUser(target.userName, lostAnimi);
                         
                         
                         p.handCards.add(fetchResult, true);
@@ -416,20 +422,18 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
                         int cardIdWillDisappearFromTurnHolder = turnHolder_greedUser.handCards.getCards().get(
                                 indexWillDisappearFromTurnHolder);
                         l.logger().d(tag, "client chose cardId=" + cardIdWillDisappearFromTurnHolder);
-                        turnHolder_greedUser.handCards.remove(cardIdWillDisappearFromTurnHolder, true);
+                        turnHolder_greedUser.handCards.remove(cardIdWillDisappearFromTurnHolder, true, c.reason.m_greeded);
                         
                         
                         int[] lostArray = new int[] { cardIdWillDisappearFromTurnHolder };
-                        Data lostAnimi = new Data();
-                        lostAnimi.setAction(client_const.lostCard);
+//                        Data lostAnimi = new Data();
+//                        lostAnimi.setAction(client_const.lostCard);
 //                        lostAnimi.setInteger(c.param_key.hand_card_count, 1);
-                        lostAnimi.setIntegerArray(c.param_key.id_list, lostArray);
-                        this.sendMessageToSingleUser(turnHolder_greedUser.userName, lostAnimi);
+//                        lostAnimi.setIntegerArray(c.param_key.id_list, lostArray);
+//                        this.sendMessageToSingleUser(turnHolder_greedUser.userName, lostAnimi);
                         
                         
                         self_greedTarget.handCards.add(lostArray, true);
-                        
-                        
                         
                         if (turnHolderChoseIndexes != null && turnHolderChoseIndexes.length > 0) {
                             updateGreedResult();
@@ -457,19 +461,20 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
                         int cardIndex = fetchIndexes[i];
                         fetchResult[i] = target.handCards.getCards().get(cardIndex);
                     }
-                    target.handCards.removeAll(fetchResult, true);
+                    target.handCards.removeAll(fetchResult, true, c.reason.m_greeded);
                 }
                 p.handCards.add(fetchResult, true);
-                p.handCards.remove(choseResult, true);
+                p.handCards.remove(choseResult, true, c.reason.m_greeded);
                 target.handCards.add(new int[] { choseResult }, true);
                 
                 this.turnBackToTurnHolder(p.userName);
             }
             
         } else if (tableState.isEqualToState(c.game_state.started.somebody_is_ending_turn)) {
+            l.logger().d(tag, "somebody_is_ending_turn");
             int[] droppedCards = msg.getIntegerArray(c.param_key.id_list);
             l.logger().d(tag, "dropping cards=" + u.printArray(droppedCards));
-            players.turnHolder.handCards.removeAll(droppedCards, false);
+            players.turnHolder.handCards.removeAll(droppedCards, false, c.reason.turn_end);
             players.turnHolder.startOrContinueTurnEnd();
         }
         
@@ -543,7 +548,7 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
     }
     
     @Override
-    public void onHandCardsDropped(int[] droppedCards, String playerName, boolean sendPrivate) {
+    public void onHandCardsDropped(int[] droppedCards, String playerName, boolean sendPrivate, String reason) {
         
         Data obj = new Data();
         obj.setAction(c.action.update_hand_cards);

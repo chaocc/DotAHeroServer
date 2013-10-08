@@ -221,7 +221,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         
         int[] usedCards = info.getIntegerArray(c.param_key.id_list);
         // this.handCards.remove(cardId, true);
-        this.handCards.removeAll(usedCards, false);
+        this.handCards.removeAll(usedCards, false, null);
         
         
         
@@ -323,19 +323,19 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 Player targetPlayer = table.players.getPlayerByPlayerName(targetName);
                 l.logger().d(tag, "s_Lagunaing Blade targetName: " + targetName);
                 
-                PlayerHandCardsModel handcards = targetPlayer.handCards;
-                if (handcards.getCardArray().length < 4) {
-                    if (handcards.getCardArray().length < 2) {
+                PlayerHandCardsModel targetHandcards = targetPlayer.handCards;
+                if (targetHandcards.getCardArray().length < 4) {
+                    if (targetHandcards.getCardArray().length < 2) {
                         targetPlayer.property.hpDown(1, true);
                     }
                     
                     Data animiData = new Data();
                     animiData.setAction(client_const.kActionChoseCardToDrop);
-                    animiData.setInteger(c.param_key.hand_card_change_amount, handcards.getCardArray().length);
-                    animiData.setIntegerArray(c.param_key.id_list, u.intArrayMapping(handcards.getCardArray()));
+                    animiData.setInteger(c.param_key.hand_card_change_amount, targetHandcards.getCardArray().length);
+                    animiData.setIntegerArray(c.param_key.id_list, u.intArrayMapping(targetHandcards.getCardArray()));
                     table.sendPublicMessage(animiData, targetPlayer.userName);
                     
-                    handcards.removeAll(u.intArrayMapping(handcards.getCardArray()), true);
+                    targetHandcards.removeAll(u.intArrayMapping(targetHandcards.getCardArray()), true, c.reason.s_viper_raided);
                     this.turnToTurnHolder();
                 } else {
                     String action = c.action.choosing_from_hand;
@@ -508,11 +508,11 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         
         if (stateReason.equals(c.reason.s_viper_raided)) {
             int[] cardsToBeDrop = msg.getIntegerArray(c.param_key.id_list);
-            this.handCards.removeAll(cardsToBeDrop, false);
+            this.handCards.removeAll(cardsToBeDrop, false, c.reason.s_viper_raided);
             this.turnToTurnHolder();
         } else if (stateReason.equals(c.reason.m_ElunesArrowed)) {
             int[] cardsToBeDrop = msg.getIntegerArray(c.param_key.id_list);
-            this.handCards.removeAll(cardsToBeDrop, false);
+            this.handCards.removeAll(cardsToBeDrop, false, c.reason.s_LagunaBladed);
             this.turnToTurnHolder();
         }
     }
@@ -766,7 +766,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             for (int i = 0; i < removeCandidates.length; i++) {
                 removeCandidates[i] = this.handCards.getCardArray()[i];
             }
-            this.handCards.removeAll(removeCandidates, false);
+            this.handCards.removeAll(removeCandidates, false, c.reason.turn_end);
         } else if (this.stateAction.equals(c.action.free_play) && table.players.turnHolder.equals(this)) {
             
             // TODO 弃牌
@@ -879,15 +879,20 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     @Override
-    public void onHandCardsDropped(int[] droppedCards, String playerName, boolean updateToClient) {
+    public void onHandCardsDropped(int[] droppedCards, String playerName, boolean updateToClient, String reason) {
         
         if (updateToClient && !this.isAi()) {
             Data obj = new Data();
             obj.setAction(c.action.update_hand_cards);// kActionUpdatePlayerHand,
                                                       // 2003
+            if (reason != null) {
+                obj.setString(c.param_key.reason, reason);
+            }
             obj.setIntegerArray(c.param_key.id_list, droppedCards);
             this.updateToClient(obj);
         }
+        
+        
     }
     
     @Override

@@ -87,7 +87,7 @@ public class PlayerHandCardsModel {
         this.cards = cards;
     }
     
-    public void remove(int card, boolean sendPrivate) {
+    public void remove(int card, boolean sendPrivate, String reason) {
         
         // int origin_size = cards.size();
         l.logger().d("[HandCards, " + player.userName + "] ", "removing card=" + card + " from=" + this.getCards());
@@ -112,11 +112,11 @@ public class PlayerHandCardsModel {
         // player.userName);
         // player.table.sendPublicMessage(data, player.userName);
         for (HandCardsChangeListener listener : changeListeners) {
-            listener.onHandCardsDropped(new int[] { card }, player.userName, sendPrivate);
+            listener.onHandCardsDropped(new int[] { card }, player.userName, sendPrivate, reason);
         }
     }
     
-    public void removeAll(int[] usedCards, boolean sendPrivate) {
+    public void removeAll(int[] usedCards, boolean sendPrivate, String reason) {
         
         // int origin_size = cards.size();
         
@@ -125,7 +125,7 @@ public class PlayerHandCardsModel {
         }
         
         for (HandCardsChangeListener listener : changeListeners) {
-            listener.onHandCardsDropped(usedCards, player.userName, sendPrivate);
+            listener.onHandCardsDropped(usedCards, player.userName, sendPrivate, reason);
         }
     }
     
@@ -219,7 +219,7 @@ public class PlayerHandCardsModel {
     public interface HandCardsChangeListener {
         public void onHandCardsAdded(int[] newCards, String playerName, boolean sendPrivate);
         
-        public void onHandCardsDropped(int[] droppedCards, String playerName, boolean sendPrivate);
+        public void onHandCardsDropped(int[] droppedCards, String playerName, boolean sendPrivate, String reason);
     }
     
     public void registerHandcardChangeListener(HandCardsChangeListener input) {

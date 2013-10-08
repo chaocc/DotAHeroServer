@@ -175,7 +175,7 @@ public interface c {
             
             int free_playing                 = 3;
             int deciding                     = 4;
-            int somebody_is_ending_turn      = 5;
+            int somebody_is_ending_turn      = 7;
             
             int somebody_attacking           = 10;
             int somebody_s_LagunaingBlade    = 11;

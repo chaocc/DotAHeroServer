@@ -53,7 +53,7 @@ public class CutCard implements ScheduledCallback {
             l.logger().d(tag, "cutCards, " + cutCards.toString());
             int card = cutCards.get(p.userName);
             cards.add(card);
-            p.handCards.remove(card, false);
+            p.handCards.remove(card, false, null);
         }
         
         //TODO 先拼点, 
