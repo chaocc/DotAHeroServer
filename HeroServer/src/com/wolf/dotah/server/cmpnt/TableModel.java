@@ -352,19 +352,32 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
             if (p.stateAction.equals(c.action.choosing_from_another)) {
                 boolean strengthened = p.stateInfo.getBoolean(c.param_key.is_strengthened, false);
                 if (strengthened) {
+                    l.logger().d(user, "strengthened greeding, 1st, choosing from another");
                     p.stateAction = c.action.choosing_from_hand;
                     
+                    //先暂存起来, 实际的更新在下边了
                     boolean equip = msg.getBoolean(c.param_key.is_equip, false);
                     int[] choseResult = msg.getIntegerArray(c.param_key.index_list);
                     p.stateInfo.addIntegerArray(c.param_key.index_list, choseResult);
                     p.stateInfo.addBoolean(c.param_key.is_equip, equip);
+                    
+                    
                     
                     Data chooseFromSelfToGive = new Data();
                     chooseFromSelfToGive.setAction(c.action.choosing_from_hand, c.reason.m_greeding);
                     chooseFromSelfToGive.setIntegerArray(c.param_key.available_id_list, u.intArrayMapping(p.handCards.getCardArray()));
                     chooseFromSelfToGive.setInteger(c.param_key.available_count, 1);
                     
+//                    this.sendPublicMessage(chooseFromSelfToGive, p.userName);
+                    this.sendMessageToSingleUser(p.userName, chooseFromSelfToGive);
+                    
+                    
+                    chooseFromSelfToGive = new Data();
+                    chooseFromSelfToGive.setAction(c.action.choosing_from_hand, c.reason.m_greeding);
+                    chooseFromSelfToGive.setInteger(c.param_key.hand_card_count, p.handCards.getCardArray().length);
+                    chooseFromSelfToGive.setInteger(c.param_key.available_count, 1);
                     this.sendPublicMessage(chooseFromSelfToGive, p.userName);
+                    
                 } else {
                     if (user.equals(players.turnHolder.userName)) {
                         boolean isEquip = msg.getBoolean(c.param_key.is_equip, false);
@@ -385,12 +398,11 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
                             this.sendPublicMessage(targetData, target.userName);
                             
                         } else {
-                            l.logger().d(user, "choosing indexes=" + u.printArray(fetchResult) + ", from=" + target.handCards.getCards());
                             for (int i = 0; i < indexesWillDisappearFromTarget.length; i++) {
                                 int cardIndex = indexesWillDisappearFromTarget[i];
                                 fetchResult[i] = target.handCards.getCards().get(cardIndex);
                             }
-                            l.logger().d(tag, "fetchResult=" + u.printArray(fetchResult));
+                            l.logger().d(tag, "fetchResult=" + u.printArray(fetchResult) + ", from=" + target.handCards.getCards());
                             target.handCards.removeAll(fetchResult, true, c.reason.m_greeded);
                         }
                         
@@ -441,6 +453,7 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
                     }
                 }
             } else if (p.stateAction.equals(c.action.choosing_from_hand) && p.stateInfo.getBoolean(c.param_key.is_strengthened, false)) {
+                l.logger().d(user, "strengthened greeding, 2nd, choosing from self hand card");
                 int choseResult = msg.getIntegerArray(c.param_key.id_list)[0];
                 Player target = players.getPlayerByPlayerName(p.stateInfo.getString(c.param_key.server_internal.target_player_name));
                 int[] fetchIndexes = p.stateInfo.getIntegerArray(c.param_key.index_list);
@@ -456,13 +469,14 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
                     targetData.setIntegerArray(c.param_key.id_list, fetchResult);
                     this.sendPublicMessage(targetData, target.userName);
                 } else {
-                    //                                            targetData.setAction(c.a);
+                    // targetData.setAction(c.a);
                     for (int i = 0; i < fetchIndexes.length; i++) {
                         int cardIndex = fetchIndexes[i];
                         fetchResult[i] = target.handCards.getCards().get(cardIndex);
                     }
                     target.handCards.removeAll(fetchResult, true, c.reason.m_greeded);
                 }
+                l.logger().d(user, "strengthened greeding, 2nd, choose result = "+u.printArray(fetchResult));
                 p.handCards.add(fetchResult, true);
                 p.handCards.remove(choseResult, true, c.reason.m_greeded);
                 target.handCards.add(new int[] { choseResult }, true);

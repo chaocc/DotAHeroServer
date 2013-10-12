@@ -15,6 +15,7 @@ import com.wolf.dotah.server.util.u;
 public class PlayerHandCardsModel {
     
     private List<HandCardsChangeListener> changeListeners;
+    final String                          tag = PlayerHandCardsModel.class.getSimpleName();
     
     public PlayerHandCardsModel(Player p, int handcardLimit) {
         
@@ -119,7 +120,7 @@ public class PlayerHandCardsModel {
     public void removeAll(int[] usedCards, boolean sendPrivate, String reason) {
         
         // int origin_size = cards.size();
-        
+        l.logger().d(tag, "removeAll, removing cards=" + u.printArray(usedCards) + " from " + this.getCards());
         for (int usedCard : usedCards) {
             this.getCards().remove(this.getCards().indexOf(usedCard));
         }

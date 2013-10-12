@@ -426,11 +426,20 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                     stateInfo.setBoolean(c.param_key.is_strengthened, isStrengthened);
                     
                     
+
+                    String targetPlayerName = info.getStringArray(c.param_key.target_player_list)[0];
+                    int targetHandcardAmount = table.players.getPlayerByPlayerName(targetPlayerName).handCards.getCardArray().length;
+                    
+                    
+                    Data animi = new Data();
+                    animi.setAction(client_const.kActionUpdateDeckHandCard);
+                    animi.setInteger(c.param_key.hand_card_count, targetHandcardAmount);
+//                    table.sendPublicMessage(animi, userName);
+                    table.sendMessageToSingleUser(userName, animi);
+                    
                     
                     Data d = new Data();
                     d.setAction(c.action.choosing_from_another, stateReason);
-                    String targetPlayerName = info.getStringArray(c.param_key.target_player_list)[0];
-                    int targetHandcardAmount = table.players.getPlayerByPlayerName(targetPlayerName).handCards.getCardArray().length;
                     d.setInteger(c.param_key.available_count, 2);
                     d.setInteger(c.param_key.hand_card_count, targetHandcardAmount);
                     stateInfo.setString(c.param_key.server_internal.target_player_name, targetPlayerName);
@@ -469,7 +478,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                     d.setInteger(c.param_key.hand_card_count, targetHandcardAmount);
                     stateInfo.setString(c.param_key.server_internal.target_player_name, targetPlayerName);
                     this.updateToClient(d);
-                    d.setStringArray(c.param_key.target_player_list, new String[] { targetPlayerName });
+//                    d.setStringArray(c.param_key.target_player_list, new String[] { targetPlayerName });
                     table.sendPublicMessage(d, userName);
                     
                     
@@ -634,7 +643,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             d.setInteger(c.param_key.hand_card_count, stateInfo.getInteger(c.param_key.hand_card_count));
             d.setInteger(c.param_key.available_count, stateInfo.getInteger(c.param_key.available_count));
             table.sendMessageToSingleUser(userName, d);
-            d.setStringArray(c.param_key.target_player_list, new String[] { userName });
+//            d.setStringArray(c.param_key.target_player_list, new String[] { userName });
             table.sendPublicMessage(d, userName);
         }
     }
@@ -713,6 +722,11 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         this.stateAction = c.action.none;
     }
     
+    public void cancel(boolean clearPreviousStateReason) {
+        this.stateReason = c.reason.none;
+        cancel();
+    }
+    
     public void cancel() {
         
         table.cancelScheduledExecution();
@@ -761,13 +775,14 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         
         
         
-        else if (this.stateReason.equals(c.reason.turn_end)) {
-            int[] removeCandidates = new int[this.handCards.getCardArray().length - this.handCards.limit];
-            for (int i = 0; i < removeCandidates.length; i++) {
-                removeCandidates[i] = this.handCards.getCardArray()[i];
-            }
-            this.handCards.removeAll(removeCandidates, false, c.reason.turn_end);
-        } else if (this.stateAction.equals(c.action.free_play) && table.players.turnHolder.equals(this)) {
+//        else if (this.stateReason.equals(c.reason.turn_end)) {
+//            int[] removeCandidates = new int[this.handCards.getCardArray().length - this.handCards.limit];
+//            for (int i = 0; i < removeCandidates.length; i++) {
+//                removeCandidates[i] = this.handCards.getCardArray()[i];
+//            }
+//            this.handCards.removeAll(removeCandidates, false, c.reason.turn_end);
+//        } 
+        else if (this.stateAction.equals(c.action.free_play) && table.players.turnHolder.equals(this)) {
             
             // TODO 弃牌
             godStrength = false;
@@ -778,7 +793,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void startOrContinueTurnEnd() {
-        
+        l.logger().d(tag, "startOrContinueTurnEnd");
         /*
          * 如果本来就<=手牌上限则不弃任何牌. 否则不停的让玩家弃牌, 直到=手牌上限. 
          */
@@ -807,13 +822,19 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     private void turnEnded() {
         
         Players players = table.players;
+        int nextPlayerIndex = players.getPlayerList().indexOf(this) + 1;
+        if (nextPlayerIndex >= players.getCount()) {
+            nextPlayerIndex = 0;
+        }
         
-        players.turnHolder = players.getPlayerByIndex(players.getPlayerList().indexOf(this) + 1);
+        
+        players.turnHolder = players.getPlayerByIndex(nextPlayerIndex);
         players.turnHolder.startTurn();
         
-        
-        for (PlayerStageListener listener : stageListeners) {
-            listener.onTurnEnded();
+        if (stageListeners != null) {
+            for (PlayerStageListener listener : stageListeners) {
+                listener.onTurnEnded();
+            }
         }
     }
     

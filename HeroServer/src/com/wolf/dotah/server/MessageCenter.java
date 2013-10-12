@@ -1,10 +1,12 @@
 package com.wolf.dotah.server;
 
 import java.util.Collection;
+
 import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.electrotank.electroserver5.extensions.api.value.UserValue;
 import com.wolf.dotah.server.cmpnt.Data;
+import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.cmpnt.TableModel;
 import com.wolf.dotah.server.cmpnt.table.Players;
 import com.wolf.dotah.server.util.c;
@@ -141,17 +143,39 @@ public class MessageCenter {
             table.choseCard(user, msg);
         } else if (client_const.kActionChoseCardToGet == client_message) {
             table.cancelScheduledExecution();
-            this.sendPublicMessage(msg, user);
+            EsObject newMsg = hideInfo(msg, user);
+            this.sendPublicMessage(newMsg, user);
             table.choseCard(user, msg);
         } else if (client_const.kActionDiscard == client_message) {
             table.cancelScheduledExecution();
             this.sendPublicMessage(msg, user);
 //            table.choseCard(user, msg);
-            table.players.getPlayerByPlayerName(user).cancel();
+            table.players.getPlayerByPlayerName(user).cancel(true);
+        } else if (client_const.kActionChoseCardToGive == client_message) {
+            table.cancelScheduledExecution();
+            EsObject newMsg = hideInfo(msg, user);
+            this.sendPublicMessage(newMsg, user);
+            table.choseCard(user, msg);
         }
         
         
         
+    }
+    
+    private EsObject hideInfo(EsObject msg, String user) {
+        
+        if (table.tableState.isEqualToState(c.game_state.started.somebody_is_m_greeding)) {
+            int[] choseIdArray = msg.getIntegerArray(c.param_key.id_list, new int[] { -1 });
+            Player p = table.players.turnHolder;
+            if (choseIdArray[0] != -1 && p.userName.equals(user) && p.stateInfo.getBoolean(c.param_key.is_strengthened, false)) {
+                Data data = new Data();
+                data.addAll(msg);
+                data.removeVariable(c.param_key.id_list);
+                data.setInteger(c.param_key.server_internal.how_many, choseIdArray.length);
+                return data;
+            }
+        }
+        return msg;
     }
     
     final String tag = "===>> MessageDispatcher ==>>  ";
