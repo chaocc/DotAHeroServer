@@ -2,7 +2,6 @@ package com.wolf.dotah.server.cmpnt;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.electrotank.electroserver5.extensions.api.value.EsObject;
 import com.wolf.dotah.server.cmpnt.cardandskill.Card;
 import com.wolf.dotah.server.cmpnt.cardandskill.card_const;
@@ -10,6 +9,7 @@ import com.wolf.dotah.server.cmpnt.cardandskill.card_const.colorcon;
 import com.wolf.dotah.server.cmpnt.cardandskill.card_const.functioncon;
 import com.wolf.dotah.server.cmpnt.player.Ai;
 import com.wolf.dotah.server.cmpnt.player.HeroInfo;
+import com.wolf.dotah.server.cmpnt.player.PlayerEquipments.EquipChangeListener;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel;
 import com.wolf.dotah.server.cmpnt.player.PlayerHandCardsModel.HandCardsChangeListener;
 import com.wolf.dotah.server.cmpnt.player.PlayerProperty;
@@ -24,24 +24,24 @@ import com.wolf.dotah.server.util.l;
 import com.wolf.dotah.server.util.u;
 
 //TODO 在写个on targeted listener, 
-public class Player implements HandCardsChangeListener, PlayerPropertyChangedListener {
+public class Player implements HandCardsChangeListener, PlayerPropertyChangedListener, EquipChangeListener {
     
-    private String                    tag                   = "Player ==>> ";
-    public String                     stateAction;
-    public String                     stateReason           = c.reason.none;
-    public boolean                    godStrength           = false;
-    public boolean                    m_Fanaticismed        = false;
-    public int                        used_how_many_attacks = 0;
-    public Data                       stateInfo;
-    public PlayerProperty             property;                              // player
-                                                                              // 属性的状态
-    public PlayerHandCardsModel       handCards;
-    public TableModel                 table;
+    private String tag = "Player ==>> ";
+    public String stateAction;
+    public String stateReason = c.reason.none;
+    public boolean godStrength = false;
+    public boolean m_Fanaticismed = false;
+    public int used_how_many_attacks = 0;
+    public Data stateInfo;
+    public PlayerProperty property; // player
+                                    // 属性的状态
+    public PlayerHandCardsModel handCards;
+    public TableModel table;
     private List<PlayerStageListener> stageListeners;
     
     
     public void updatePropertyToClient(Data result) {
-        
+    
         result.addString(c.param_key.player_name, userName);
         result.setAction(c.action.update_player_property);
         // this.table.sendMessageToAll(result);
@@ -49,12 +49,11 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     
-    
     /**
      * 相当于客户端拿来了新消息, 在做判断 TODO 这个方法应并进auto decide里
      */
     public void performAiAction(String fromParamKey) {
-        
+    
         if (stateAction.equals(c.playercon.state.choosing.choosing_hero)) {
             int[] pickResult = stateInfo.getIntegerArray(c.playercon.state.param_key.general.id_list, new int[] {});
             int heroId = ai.chooseSingle(pickResult);
@@ -67,7 +66,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void performSimplestChoice() {
-        
+    
         if (table.tableState.getState() == c.game_state.not_started.cutting) {// cutting
             int id = this.handCards.getCards().get(0);
             
@@ -87,7 +86,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
      * TODO 要并到choose from showing里
      */
     public void pickedHero(EsObject msg) {
-        
+    
         l.logger().d(tag, "picking hero, stateAction = " + stateAction);
         if (stateAction.equals(c.playercon.state.choosing.choosing_hero)) {
             int[] pickResult = msg.getIntegerArray(c.param_key.id_list, new int[] {});
@@ -97,7 +96,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     private void initPropertyWithHeroId(int heroId) {
-        
+    
         HeroInfo heroInfo = HeroParser.getParser().getHeroInfoById(heroId);
         property = new PlayerProperty(heroInfo, this);
         handCards = new PlayerHandCardsModel(this, heroInfo.getHandcardLimit());
@@ -121,17 +120,18 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             }
             updateToClient(msg);
         }
+        property.equips.registerEquipChangeListener(this);
     }
     
     public void updateToClient(Data msg) {
-        
+    
         l.logger().d(tag, "updateToClient, stateInfo=");
         table.sendMessageToSingleUser(userName, msg);
         
     }
     
     public void sendPrivateMessage(String string_action) {
-        
+    
         Data data = new Data();
         data.setAction(string_action);
         addPrivateData(data, string_action);
@@ -140,7 +140,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     // TODO should deprecate, no need 不需要使用类似的操作
     private void addPrivateData(Data data, String string_action) {
-        
+    
         if (c.action.choosing_from_hand.equals(string_action)) {
             List<Integer> cardList = this.handCards.getCards();
             int[] cardArray = u.intArrayMapping(cardList.toArray(new Integer[] {}));
@@ -150,7 +150,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void cutting() {
-        
+    
         stateAction = c.action.choosing_from_hand;
         if (ai != null && ai.isAi()) {
             performAiAction(c.param_key.id_list);
@@ -160,7 +160,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public int[] getAvailableHandCards() {
-        
+    
         debug(tag, "getAvailableHandCards()");
         // TODO 判断哪些available
         /*
@@ -171,7 +171,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void initHandCards(List<Integer> cards) {
-        
+    
         // TODO TODO only for test, need remove when production
         // cards.clear();
         cards.add(22);
@@ -182,23 +182,23 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public Player(String name, TableModel inputTable) {
-        
+    
         this.table = inputTable;
         this.userName = name;
         this.tag += name + ", ";
     }
     
     public String userName;
-    public Ai     ai;
+    public Ai ai;
     
     public boolean isAi() {
-        
+    
         if (ai == null) { return false; }
         return ai.isAi();
     }
     
     private void debug(String tag, String log) {
-        
+    
         if (table != null) {
             l.logger().d(tag, log);
         }
@@ -206,7 +206,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     @Override
     public String toString() {
-        
+    
         return "Player [userName=" + userName + "]";
     }
     
@@ -216,13 +216,17 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void useCard(EsObject info, int functionId) {
-        
+    
         l.logger().d(tag, "using card with function " + functionId);
         
         int[] usedCards = info.getIntegerArray(c.param_key.id_list);
         // this.handCards.remove(cardId, true);
         this.handCards.removeAll(usedCards, false, null);
         
+        if (usedCards.length == 1 && isEquipment(usedCards[0]) && noTarget(info)) {
+            euip(usedCards[0]);
+            return;
+        }
         
         
         // 驱散要在这之前
@@ -376,6 +380,30 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                  * 选择目标角色装备区里的一张装备牌弃置。
                  * 强化：你将目标角色装备区里的装备牌收为自己的手牌。
                  */
+                int equipId = -1;
+                String target = "";
+                
+                int[] equipArray = info.getIntegerArray(c.param_key.id_list, new int[] {});
+                if (equipArray.length == 1) {
+                    equipId = equipArray[0];
+                } else {
+                    l.logger().d(tag, "m_Disarm, invalid equip id, equipArray=" + u.printArray(equipArray));
+                    this.turnToTurnHolder();
+                }
+                String[] targetArray = info.getStringArray(c.param_key.target_player_list, new String[] {});
+                if (targetArray.length == 1) {
+                    target = targetArray[0];
+                } else {
+                    l.logger().d(tag, "m_Disarm, invalid target, targetArray=" + u.printArray(targetArray));
+                    this.turnToTurnHolder();
+                }
+                
+                table.players.getPlayerByPlayerName(target).property.equips.removeEquip(CardParser.getParser().getCardById(equipId));
+                if(isStrengthened){
+                    this.getCardFromTarget(equipId, target);
+                }
+                this.turnToTurnHolder();
+                
                 break;
             }
             case functioncon.m_ElunesArrow: {
@@ -393,6 +421,12 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                  * 强化效果：按行动顺序进行分配，其中一名角色获得两张牌，
                  * 另一名角色不能获得牌，其他角色各获得一张。
                  */
+                
+                
+                
+                
+                
+                
                 break;
             }
             case functioncon.m_Fanaticism: {
@@ -426,7 +460,6 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                     stateInfo.setBoolean(c.param_key.is_strengthened, isStrengthened);
                     
                     
-
                     String targetPlayerName = info.getStringArray(c.param_key.target_player_list)[0];
                     int targetHandcardAmount = table.players.getPlayerByPlayerName(targetPlayerName).handCards.getCardArray().length;
                     
@@ -434,7 +467,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                     Data animi = new Data();
                     animi.setAction(client_const.kActionUpdateDeckHandCard);
                     animi.setInteger(c.param_key.hand_card_count, targetHandcardAmount);
-//                    table.sendPublicMessage(animi, userName);
+                    //                    table.sendPublicMessage(animi, userName);
                     table.sendMessageToSingleUser(userName, animi);
                     
                     
@@ -443,9 +476,8 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                     d.setInteger(c.param_key.available_count, 2);
                     d.setInteger(c.param_key.hand_card_count, targetHandcardAmount);
                     stateInfo.setString(c.param_key.server_internal.target_player_name, targetPlayerName);
-//                    table.sendPublicMessage(d, userName);
+                    //                    table.sendPublicMessage(d, userName);
                     this.updateToClient(d);
-                    
                     
                     
                 } else {
@@ -468,7 +500,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                     Data animi = new Data();
                     animi.setAction(client_const.kActionUpdateDeckHandCard);
                     animi.setInteger(c.param_key.hand_card_count, targetHandcardAmount);
-//                    table.sendPublicMessage(animi, userName);
+                    //                    table.sendPublicMessage(animi, userName);
                     table.sendMessageToSingleUser(userName, animi);
                     
                     
@@ -478,9 +510,8 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                     d.setInteger(c.param_key.hand_card_count, targetHandcardAmount);
                     stateInfo.setString(c.param_key.server_internal.target_player_name, targetPlayerName);
                     this.updateToClient(d);
-//                    d.setStringArray(c.param_key.target_player_list, new String[] { targetPlayerName });
+                    //                    d.setStringArray(c.param_key.target_player_list, new String[] { targetPlayerName });
                     table.sendPublicMessage(d, userName);
-                    
                     
                     
                     Player target = table.players.getPlayerByPlayerName(targetPlayerName);
@@ -512,9 +543,56 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         }
     }
     
+    private void getCardFromTarget(int equipId, String target) {
+    
+        //TODO 考虑是否要播放动画
+        this.handCards.add(new int[]{equipId}, true);
+    }
+
+
+    private boolean noTarget(EsObject info) {
+    
+        String[] targets = info.getStringArray(c.param_key.target_player_list, new String[] {});
+        if (targets.length == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    
+    private void euip(int i) {
+    
+        Card card = CardParser.getParser().getCardById(i);
+        if (card.getType() == 'e') {
+            this.property.equips.setArmor(card);
+        } else if (card.getType() == 'w' || card.getType() == 'd') {
+            property.equips.setWeapon(card);
+        }
+        
+        
+        // TODO 更新equip 相关的属性
+        
+        
+        this.turnToTurnHolder();
+        
+        
+    }
+    
+    private boolean isEquipment(int i) {
+    
+        boolean isStageFreePlay = this.stateAction.equals(c.action.free_play);
+        Card card = CardParser.getParser().getCardById(i);
+        boolean euipable = card.isEquipable();
+        l.logger().d(tag, "checking isEquipment euipable=" + euipable + ", stateAction=" + stateAction);
+        return isStageFreePlay && euipable;
+        
+    }
+    
+    
     // TODO 思考是用chose更好, 还是用respond as target更好, 或者改成chain的某个阶段之类的?
     public void respondAsTarget(EsObject msg) {
-        
+    
         if (stateReason.equals(c.reason.s_viper_raided)) {
             int[] cardsToBeDrop = msg.getIntegerArray(c.param_key.id_list);
             this.handCards.removeAll(cardsToBeDrop, false, c.reason.s_viper_raided);
@@ -527,7 +605,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void updateState(String state, String reason, EsObject inputState) {
-        
+    
         this.stateAction = state;
         this.stateReason = reason;
         this.stateInfo.addAll(inputState);
@@ -536,8 +614,8 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
          */
         l.logger().d(tag, "stateAction=" + stateAction + "stateAction, stateReason=" + stateReason);
         if (stateReason.equals(c.reason.normal_attacked)
-                || stateReason.equals(c.reason.chaos_attacked)
-                || stateReason.equals(c.reason.flame_attacked)
+            || stateReason.equals(c.reason.chaos_attacked)
+            || stateReason.equals(c.reason.flame_attacked)
         
         ) {
             l.logger().d(tag + this.userName, "under attacking");
@@ -634,7 +712,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             Data animi = new Data();
             animi.setAction(client_const.kActionUpdateDeckHandCard);
             animi.setInteger(c.param_key.hand_card_count, stateInfo.getInteger(c.param_key.hand_card_count));
-//            table.sendPublicMessage(animi, userName);
+            //            table.sendPublicMessage(animi, userName);
             table.sendMessageToSingleUser(userName, animi);
             
             
@@ -643,12 +721,13 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             d.setInteger(c.param_key.hand_card_count, stateInfo.getInteger(c.param_key.hand_card_count));
             d.setInteger(c.param_key.available_count, stateInfo.getInteger(c.param_key.available_count));
             table.sendMessageToSingleUser(userName, d);
-//            d.setStringArray(c.param_key.target_player_list, new String[] { userName });
+            //            d.setStringArray(c.param_key.target_player_list, new String[] { userName });
             table.sendPublicMessage(d, userName);
         }
     }
     
     public void startTurn() {
+    
         used_how_many_attacks = 0;
         this.drawHandCards(2);
         this.freePlay(this.isAi());
@@ -656,7 +735,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     private void freePlay(boolean ai) {
-        
+    
         this.stateAction = c.action.free_play;
         
         
@@ -683,7 +762,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     private void drawHandCards(int i) {
-        
+    
         List<Integer> cards = table.drawCardsFromDeck(i);
         
         Data animi = new Data();
@@ -696,7 +775,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void autoDecise() {
-        
+    
         l.logger().d(tag, "autoDecise, stateAction=" + stateAction + ", stateReason=" + stateReason);
         if (stateAction.equals(c.action.choosing_from_hand)) {
             if (this.isAi()) {
@@ -723,12 +802,13 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void cancel(boolean clearPreviousStateReason) {
+    
         this.stateReason = c.reason.none;
         cancel();
     }
     
     public void cancel() {
-        
+    
         table.cancelScheduledExecution();
         
         l.logger().d(tag, "[cancel] stateAction=" + this.stateAction + ", stateReason=" + stateReason);
@@ -774,14 +854,13 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         }
         
         
-        
-//        else if (this.stateReason.equals(c.reason.turn_end)) {
-//            int[] removeCandidates = new int[this.handCards.getCardArray().length - this.handCards.limit];
-//            for (int i = 0; i < removeCandidates.length; i++) {
-//                removeCandidates[i] = this.handCards.getCardArray()[i];
-//            }
-//            this.handCards.removeAll(removeCandidates, false, c.reason.turn_end);
-//        } 
+        //        else if (this.stateReason.equals(c.reason.turn_end)) {
+        //            int[] removeCandidates = new int[this.handCards.getCardArray().length - this.handCards.limit];
+        //            for (int i = 0; i < removeCandidates.length; i++) {
+        //                removeCandidates[i] = this.handCards.getCardArray()[i];
+        //            }
+        //            this.handCards.removeAll(removeCandidates, false, c.reason.turn_end);
+        //        } 
         else if (this.stateAction.equals(c.action.free_play) && table.players.turnHolder.equals(this)) {
             
             // TODO 弃牌
@@ -793,6 +872,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void startOrContinueTurnEnd() {
+    
         l.logger().d(tag, "startOrContinueTurnEnd");
         /*
          * 如果本来就<=手牌上限则不弃任何牌. 否则不停的让玩家弃牌, 直到=手牌上限. 
@@ -820,7 +900,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     private void turnEnded() {
-        
+    
         Players players = table.players;
         int nextPlayerIndex = players.getPlayerList().indexOf(this) + 1;
         if (nextPlayerIndex >= players.getCount()) {
@@ -839,6 +919,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public void colorResult(int choseResult) {
+    
         if (this.stateReason.equals(c.reason.m_Chakraing)) {
             int realCardId = stateInfo.getInteger(c.param_key.id);
             Card card = CardParser.getParser().getCardById(realCardId);
@@ -873,6 +954,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     private void showCoveredCard(int realCardId) {
+    
         // TODO drop stack . add realCardId
         // table.deck
         Data data = new Data();
@@ -882,14 +964,14 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     private void turnToTurnHolder() {
-        
+    
         table.turnBackToTurnHolder(userName);
         
     }
     
     @Override
     public void onHandCardsAdded(int[] newCards, String playerName, boolean updateToClient) {
-        
+    
         if (updateToClient && !this.isAi()) {
             Data obj = new Data();
             obj.setAction(c.action.update_hand_cards);// kActionUpdatePlayerHand,
@@ -901,7 +983,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     @Override
     public void onHandCardsDropped(int[] droppedCards, String playerName, boolean updateToClient, String reason) {
-        
+    
         if (updateToClient && !this.isAi()) {
             Data obj = new Data();
             obj.setAction(c.action.update_hand_cards);// kActionUpdatePlayerHand,
@@ -918,7 +1000,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     @Override
     public void onHpChanged(String playerName, int amount) {
-        
+    
         // Data data = new Data();
         // data.addInteger(c.param_key.hp_changed, amount);
         // this.updatePropertyToClient(data);
@@ -927,7 +1009,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     @Override
     public void onSpChanged(String playerName, int amount) {
-        
+    
         //
         // Data data = new Data();
         // data.addInteger(c.param_key.sp_changed, amount);
@@ -937,7 +1019,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     
     @Override
     public void onEquipChanged(String playerName) {
-        
+    
     }
     
     public interface PlayerStageListener {
@@ -945,6 +1027,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public int registerPlayerStageListener(PlayerStageListener listener) {
+    
         if (stageListeners == null) {
             stageListeners = new ArrayList<PlayerStageListener>();
         }
@@ -955,10 +1038,33 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     }
     
     public boolean unregisterPlayerStageListener(PlayerStageListener listener) {
+    
         if (stageListeners != null && stageListeners.contains(listener)) {
             return true;
         } else {
             return false;
         }
+    }
+    
+    
+    @Override
+    public void onWeaponChanged(Card weapon, boolean directionRemove) {
+    
+        Data d = new Data();
+        d.setAction(client_const.kActionPlayerUpdateEquipment);
+        d.setIntegerArray(c.param_key.id_list, new int[] { weapon.getId() });
+        table.sendPublicMessage(d, userName);
+        
+    }
+    
+    
+    @Override
+    public void onArmorChanged(Card armor, boolean directionRemove) {
+    
+        Data d = new Data();
+        d.setAction(client_const.kActionPlayerUpdateEquipment);
+        d.setIntegerArray(c.param_key.id_list, new int[] { armor.getId() });
+        table.sendPublicMessage(d, userName);
+        
     }
 }

@@ -108,7 +108,7 @@ public class u {
         return result;
     }
     
-    public static String printArray(Integer[] choosingCards) {
+    public static String printArray(Object[] choosingCards) {
         
         String result = Arrays.toString(choosingCards);
         // MessageDispatcher.getDispatcher(null).debug(tag, "printArray: " +

@@ -12,7 +12,7 @@ public class PlayerProperty {
     int sp;
     final int hpLimit;
     final int spLimit;
-    PlayerEquipments equips;
+    public PlayerEquipments equips;
     String force;
     
     Player player;
