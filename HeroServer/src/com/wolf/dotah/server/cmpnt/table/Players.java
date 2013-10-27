@@ -163,6 +163,14 @@ public class Players {
         
     }
     
+    public boolean somebodyHasDispell() {
+    
+        for (Player p : playerList) {
+            if (p.handCards.hasDispell()) { return true; }
+        }
+        return false;
+    }
+    
     //    @Override
     //    public String toString() {
     //    

@@ -228,13 +228,35 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             return;
         }
         
-        
-        // 驱散要在这之前
+
         boolean isStrengthened = info.getBoolean(c.param_key.is_strengthened, false);
         l.logger().d(tag, "using card with strengthened=" + isStrengthened);
         if (isStrengthened) {
             this.property.spDown(1);
         }
+        
+        /* ********************  驱散 开始     *******************/
+        switch(functionId){
+            case functioncon.m_Chakra:
+            case functioncon.m_Disarm:
+            case functioncon.m_Dispel:
+            case functioncon.m_ElunesArrow:
+            case functioncon.m_EnergyTransport:
+            case functioncon.m_Fanaticism:
+            case functioncon.m_Greed:
+            case functioncon.m_Mislead:{
+                if(table.players.somebodyHasDispell()){
+                    
+
+                    
+                    return;
+                }
+                break;
+            }
+        }
+        
+        /* ********************  驱散 结束     *******************/
+        
         switch (functionId) {// 主要是b, s, m三类
             case functioncon.b_normal_attack: {
                 used_how_many_attacks++;
