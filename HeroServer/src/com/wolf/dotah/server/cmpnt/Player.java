@@ -228,7 +228,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
             return;
         }
         
-
+        
         boolean isStrengthened = info.getBoolean(c.param_key.is_strengthened, false);
         l.logger().d(tag, "using card with strengthened=" + isStrengthened);
         if (isStrengthened) {
@@ -236,24 +236,24 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         }
         
         /* ********************  驱散 开始     *******************/
-        switch(functionId){
-            case functioncon.m_Chakra:
-            case functioncon.m_Disarm:
-            case functioncon.m_Dispel:
-            case functioncon.m_ElunesArrow:
-            case functioncon.m_EnergyTransport:
-            case functioncon.m_Fanaticism:
-            case functioncon.m_Greed:
-            case functioncon.m_Mislead:{
-                if(table.players.somebodyHasDispell()){
-                    
-
-                    
-                    return;
-                }
-                break;
-            }
-        }
+        //        switch(functionId){
+        //            case functioncon.m_Chakra:
+        //            case functioncon.m_Disarm:
+        //            case functioncon.m_Dispel:
+        //            case functioncon.m_ElunesArrow:
+        //            case functioncon.m_EnergyTransport:
+        //            case functioncon.m_Fanaticism:
+        //            case functioncon.m_Greed:
+        //            case functioncon.m_Mislead:{
+        //                if(table.players.somebodyHasDispell()){
+        //                    
+        //
+        //                    
+        //                    return;
+        //                }
+        //                break;
+        //            }
+        //        }
         
         /* ********************  驱散 结束     *******************/
         
@@ -421,7 +421,7 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 }
                 
                 table.players.getPlayerByPlayerName(target).property.equips.removeEquip(CardParser.getParser().getCardById(equipId));
-                if(isStrengthened){
+                if (isStrengthened) {
                     this.getCardFromTarget(equipId, target);
                 }
                 this.turnToTurnHolder();
@@ -440,9 +440,30 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 /*
                  * 能量转移：出牌阶段，你查看牌堆顶的X张牌（X为存活角色的数量），
                  * 按行动顺序均分给所有角色。
-                 * 强化效果：按行动顺序进行分配，其中一名角色获得两张牌，
-                 * 另一名角色不能获得牌，其他角色各获得一张。
+                 * 强化效果：自己先摸一张牌，然后执行非强化时的效果.
                  */
+                this.stateAction = c.action.ordering;
+                this.stateReason = c.reason.m_EnergyTransporting;
+                
+                table.tableState = new TableState(c.game_state.started.somebody_is_m_EnergyTransport, new String[] { userName });
+                if (isStrengthened) {
+                    this.drawHandCards(1);
+                }
+                Data pub = new Data();
+                pub.setAction(c.action.choosing_from_list);
+                pub.setInteger(c.param_key.amount, table.players.getCount());
+                table.sendPublicMessage(pub, userName);
+                
+                
+                
+                
+                
+                Data pri = new Data();
+                pri.setAction(c.action.choosing_from_list);
+                List<Integer> cards = table.drawCardsFromDeck(table.players.getCount());
+                pri.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cards.toArray(new Integer[] {})));
+                table.sendMessageToSingleUser(userName, pri);
+                
                 
                 
                 
@@ -568,10 +589,10 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
     private void getCardFromTarget(int equipId, String target) {
     
         //TODO 考虑是否要播放动画
-        this.handCards.add(new int[]{equipId}, true);
+        this.handCards.add(new int[] { equipId }, true);
     }
-
-
+    
+    
     private boolean noTarget(EsObject info) {
     
         String[] targets = info.getStringArray(c.param_key.target_player_list, new String[] {});

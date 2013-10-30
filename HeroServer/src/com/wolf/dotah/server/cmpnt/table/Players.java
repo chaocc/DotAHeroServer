@@ -170,6 +170,12 @@ public class Players {
         }
         return false;
     }
+
+    public int getPlayerIndex(Player player) {
+    
+        playerList.indexOf(player);
+        return 0;
+    }
     
     //    @Override
     //    public String toString() {

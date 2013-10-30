@@ -156,6 +156,11 @@ public class MessageCenter {
             EsObject newMsg = hideInfo(msg, user);
             this.sendPublicMessage(newMsg, user);
             table.choseCard(user, msg);
+        }else if(table.tableState.isEqualToState(c.game_state.started.somebody_is_m_EnergyTransport)){
+            table.cancelScheduledExecution();
+            EsObject newMsg = hideInfo(msg, user);
+            this.sendPublicMessage(newMsg, user);
+            table.choseCard(user, msg);
         }
         
         

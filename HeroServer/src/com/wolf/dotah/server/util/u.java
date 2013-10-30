@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class u {
     public static int[] intArrayMapping(Integer[] integerArray) {
-        
+    
         int length = integerArray.length;
         int[] result = new int[length];
         for (int i = 0; i < length; i++) {
@@ -14,7 +14,7 @@ public class u {
     }
     
     public static Integer[] integerArrayMapping(int[] intArray) {
-        
+    
         int length = intArray.length;
         Integer[] result = new Integer[length];
         for (int i = 0; i < length; i++) {
@@ -28,7 +28,7 @@ public class u {
      * only actions have limitations
      */
     public static int actionMapping(String action) {
-        
+    
         int result = -1;
         if (action.equals(c.playercon.state.choosing.choosing_hero)) {
             result = client_const.kActionUpdateDeckHero;
@@ -72,6 +72,8 @@ public class u {
             result = client_const.update_player_hand_get_card_from_table;
         } else if (action.equals(c.action.choosing_from_another)) {
             
+        } else if (action.equals(c.action.choosing_from_list)) {
+            result = client_const.choosing_from_list;
         }
         
         return result;
@@ -79,6 +81,7 @@ public class u {
     }
     
     public static int actionMapping(String action, String reason) {
+    
         int result = -1;
         if (action.equals(c.action.choosing_from_another)) {
             if (reason.equals(c.reason.m_greeding)) {
@@ -97,7 +100,7 @@ public class u {
     }
     
     public static String actionMapping(int action) {
-        
+    
         String result = "";
         switch (action) {
             case -1: {
@@ -109,7 +112,7 @@ public class u {
     }
     
     public static String printArray(Object[] choosingCards) {
-        
+    
         String result = Arrays.toString(choosingCards);
         // MessageDispatcher.getDispatcher(null).debug(tag, "printArray: " +
         // result);
@@ -117,7 +120,7 @@ public class u {
     }
     
     public static String printArray(int[] choosingCards) {
-        
+    
         String result = Arrays.toString(choosingCards);
         // MessageDispatcher.getDispatcher(null).debug(tag, "printArray: " +
         // result);
@@ -127,6 +130,7 @@ public class u {
     final String tag = "util: ";
     
     public static int[] getIndexList(int amount) {
+    
         int[] result = new int[amount];
         for (int i = 0; i < result.length; i++) {
             result[i] = i;

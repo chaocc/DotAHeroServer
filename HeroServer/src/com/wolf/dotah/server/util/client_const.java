@@ -3,77 +3,78 @@ package com.wolf.dotah.server.util;
 public interface client_const {
     
     public static final String kActionStartGame = "startGame"; // 开始游戏
-    public static final String kActionUseCard   = "useCard";  // 使用卡牌
+    public static final String kActionUseCard = "useCard"; // 使用卡牌
     public static final int
-                               ACTION_BASE      = 0,
-                                                ACTION_USER_READY = ACTION_BASE + 1,
-                                                ACTION_START_GAME = ACTION_BASE + 2,
-                                                kActionStartRound = ACTION_BASE + 3;
+        ACTION_BASE = 0,
+        ACTION_USER_READY = ACTION_BASE + 1,
+        ACTION_START_GAME = ACTION_BASE + 2,
+        kActionStartRound = ACTION_BASE + 3;
     
     interface action {
-        int count_down    = -100;
+        int count_down = -100;
         int choosing_hero = 2;
     }
     
     public int
-               kActionUseHandCard = 100, // 使用卡牌 // 专门用来主动出牌期间选择了一个卡牌来出
-            kActionUseHeroSkill = 101, // 使用英雄技能
-            kActionCancel = 102, // 取消
-            kActionDiscard = 103, // 进入弃牌
-            kActionOkay = 104, // 确定
-            kActionClearDeckCard = 105, // 清空桌面
-            
-            kActionChoseHero = 200, // 选择了英雄
-            kActionChoseCardToUse = 201, // 选择了卡牌Id/Idx: 使用
-            kActionChoseCardToCut = 202, // 选择了卡牌: 切牌
-            kActionChoseCardToGet = 203, // 选择了目标卡牌: 抽取获得
-            kActionChoseCardToGive = 204, // 选择了卡牌: 交给其他玩家
-            kActionChoseCardToDrop = 205, // 先择了卡牌: 丢掉
-            kActionChoseColor = 206, // 选择了卡牌颜色
-            kActionChoseSuits = 207, // 选择了卡牌花色
-            kActionAssignCard = 208 // 分配了卡牌(如能量转移)
-//            table_card_to_get = 209,
-//            table_card_to_drop = 210
-            
-            ;
+        kActionUseHandCard = 100, // 使用卡牌 // 专门用来主动出牌期间选择了一个卡牌来出
+        kActionUseHeroSkill = 101, // 使用英雄技能
+        kActionCancel = 102, // 取消
+        kActionDiscard = 103, // 进入弃牌
+        kActionOkay = 104, // 确定
+        kActionClearDeckCard = 105, // 清空桌面
+        
+        kActionChoseHero = 200, // 选择了英雄
+        kActionChoseCardToUse = 201, // 选择了卡牌Id/Idx: 使用
+        kActionChoseCardToCut = 202, // 选择了卡牌: 切牌
+        kActionChoseCardToGet = 203, // 选择了目标卡牌: 抽取获得
+        kActionChoseCardToGive = 204, // 选择了卡牌: 交给其他玩家
+        kActionChoseCardToDrop = 205, // 先择了卡牌: 丢掉
+        kActionChoseColor = 206, // 选择了卡牌颜色
+        kActionChoseSuits = 207, // 选择了卡牌花色
+        kActionAssignCard = 208 // 分配了卡牌(如能量转移)
+        //            table_card_to_get = 209,
+        //            table_card_to_drop = 210
+        
+        ;
     
     // 1000 开始是server的 action
     public int
-               kActionUpdateDeckHero = 1000, // 更新桌面: 待选英雄
-            kActionUpdateDeckUsedCard = 1001, // 更新桌面: 用掉/弃掉的牌
-            kActionUpdateDeckHandCard = 1002, // 更新桌面: 目标手牌/装备
-            kActionUpdateDeckPlayingCard = 1003, // 更新桌面: 牌堆顶的牌
-            action_update_table_confirmed_heros = 1004, // 更新桌面: 玩家列表
-            action_cutted = 1005,// 切牌完成
-            kActionClearPlayingDeck = 1100,
-            
-            kActionInitPlayerHero = 2000, // 初始化玩家: 选中的英雄
-            kActionInitPlayerCard = 2001, // 初始化玩家: 发初始手牌
-            kActionUpdatePlayerHero = 2002, // 更新玩家: 英雄的血量/怒气等信息
-            kActionPlayerUpdateHand = 2003, // 更新手牌
-            kActionPlayerUpdateHandGetting = 2005, // 更新手牌: 获得
-            update_player_hand_get_card_from_table = 2006, // 查克拉
-//            lostCard = 2007, //被抽取之类的,  贪婪
-            
-            
-            kActionPlayerUpdateEquipment = 2004, // 更新装备区的牌
-            kActionUpdatePlayerEquipmentExtracted = 2008, // 更新玩家: 装备去的牌被抽取
-            
-            kActionPlayingCard = 3000, // 出牌阶段
-            kActionChooseCardToUse = 3001, // 选择卡牌: 被动使用
-            action_choose_card_to_react = 3008,// 选择卡牌: 被动出闪什么的
-            kActionChooseCardToCompare = 3002, // 选择卡牌: 拼点
-            kActionChooseCardToExtract = 3003, // 选择目标卡牌: 抽取
-            kActionChooseCardToGive = 3004, // 选择卡牌: 交给其他玩家
-            kActionChooseCardToDiscard = 3005, // 选择卡牌: 弃置
-            kActionChoosingColor = 3006, // 选择颜色阶段
-            kActionChoosingSuits = 3007, // 选择花色阶段
-            drop_card_stage = 3008,
-            
-            kActionPlayerUpdateHandDrawing = 4000, // 播放动画: 从牌堆摸牌
-            kActionGuessCard = 4001
-            
-            ;
+        kActionUpdateDeckHero = 1000, // 更新桌面: 待选英雄
+        kActionUpdateDeckUsedCard = 1001, // 更新桌面: 用掉/弃掉的牌
+        kActionUpdateDeckHandCard = 1002, // 更新桌面: 目标手牌/装备
+        kActionUpdateDeckPlayingCard = 1003, // 更新桌面: 牌堆顶的牌
+        action_update_table_confirmed_heros = 1004, // 更新桌面: 玩家列表
+        action_cutted = 1005,// 切牌完成
+        kActionClearPlayingDeck = 1100,
+        
+        kActionInitPlayerHero = 2000, // 初始化玩家: 选中的英雄
+        kActionInitPlayerCard = 2001, // 初始化玩家: 发初始手牌
+        kActionUpdatePlayerHero = 2002, // 更新玩家: 英雄的血量/怒气等信息
+        kActionPlayerUpdateHand = 2003, // 更新手牌
+        kActionPlayerUpdateHandGetting = 2005, // 更新手牌: 获得
+        update_player_hand_get_card_from_table = 2006, // 查克拉
+        //            lostCard = 2007, //被抽取之类的,  贪婪
+        
+        
+        kActionPlayerUpdateEquipment = 2004, // 更新装备区的牌
+        kActionUpdatePlayerEquipmentExtracted = 2008, // 更新玩家: 装备去的牌被抽取
+        
+        kActionPlayingCard = 3000, // 出牌阶段
+        kActionChooseCardToUse = 3001, // 选择卡牌: 被动使用
+        action_choose_card_to_react = 3008,// 选择卡牌: 被动出闪什么的
+        kActionChooseCardToCompare = 3002, // 选择卡牌: 拼点
+        kActionChooseCardToExtract = 3003, // 选择目标卡牌: 抽取
+        kActionChooseCardToGive = 3004, // 选择卡牌: 交给其他玩家
+        kActionChooseCardToDiscard = 3005, // 选择卡牌: 弃置
+        kActionChoosingColor = 3006, // 选择颜色阶段
+        kActionChoosingSuits = 3007, // 选择花色阶段
+        drop_card_stage = 3008,
+        choosing_from_list = 3009,
+        
+        kActionPlayerUpdateHandDrawing = 4000, // 播放动画: 从牌堆摸牌
+        kActionGuessCard = 4001
+        
+        ;
     
     // typedef NS_ENUM(NSInteger, BGCardColor) {
     // kCardColorInvalid = 0,
