@@ -236,25 +236,25 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         }
         
         /* ********************  驱散 开始     *******************/
-        switch (functionId) {
-            case functioncon.m_Chakra:
-            case functioncon.m_Disarm:
-            case functioncon.m_Dispel:
-            case functioncon.m_ElunesArrow:
-            case functioncon.m_EnergyTransport:
-            case functioncon.m_Fanaticism:
-            case functioncon.m_Greed:
-            case functioncon.m_Mislead: {
-                if (table.players.somebodyHasDispell()) {
-                    table.tableState = new TableState(c.game_state.started.table_asking_dispell, new String[] {});
-                    Player[] spellHolderArray = table.players.getSpellHolderArray();
-                    table.waiter.waitingForThesePlayer(c.reason.choosing_dispell, spellHolderArray);
-                    
-                    return;
-                }
-                break;
-            }
-        }
+//        switch (functionId) {
+//            case functioncon.m_Chakra:
+//            case functioncon.m_Disarm:
+//            case functioncon.m_Dispel:
+//            case functioncon.m_ElunesArrow:
+//            case functioncon.m_EnergyTransport:
+//            case functioncon.m_Fanaticism:
+//            case functioncon.m_Greed:
+//            case functioncon.m_Mislead: {
+//                if (table.players.somebodyHasDispell()) {
+//                    table.tableState = new TableState(c.game_state.started.table_asking_dispell, new String[] {});
+//                    Player[] spellHolderArray = table.players.getSpellHolderArray();
+//                    table.waiter.waitingForThesePlayers(c.reason.choosing_dispell, spellHolderArray, c.default_wait_time);
+//                    
+//                    return;
+//                }
+//                break;
+//            }
+//        }
         
         /* ********************  驱散 结束     *******************/
         

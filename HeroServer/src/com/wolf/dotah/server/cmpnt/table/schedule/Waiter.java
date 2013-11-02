@@ -1,5 +1,6 @@
 package com.wolf.dotah.server.cmpnt.table.schedule;
 
+import com.electrotank.electroserver5.extensions.api.ScheduledCallback;
 import com.wolf.dotah.server.MessageCenter;
 import com.wolf.dotah.server.cmpnt.Player;
 import com.wolf.dotah.server.util.c;
@@ -9,6 +10,7 @@ public class Waiter {
     final String tag = "Waiter ==> ";
     private String waitReason;
     private int waitingType;
+    private ScheduledCallback scheduleCallback;
     private MessageCenter messenger;
     
     public Waiter(MessageCenter input) {
@@ -68,19 +70,27 @@ public class Waiter {
     
         l.logger().d(tag, "cancelScheduledExecution " + execution_id);
         messenger.cancelScheduledExecution(execution_id);
+        scheduleCallback = null;
     }
     
     //    public int choosing_hero = -1, cutting = -1;
     public int execution_id = -1;
     
-    public void waitingForThesePlayer(String reason, Player[] players) {
+    public void waitingForThesePlayers(String reason, Player[] players, int sec) {
     
         this.waitReason = reason;
         if (reason.equals(c.reason.choosing_dispell)) {
             //1000, sec * 1000,
-//            this.execution_id=messenger.scheduleExecution(i, j, callback)
+            MultiplePlayerChoosing mpc = new MultiplePlayerChoosing(messenger.getTable(), players, reason);
+            this.execution_id = messenger.scheduleExecution(1000, sec * 1000, mpc);
+            scheduleCallback = mpc;
         }
         
+    }
+    
+    public ScheduledCallback getSchedulingCallback() {
+    
+        return this.scheduleCallback;
     }
     
     
