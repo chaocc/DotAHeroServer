@@ -492,13 +492,17 @@ public class TableModel implements PlayerListListener, HandCardsChangeListener, 
             l.logger().d(tag, "somebody_is_m_EnergyTransport");
             int[] cardArray = msg.getIntegerArray(c.param_key.id_list, new int[] {});
             if (cardArray.length > 0) {
-                int startIndex=players.getPlayerIndex(players.turnHolder);
+                int startIndex = players.getPlayerIndex(players.turnHolder);
                 for (int i = 0; i < players.getCount(); i++) {
-                    
+                    int playerIndex = startIndex + i;
+                    if (playerIndex >= players.getCount()) {
+                        playerIndex = playerIndex - players.getCount();
+                    }
+                    Player p = players.getPlayerByIndex(playerIndex);
+                    p.handCards.add(cardArray[i], true, null);
                 }
             }
-            
-            
+            this.turnBackToTurnHolder(players.turnHolder.userName);
         }
         
     }

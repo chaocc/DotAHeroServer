@@ -51,11 +51,11 @@ public class PlayerHandCardsModel {
         }
     }
     
-    public void add(int input, boolean sendPrivate, Data withEffect) {
+    public void add(int input, boolean sendPrivate, Data effectData) {
     
-        if (withEffect != null) {
-            withEffect.setIntegerArray(c.param_key.id_list, new int[] { input });
-            player.table.sendPublicMessage(withEffect, player.userName);
+        if (effectData != null) {
+            effectData.setIntegerArray(c.param_key.id_list, new int[] { input });
+            player.table.sendPublicMessage(effectData, player.userName);
         }
         cards.add(input);
         for (HandCardsChangeListener listener : changeListeners) {
