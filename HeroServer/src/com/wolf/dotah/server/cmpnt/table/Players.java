@@ -170,11 +170,22 @@ public class Players {
         }
         return false;
     }
-
+    
     public int getPlayerIndex(Player player) {
     
         playerList.indexOf(player);
         return 0;
+    }
+    
+    public Player[] getSpellHolderArray() {
+    
+        List<Player> spellHolderList = new ArrayList<Player>();
+        for (Player p : playerList) {
+            if (p.handCards.hasDispell()) {
+                spellHolderList.add(p);
+            }
+        }
+        return spellHolderList.toArray(new Player[] {});
     }
     
     //    @Override

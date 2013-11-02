@@ -236,24 +236,25 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
         }
         
         /* ********************  驱散 开始     *******************/
-                switch(functionId){
-                    case functioncon.m_Chakra:
-                    case functioncon.m_Disarm:
-                    case functioncon.m_Dispel:
-                    case functioncon.m_ElunesArrow:
-                    case functioncon.m_EnergyTransport:
-                    case functioncon.m_Fanaticism:
-                    case functioncon.m_Greed:
-                    case functioncon.m_Mislead:{
-                        if(table.players.somebodyHasDispell()){
-                            
-        
-                            
-                            return;
-                        }
-                        break;
-                    }
+        switch (functionId) {
+            case functioncon.m_Chakra:
+            case functioncon.m_Disarm:
+            case functioncon.m_Dispel:
+            case functioncon.m_ElunesArrow:
+            case functioncon.m_EnergyTransport:
+            case functioncon.m_Fanaticism:
+            case functioncon.m_Greed:
+            case functioncon.m_Mislead: {
+                if (table.players.somebodyHasDispell()) {
+                    table.tableState = new TableState(c.game_state.started.table_asking_dispell, new String[] {});
+                    Player[] spellHolderArray = table.players.getSpellHolderArray();
+                    table.waiter.waitingForThesePlayer(c.reason.choosing_dispell, spellHolderArray);
+                    
+                    return;
                 }
+                break;
+            }
+        }
         
         /* ********************  驱散 结束     *******************/
         
@@ -390,12 +391,12 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 
                 break;
             }
-//            case functioncon.m_Dispel: {
-//                /*
-//                 * 驱散：在魔法牌或英雄技能生效前，抵消其全部效果。
-//                 */
-//                break;
-//            }
+            //            case functioncon.m_Dispel: {
+            //                /*
+            //                 * 驱散：在魔法牌或英雄技能生效前，抵消其全部效果。
+            //                 */
+            //                break;
+            //            }
             case functioncon.m_Disarm: {
                 /*
                  * 缴械：出牌阶段，对任意一名装备区里有装备牌的角色使用。
@@ -455,19 +456,11 @@ public class Player implements HandCardsChangeListener, PlayerPropertyChangedLis
                 table.sendPublicMessage(pub, userName);
                 
                 
-                
-                
-                
                 Data pri = new Data();
                 pri.setAction(c.action.choosing_from_list);
                 List<Integer> cards = table.drawCardsFromDeck(table.players.getCount());
                 pri.setIntegerArray(c.param_key.id_list, u.intArrayMapping(cards.toArray(new Integer[] {})));
                 table.sendMessageToSingleUser(userName, pri);
-                
-                
-                
-                
-                
                 
                 
                 break;

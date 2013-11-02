@@ -60,6 +60,7 @@ public interface c {
         String m_greeded = "m_greeded";
         String m_EnergyTransporting = "m_EnergyTransporting";
         String turn_end = "turn_end";
+        String choosing_dispell = "choosing_dispell";
         String none = "";
     }
     
@@ -188,6 +189,7 @@ public interface c {
             int somebody_is_m_Chakraing = 14;
             int somebody_is_m_greeding = 15;
             int somebody_is_m_EnergyTransport = 16;
+            int table_asking_dispell = 101;
         }
         
         int ended = 5;

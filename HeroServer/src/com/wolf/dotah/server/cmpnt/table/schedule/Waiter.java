@@ -73,5 +73,15 @@ public class Waiter {
     //    public int choosing_hero = -1, cutting = -1;
     public int execution_id = -1;
     
+    public void waitingForThesePlayer(String reason, Player[] players) {
+    
+        this.waitReason = reason;
+        if (reason.equals(c.reason.choosing_dispell)) {
+            //1000, sec * 1000,
+//            this.execution_id=messenger.scheduleExecution(i, j, callback)
+        }
+        
+    }
+    
     
 }
